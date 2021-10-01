@@ -284,9 +284,8 @@ if(EIGEN_TEST_CXX11)
 
 endif()
 
-if(EIGEN_TEST_CXX14)
+if(True)
   set(CMAKE_CXX_STANDARD 14)
-
   ei_add_test(cxx14_indexed_tensor)
 endif()
 
