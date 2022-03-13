@@ -122,22 +122,21 @@ public:
     Scalar m_value;
     StorageIndex m_id;
   };
-  
-  
-  enum {
-    CoeffReadCost = int(evaluator<Lhs>::CoeffReadCost) + int(evaluator<Rhs>::CoeffReadCost) + int(functor_traits<BinaryOp>::Cost),
-    Flags = XprType::Flags
-  };
-  
+
+
+  static constexpr int
+    CoeffReadCost = evaluator<Lhs>::CoeffReadCost + evaluator<Rhs>::CoeffReadCost + functor_traits<BinaryOp>::Cost,
+    Flags = XprType::Flags;
+
   explicit binary_evaluator(const XprType& xpr)
     : m_functor(xpr.functor()),
-      m_lhsImpl(xpr.lhs()), 
-      m_rhsImpl(xpr.rhs())  
+      m_lhsImpl(xpr.lhs()),
+      m_rhsImpl(xpr.rhs())
   {
     EIGEN_INTERNAL_CHECK_COST_VALUE(functor_traits<BinaryOp>::Cost);
     EIGEN_INTERNAL_CHECK_COST_VALUE(CoeffReadCost);
   }
-  
+
   inline Index nonZerosEstimate() const {
     return m_lhsImpl.nonZerosEstimate() + m_rhsImpl.nonZerosEstimate();
   }
@@ -162,7 +161,7 @@ public:
 
   class InnerIterator
   {
-    enum { IsRowMajor = (int(Rhs::Flags)&RowMajorBit)==RowMajorBit };
+    static constexpr bool IsRowMajor = (int(Rhs::Flags)&RowMajorBit)==RowMajorBit ;
   public:
 
     EIGEN_STRONG_INLINE InnerIterator(const binary_evaluator& aEval, Index outer)
@@ -209,10 +208,9 @@ public:
   };
 
 
-  enum {
-    CoeffReadCost = int(evaluator<Lhs>::CoeffReadCost) + int(evaluator<Rhs>::CoeffReadCost) + int(functor_traits<BinaryOp>::Cost),
-    Flags = XprType::Flags
-  };
+  static constexpr int
+    CoeffReadCost = evaluator<Lhs>::CoeffReadCost + evaluator<Rhs>::CoeffReadCost + functor_traits<BinaryOp>::Cost,
+    Flags = XprType::Flags;
 
   explicit binary_evaluator(const XprType& xpr)
     : m_functor(xpr.functor()),
@@ -249,7 +247,7 @@ public:
 
   class InnerIterator
   {
-    enum { IsRowMajor = (int(Lhs::Flags)&RowMajorBit)==RowMajorBit };
+    static constexpr bool IsRowMajor = (int(Lhs::Flags)&RowMajorBit)==RowMajorBit ;
   public:
 
     EIGEN_STRONG_INLINE InnerIterator(const binary_evaluator& aEval, Index outer)
@@ -296,10 +294,9 @@ public:
   };
 
 
-  enum {
-    CoeffReadCost = int(evaluator<Lhs>::CoeffReadCost) + int(evaluator<Rhs>::CoeffReadCost) + int(functor_traits<BinaryOp>::Cost),
-    Flags = XprType::Flags
-  };
+  static constexpr int
+    CoeffReadCost = evaluator<Lhs>::CoeffReadCost + evaluator<Rhs>::CoeffReadCost + functor_traits<BinaryOp>::Cost,
+    Flags = XprType::Flags;
 
   explicit binary_evaluator(const XprType& xpr)
     : m_functor(xpr.functor()),
@@ -453,13 +450,12 @@ public:
     RhsIterator m_rhsIter;
     const BinaryOp& m_functor;
   };
-  
-  
-  enum {
-    CoeffReadCost = int(evaluator<LhsArg>::CoeffReadCost) + int(evaluator<RhsArg>::CoeffReadCost) + int(functor_traits<BinaryOp>::Cost),
-    Flags = XprType::Flags
-  };
-  
+
+
+  static constexpr int
+    CoeffReadCost = evaluator<LhsArg>::CoeffReadCost + evaluator<RhsArg>::CoeffReadCost + functor_traits<BinaryOp>::Cost,
+    Flags = XprType::Flags;
+
   explicit sparse_conjunction_evaluator(const XprType& xpr)
     : m_functor(xpr.functor()),
       m_lhsImpl(xpr.lhs()), 
@@ -496,7 +492,7 @@ public:
 
   class InnerIterator
   {
-    enum { IsRowMajor = (int(RhsArg::Flags)&RowMajorBit)==RowMajorBit };
+    static constexpr bool IsRowMajor = (int(RhsArg::Flags)&RowMajorBit)==RowMajorBit ;
 
   public:
     
@@ -526,13 +522,11 @@ public:
     const BinaryOp& m_functor;
     const Index m_outer;
   };
-  
-  
-  enum {
-    CoeffReadCost = int(evaluator<LhsArg>::CoeffReadCost) + int(evaluator<RhsArg>::CoeffReadCost) + int(functor_traits<BinaryOp>::Cost),
-    Flags = XprType::Flags
-  };
-  
+
+  static constexpr int
+    CoeffReadCost = evaluator<LhsArg>::CoeffReadCost + evaluator<RhsArg>::CoeffReadCost + functor_traits<BinaryOp>::Cost,
+    Flags = XprType::Flags;
+
   explicit sparse_conjunction_evaluator(const XprType& xpr)
     : m_functor(xpr.functor()),
       m_lhsImpl(xpr.lhs()), 
@@ -569,7 +563,7 @@ public:
 
   class InnerIterator
   {
-    enum { IsRowMajor = (int(LhsArg::Flags)&RowMajorBit)==RowMajorBit };
+    static constexpr bool IsRowMajor = (int(LhsArg::Flags)&RowMajorBit)==RowMajorBit ;
 
   public:
     
@@ -600,13 +594,11 @@ public:
     const BinaryOp& m_functor;
     const Index m_outer;
   };
-  
-  
-  enum {
-    CoeffReadCost = int(evaluator<LhsArg>::CoeffReadCost) + int(evaluator<RhsArg>::CoeffReadCost) + int(functor_traits<BinaryOp>::Cost),
-    Flags = XprType::Flags
-  };
-  
+
+  static constexpr int
+    CoeffReadCost = evaluator<LhsArg>::CoeffReadCost + evaluator<RhsArg>::CoeffReadCost + functor_traits<BinaryOp>::Cost,
+    Flags = XprType::Flags;
+
   explicit sparse_conjunction_evaluator(const XprType& xpr)
     : m_functor(xpr.functor()),
       m_lhsImpl(xpr.lhs()), 

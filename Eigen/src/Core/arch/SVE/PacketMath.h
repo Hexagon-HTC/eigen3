@@ -28,7 +28,7 @@ namespace internal
 
 template <typename Scalar, int SVEVectorLength>
 struct sve_packet_size_selector {
-  enum { size = SVEVectorLength / (sizeof(Scalar) * CHAR_BIT) };
+  static constepxr int size = SVEVectorLength / (sizeof(Scalar) * CHAR_BIT);
 };
 
 /********************************* int32 **************************************/
@@ -38,40 +38,40 @@ template <>
 struct packet_traits<numext::int32_t> : default_packet_traits {
   typedef PacketXi type;
   typedef PacketXi half;  // Half not implemented yet
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
+  static constexpr int
     size = sve_packet_size_selector<numext::int32_t, EIGEN_ARM64_SVE_VL>::size,
-    HasHalfPacket = 0,
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasAdd = 1,
-    HasSub = 1,
-    HasShift = 1,
-    HasMul = 1,
-    HasNegate = 1,
-    HasAbs = 1,
-    HasArg = 0,
-    HasAbs2 = 1,
-    HasMin = 1,
-    HasMax = 1,
-    HasConj = 1,
-    HasSetLinear = 0,
-    HasBlend = 0,
-    HasReduxp = 0  // Not implemented in SVE
-  };
+    HasAdd = true,
+    HasSub = true,
+    HasShift = true,
+    HasMul = true,
+    HasNegate = true,
+    HasAbs = true,
+    HasArg = false,
+    HasAbs2 = true,
+    HasMin = true,
+    HasMax = true,
+    HasConj = true,
+    HasSetLinear = false,
+    HasBlend = false,
+    HasReduxp = false;  // Not implemented in SVE
 };
 
 template <>
 struct unpacket_traits<PacketXi> {
   typedef numext::int32_t type;
   typedef PacketXi half;  // Half not yet implemented
-  enum {
+  static constexpr int
     size = sve_packet_size_selector<numext::int32_t, EIGEN_ARM64_SVE_VL>::size,
-    alignment = Aligned64,
+    alignment = Aligned64;
+  static constexpr bool
     vectorizable = true,
     masked_load_available = false,
-    masked_store_available = false
-  };
+    masked_store_available = false;
 };
 
 template <>
@@ -373,38 +373,38 @@ struct packet_traits<float> : default_packet_traits {
   typedef PacketXf type;
   typedef PacketXf half;
 
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = sve_packet_size_selector<float, EIGEN_ARM64_SVE_VL>::size,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = sve_packet_size_selector<float, EIGEN_ARM64_SVE_VL>::size;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasAdd = 1,
-    HasSub = 1,
-    HasShift = 1,
-    HasMul = 1,
-    HasNegate = 1,
-    HasAbs = 1,
-    HasArg = 0,
-    HasAbs2 = 1,
-    HasMin = 1,
-    HasMax = 1,
-    HasConj = 1,
-    HasSetLinear = 0,
-    HasBlend = 0,
-    HasReduxp = 0,  // Not implemented in SVE
+    HasAdd = true,
+    HasSub = true,
+    HasShift = true,
+    HasMul = true,
+    HasNegate = true,
+    HasAbs = true,
+    HasArg = false,
+    HasAbs2 = true,
+    HasMin = true,
+    HasMax = true,
+    HasConj = true,
+    HasSetLinear = false,
+    HasBlend = false,
+    HasReduxp = false,  // Not implemented in SVE
 
-    HasDiv = 1,
-    HasFloor = 1,
+    HasDiv = true,
+    HasFloor = true,
 
-    HasSin = EIGEN_FAST_MATH,
-    HasCos = EIGEN_FAST_MATH,
-    HasLog = 1,
-    HasExp = 1,
-    HasSqrt = 0,
-    HasTanh = EIGEN_FAST_MATH,
-    HasErf = EIGEN_FAST_MATH
-  };
+    HasSin = bool(EIGEN_FAST_MATH),
+    HasCos = bool(EIGEN_FAST_MATH),
+    HasLog = true,
+    HasExp = true,
+    HasSqrt = false,
+    HasTanh = bool(EIGEN_FAST_MATH),
+    HasErf = bool(EIGEN_FAST_MATH);
 };
 
 template <>
@@ -413,13 +413,13 @@ struct unpacket_traits<PacketXf> {
   typedef PacketXf half;  // Half not yet implemented
   typedef PacketXi integer_packet;
 
-  enum {
+  static constexpr int
     size = sve_packet_size_selector<float, EIGEN_ARM64_SVE_VL>::size,
-    alignment = Aligned64,
+    alignment = Aligned64;
+  static constexpr bool
     vectorizable = true,
     masked_load_available = false,
-    masked_store_available = false
-  };
+    masked_store_available = false;
 };
 
 template <>

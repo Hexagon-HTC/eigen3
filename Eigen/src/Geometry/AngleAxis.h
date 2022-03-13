@@ -56,7 +56,7 @@ public:
 
   using Base::operator*;
 
-  enum { Dim = 3 };
+  static constexpr int Dim = 3;
   /** the scalar type of the coefficients */
   typedef Scalar_ Scalar;
   typedef Matrix<Scalar,3,3> Matrix3;

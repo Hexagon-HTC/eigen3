@@ -26,14 +26,13 @@ class DiagonalBase : public EigenBase<Derived>
     typedef typename internal::traits<Derived>::StorageKind StorageKind;
     typedef typename internal::traits<Derived>::StorageIndex StorageIndex;
 
-    enum {
+    static constexpr int
       RowsAtCompileTime = DiagonalVectorType::SizeAtCompileTime,
       ColsAtCompileTime = DiagonalVectorType::SizeAtCompileTime,
       MaxRowsAtCompileTime = DiagonalVectorType::MaxSizeAtCompileTime,
       MaxColsAtCompileTime = DiagonalVectorType::MaxSizeAtCompileTime,
       IsVectorAtCompileTime = 0,
-      Flags = NoPreferredStorageOrderBit
-    };
+      Flags = NoPreferredStorageOrderBit;
 
     typedef Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime, 0, MaxRowsAtCompileTime, MaxColsAtCompileTime> DenseMatrixType;
     typedef DenseMatrixType DenseType;
@@ -133,9 +132,8 @@ struct traits<DiagonalMatrix<Scalar_,SizeAtCompileTime,MaxSizeAtCompileTime> >
 {
   typedef Matrix<Scalar_,SizeAtCompileTime,1,0,MaxSizeAtCompileTime,1> DiagonalVectorType;
   typedef DiagonalShape StorageKind;
-  enum {
-    Flags = LvalueBit | NoPreferredStorageOrderBit | NestByRefBit
-  };
+  static constexpr int
+    Flags = LvalueBit | NoPreferredStorageOrderBit | NestByRefBit;
 };
 }
 template<typename Scalar_, int SizeAtCompileTime, int MaxSizeAtCompileTime>
@@ -277,13 +275,12 @@ struct traits<DiagonalWrapper<DiagonalVectorType_> >
   typedef typename DiagonalVectorType::StorageIndex StorageIndex;
   typedef DiagonalShape StorageKind;
   typedef typename traits<DiagonalVectorType>::XprKind XprKind;
-  enum {
+  static constexpr int
     RowsAtCompileTime = DiagonalVectorType::SizeAtCompileTime,
     ColsAtCompileTime = DiagonalVectorType::SizeAtCompileTime,
     MaxRowsAtCompileTime = DiagonalVectorType::MaxSizeAtCompileTime,
     MaxColsAtCompileTime = DiagonalVectorType::MaxSizeAtCompileTime,
-    Flags =  (traits<DiagonalVectorType>::Flags & LvalueBit) | NoPreferredStorageOrderBit
-  };
+    Flags =  (traits<DiagonalVectorType>::Flags & LvalueBit) | NoPreferredStorageOrderBit;
 };
 }
 

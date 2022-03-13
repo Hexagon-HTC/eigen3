@@ -18,9 +18,8 @@ namespace Eigen {
 namespace internal {
 template<int n> struct decrement_size
 {
-  enum {
-    ret = n==Dynamic ? n : n-1
-  };
+  static constexpr int
+    ret = n==Dynamic ? n : n-1;
 };
 }
 

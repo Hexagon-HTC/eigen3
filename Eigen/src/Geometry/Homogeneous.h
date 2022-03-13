@@ -38,7 +38,7 @@ struct traits<Homogeneous<MatrixType,Direction> >
   typedef typename traits<MatrixType>::StorageKind StorageKind;
   typedef typename ref_selector<MatrixType>::type MatrixTypeNested;
   typedef std::remove_reference_t<MatrixTypeNested> MatrixTypeNested_;
-  enum {
+  static constexpr int
     RowsPlusOne = (MatrixType::RowsAtCompileTime != Dynamic) ?
                   int(MatrixType::RowsAtCompileTime) + 1 : Dynamic,
     ColsPlusOne = (MatrixType::ColsAtCompileTime != Dynamic) ?
@@ -50,8 +50,7 @@ struct traits<Homogeneous<MatrixType,Direction> >
     TmpFlags = MatrixTypeNested_::Flags & HereditaryBits,
     Flags = ColsAtCompileTime==1 ? (TmpFlags & ~RowMajorBit)
           : RowsAtCompileTime==1 ? (TmpFlags | RowMajorBit)
-          : TmpFlags
-  };
+          : TmpFlags;
 };
 
 template<typename MatrixType,typename Lhs> struct homogeneous_left_product_impl;
@@ -65,7 +64,7 @@ template<typename MatrixType,int Direction_> class Homogeneous
   public:
 
     typedef MatrixType NestedExpression;
-    enum { Direction = Direction_ };
+    static constexpr int Direction = Direction_;
 
     typedef MatrixBase<Homogeneous> Base;
     EIGEN_DENSE_PUBLIC_INTERFACE(Homogeneous)
@@ -399,10 +398,9 @@ struct generic_product_impl<Homogeneous<LhsArg,Horizontal>, Rhs, HomogeneousShap
 template<typename Lhs,typename Rhs>
 struct homogeneous_right_product_refactoring_helper
 {
-  enum {
+  static constexpr int
     Dim  = Lhs::ColsAtCompileTime,
-    Rows = Lhs::RowsAtCompileTime
-  };
+    Rows = Lhs::RowsAtCompileTime;
   typedef typename Rhs::template ConstNRowsBlockXpr<Dim>::Type          LinearBlockConst;
   typedef std::remove_const_t<LinearBlockConst>                 LinearBlock;
   typedef typename Rhs::ConstRowXpr                                     ConstantColumn;
@@ -452,10 +450,9 @@ struct generic_product_impl<Lhs, Homogeneous<RhsArg,Vertical>, TriangularShape, 
 template<typename Lhs,typename Rhs>
 struct homogeneous_left_product_refactoring_helper
 {
-  enum {
+  static constexpr int
     Dim = Rhs::RowsAtCompileTime,
-    Cols = Rhs::ColsAtCompileTime
-  };
+    Cols = Rhs::ColsAtCompileTime;
   typedef typename Lhs::template ConstNColsBlockXpr<Dim>::Type          LinearBlockConst;
   typedef std::remove_const_t<LinearBlockConst>                 LinearBlock;
   typedef typename Lhs::ConstColXpr                                     ConstantColumn;

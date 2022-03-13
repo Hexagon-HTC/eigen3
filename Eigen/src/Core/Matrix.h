@@ -20,24 +20,25 @@ template<typename Scalar_, int Rows_, int Cols_, int Options_, int MaxRows_, int
 struct traits<Matrix<Scalar_, Rows_, Cols_, Options_, MaxRows_, MaxCols_> >
 {
 private:
-  enum { size = internal::size_at_compile_time<Rows_,Cols_>::ret };
+  static constexpr int size = internal::size_at_compile_time<Rows_,Cols_>::ret;
   typedef typename find_best_packet<Scalar_,size>::type PacketScalar;
-  enum {
-      row_major_bit = Options_&RowMajor ? RowMajorBit : 0,
-      is_dynamic_size_storage = MaxRows_==Dynamic || MaxCols_==Dynamic,
+  static constexpr int
+      row_major_bit = Options_&RowMajor ? RowMajorBit : 0;
+  static constexpr bool
+      is_dynamic_size_storage = MaxRows_==Dynamic || MaxCols_==Dynamic;
+  static constexpr int
       max_size = is_dynamic_size_storage ? Dynamic : MaxRows_*MaxCols_,
       default_alignment = compute_default_alignment<Scalar_,max_size>::value,
       actual_alignment = ((Options_&DontAlign)==0) ? default_alignment : 0,
       required_alignment = unpacket_traits<PacketScalar>::alignment,
-      packet_access_bit = (packet_traits<Scalar_>::Vectorizable && (EIGEN_UNALIGNED_VECTORIZE || (actual_alignment>=required_alignment))) ? PacketAccessBit : 0
-    };
+      packet_access_bit = (packet_traits<Scalar_>::Vectorizable && (EIGEN_UNALIGNED_VECTORIZE || (actual_alignment>=required_alignment))) ? PacketAccessBit : 0;
 
 public:
   typedef Scalar_ Scalar;
   typedef Dense StorageKind;
   typedef Eigen::Index StorageIndex;
   typedef MatrixXpr XprKind;
-  enum {
+  static constexpr int
     RowsAtCompileTime = Rows_,
     ColsAtCompileTime = Cols_,
     MaxRowsAtCompileTime = MaxRows_,
@@ -49,8 +50,7 @@ public:
 
     // FIXME, the following flag in only used to define NeedsToAlign in PlainObjectBase
     EvaluatorFlags = LinearAccessBit | DirectAccessBit | packet_access_bit | row_major_bit,
-    Alignment = actual_alignment
-  };
+    Alignment = actual_alignment;
 };
 }
 
@@ -187,7 +187,7 @@ class Matrix
       */
     typedef PlainObjectBase<Matrix> Base;
 
-    enum { Options = Options_ };
+    static constexpr int Options = Options_;
 
     EIGEN_DENSE_PUBLIC_INTERFACE(Matrix)
 

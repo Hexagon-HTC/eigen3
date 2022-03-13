@@ -32,11 +32,10 @@ struct traits<ArrayWrapper<ExpressionType> >
 {
   typedef ArrayXpr XprKind;
   // Let's remove NestByRefBit
-  enum {
+  static constexpr int
     Flags0 = traits<remove_all_t<typename ExpressionType::Nested> >::Flags,
     LvalueBitFlag = is_lvalue<ExpressionType>::value ? LvalueBit : 0,
-    Flags = (Flags0 & ~(NestByRefBit | LvalueBit)) | LvalueBitFlag
-  };
+    Flags = (Flags0 & ~(NestByRefBit | LvalueBit)) | LvalueBitFlag;
 };
 }
 
@@ -130,11 +129,10 @@ struct traits<MatrixWrapper<ExpressionType> >
 {
   typedef MatrixXpr XprKind;
   // Let's remove NestByRefBit
-  enum {
+  static constexpr int
     Flags0 = traits<remove_all_t<typename ExpressionType::Nested> >::Flags,
     LvalueBitFlag = is_lvalue<ExpressionType>::value ? LvalueBit : 0,
-    Flags = (Flags0 & ~(NestByRefBit | LvalueBit)) | LvalueBitFlag
-  };
+    Flags = (Flags0 & ~(NestByRefBit | LvalueBit)) | LvalueBitFlag;
 };
 }
 

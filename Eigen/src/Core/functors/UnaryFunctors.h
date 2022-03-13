@@ -30,9 +30,10 @@ template<typename Scalar> struct scalar_opposite_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_opposite_op<Scalar> >
-{ enum {
-    Cost = NumTraits<Scalar>::AddCost,
-    PacketAccess = packet_traits<Scalar>::HasNegate };
+{ static constexpr int
+    Cost = NumTraits<Scalar>::AddCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasNegate;
 };
 
 /** \internal
@@ -51,10 +52,10 @@ template<typename Scalar> struct scalar_abs_op {
 template<typename Scalar>
 struct functor_traits<scalar_abs_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::AddCost,
-    PacketAccess = packet_traits<Scalar>::HasAbs
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::AddCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasAbs;
 };
 
 /** \internal
@@ -101,7 +102,7 @@ template<typename Scalar> struct scalar_abs2_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_abs2_op<Scalar> >
-{ enum { Cost = NumTraits<Scalar>::MulCost, PacketAccess = packet_traits<Scalar>::HasAbs2 }; };
+{ static constexpr int Cost = NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = packet_traits<Scalar>::HasAbs2; };
 
 /** \internal
   * \brief Template functor to compute the conjugate of a complex value
@@ -118,8 +119,8 @@ template<typename Scalar> struct scalar_conjugate_op {
 template<typename Scalar>
 struct functor_traits<scalar_conjugate_op<Scalar> >
 {
-  enum {
-    Cost = 0,
+  static constexpr int
+    Cost = 0;
     // Yes the cost is zero even for complexes because in most cases for which
     // the cost is used, conjugation turns to be a no-op. Some examples:
     //   cost(a*conj(b)) == cost(a*b)
@@ -128,8 +129,8 @@ struct functor_traits<scalar_conjugate_op<Scalar> >
     // If we don't set it to zero, then:
     //   A.conjugate().lazyProduct(B.conjugate())
     // will bake its operands. We definitely don't want that!
-    PacketAccess = packet_traits<Scalar>::HasConj
-  };
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasConj;
 };
 
 /** \internal
@@ -148,10 +149,10 @@ template<typename Scalar> struct scalar_arg_op {
 template<typename Scalar>
 struct functor_traits<scalar_arg_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::IsComplex ? 5 * NumTraits<Scalar>::MulCost : NumTraits<Scalar>::AddCost,
-    PacketAccess = packet_traits<Scalar>::HasArg
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::IsComplex ? 5 * NumTraits<Scalar>::MulCost : NumTraits<Scalar>::AddCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasArg;
 };
 /** \internal
   * \brief Template functor to cast a scalar to another type
@@ -166,7 +167,7 @@ struct scalar_cast_op {
 };
 template<typename Scalar, typename NewType>
 struct functor_traits<scalar_cast_op<Scalar,NewType> >
-{ enum { Cost = is_same<Scalar, NewType>::value ? 0 : NumTraits<NewType>::AddCost, PacketAccess = false }; };
+{ static constexpr int Cost = is_same<Scalar, NewType>::value ? 0 : NumTraits<NewType>::AddCost; static constexpr bool PacketAccess = false; };
 
 /** \internal
   * \brief Template functor to arithmetically shift a scalar right by a number of bits
@@ -185,7 +186,7 @@ struct scalar_shift_right_op {
 };
 template<typename Scalar, int N>
 struct functor_traits<scalar_shift_right_op<Scalar,N> >
-{ enum { Cost = NumTraits<Scalar>::AddCost, PacketAccess = packet_traits<Scalar>::HasShift }; };
+{ static constexpr int Cost = NumTraits<Scalar>::AddCost; static constexpr bool PacketAccess = packet_traits<Scalar>::HasShift; };
 
 /** \internal
   * \brief Template functor to logically shift a scalar left by a number of bits
@@ -204,7 +205,7 @@ struct scalar_shift_left_op {
 };
 template<typename Scalar, int N>
 struct functor_traits<scalar_shift_left_op<Scalar,N> >
-{ enum { Cost = NumTraits<Scalar>::AddCost, PacketAccess = packet_traits<Scalar>::HasShift }; };
+{ static constexpr int Cost = NumTraits<Scalar>::AddCost; static constexpr bool PacketAccess = packet_traits<Scalar>::HasShift; };
 
 /** \internal
   * \brief Template functor to extract the real part of a complex
@@ -220,7 +221,7 @@ struct scalar_real_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_real_op<Scalar> >
-{ enum { Cost = 0, PacketAccess = false }; };
+{ static constexpr int Cost = 0; static constexpr bool PacketAccess = false; };
 
 /** \internal
   * \brief Template functor to extract the imaginary part of a complex
@@ -236,7 +237,7 @@ struct scalar_imag_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_imag_op<Scalar> >
-{ enum { Cost = 0, PacketAccess = false }; };
+{ static constexpr int Cost = 0; static constexpr bool PacketAccess = false; };
 
 /** \internal
   * \brief Template functor to extract the real part of a complex as a reference
@@ -252,7 +253,7 @@ struct scalar_real_ref_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_real_ref_op<Scalar> >
-{ enum { Cost = 0, PacketAccess = false }; };
+{ static constexpr int Cost = 0; static constexpr bool PacketAccess = false; };
 
 /** \internal
   * \brief Template functor to extract the imaginary part of a complex as a reference
@@ -268,7 +269,7 @@ struct scalar_imag_ref_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_imag_ref_op<Scalar> >
-{ enum { Cost = 0, PacketAccess = false }; };
+{ static constexpr int Cost = 0; static constexpr bool PacketAccess = false; };
 
 /** \internal
   *
@@ -284,11 +285,12 @@ template<typename Scalar> struct scalar_exp_op {
 };
 template <typename Scalar>
 struct functor_traits<scalar_exp_op<Scalar> > {
-  enum {
-    PacketAccess = packet_traits<Scalar>::HasExp,
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasExp;
     // The following numbers are based on the AVX implementation.
 #ifdef EIGEN_VECTORIZE_FMA
     // Haswell can issue 2 add/mul/madd per cycle.
+  static constexpr int
     Cost =
     (sizeof(Scalar) == 4
      // float: 8 pmadd, 4 pmul, 2 padd/psub, 6 other
@@ -296,8 +298,9 @@ struct functor_traits<scalar_exp_op<Scalar> > {
      // double: 7 pmadd, 5 pmul, 3 padd/psub, 1 div,  13 other
      : (14 * NumTraits<Scalar>::AddCost +
         6 * NumTraits<Scalar>::MulCost +
-        scalar_div_cost<Scalar,packet_traits<Scalar>::HasDiv>::value))
+        scalar_div_cost<Scalar,packet_traits<Scalar>::HasDiv>::value));
 #else
+  static constexpr int
     Cost =
     (sizeof(Scalar) == 4
      // float: 7 pmadd, 6 pmul, 4 padd/psub, 10 other
@@ -305,9 +308,8 @@ struct functor_traits<scalar_exp_op<Scalar> > {
      // double: 7 pmadd, 5 pmul, 3 padd/psub, 1 div,  13 other
      : (23 * NumTraits<Scalar>::AddCost +
         12 * NumTraits<Scalar>::MulCost +
-        scalar_div_cost<Scalar,packet_traits<Scalar>::HasDiv>::value))
+        scalar_div_cost<Scalar,packet_traits<Scalar>::HasDiv>::value));
 #endif
-  };
 };
 
 /** \internal
@@ -324,10 +326,10 @@ template<typename Scalar> struct scalar_expm1_op {
 };
 template <typename Scalar>
 struct functor_traits<scalar_expm1_op<Scalar> > {
-  enum {
-    PacketAccess = packet_traits<Scalar>::HasExpm1,
-    Cost = functor_traits<scalar_exp_op<Scalar> >::Cost // TODO measure cost of expm1
-  };
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasExpm1;
+  static constexpr int
+    Cost = functor_traits<scalar_exp_op<Scalar> >::Cost; // TODO measure cost of expm1
 };
 
 /** \internal
@@ -344,8 +346,9 @@ template<typename Scalar> struct scalar_log_op {
 };
 template <typename Scalar>
 struct functor_traits<scalar_log_op<Scalar> > {
-  enum {
-    PacketAccess = packet_traits<Scalar>::HasLog,
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasLog;
+  static constexpr int
     Cost =
     (PacketAccess
      // The following numbers are based on the AVX implementation.
@@ -357,8 +360,7 @@ struct functor_traits<scalar_log_op<Scalar> > {
      ? (36 * NumTraits<Scalar>::AddCost + 14 * NumTraits<Scalar>::MulCost)
 #endif
      // Measured cost of std::log.
-     : sizeof(Scalar)==4 ? 40 : 85)
-  };
+     : sizeof(Scalar)==4 ? 40 : 85);
 };
 
 /** \internal
@@ -375,10 +377,10 @@ template<typename Scalar> struct scalar_log1p_op {
 };
 template <typename Scalar>
 struct functor_traits<scalar_log1p_op<Scalar> > {
-  enum {
-    PacketAccess = packet_traits<Scalar>::HasLog1p,
-    Cost = functor_traits<scalar_log_op<Scalar> >::Cost // TODO measure cost of log1p
-  };
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasLog1p;
+  static constexpr int
+    Cost = functor_traits<scalar_log_op<Scalar> >::Cost; // TODO measure cost of log1p
 };
 
 /** \internal
@@ -395,7 +397,7 @@ template<typename Scalar> struct scalar_log10_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_log10_op<Scalar> >
-{ enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess = packet_traits<Scalar>::HasLog10 }; };
+{ static constexpr int Cost = 5 * NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = packet_traits<Scalar>::HasLog10; };
 
 /** \internal
   *
@@ -411,7 +413,7 @@ template<typename Scalar> struct scalar_log2_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_log2_op<Scalar> >
-{ enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess = packet_traits<Scalar>::HasLog }; };
+{ static constexpr int Cost = 5 * NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = packet_traits<Scalar>::HasLog; };
 
 /** \internal
   * \brief Template functor to compute the square root of a scalar
@@ -425,19 +427,20 @@ template<typename Scalar> struct scalar_sqrt_op {
 };
 template <typename Scalar>
 struct functor_traits<scalar_sqrt_op<Scalar> > {
-  enum {
 #if EIGEN_FAST_MATH
     // The following numbers are based on the AVX implementation.
+  static constexpr int
     Cost = (sizeof(Scalar) == 8 ? 28
                                 // 4 pmul, 1 pmadd, 3 other
                                 : (3 * NumTraits<Scalar>::AddCost +
-                                   5 * NumTraits<Scalar>::MulCost)),
+                                   5 * NumTraits<Scalar>::MulCost));
 #else
     // The following numbers are based on min VSQRT throughput on Haswell.
-    Cost = (sizeof(Scalar) == 8 ? 28 : 14),
+  static constexpr int
+    Cost = (sizeof(Scalar) == 8 ? 28 : 14);
 #endif
-    PacketAccess = packet_traits<Scalar>::HasSqrt
-  };
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasSqrt;
 };
 
 // Boolean specialization to eliminate -Wimplicit-conversion-floating-point-to-bool warnings.
@@ -449,7 +452,7 @@ template<> struct scalar_sqrt_op<bool> {
 };
 template <>
 struct functor_traits<scalar_sqrt_op<bool> > {
-  enum { Cost = 1, PacketAccess = packet_traits<bool>::Vectorizable };
+  static constexpr int Cost = 1; static constexpr bool PacketAccess = packet_traits<bool>::Vectorizable;
 };
 
 /** \internal
@@ -465,10 +468,10 @@ template<typename Scalar> struct scalar_rsqrt_op {
 
 template<typename Scalar>
 struct functor_traits<scalar_rsqrt_op<Scalar> >
-{ enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasRsqrt
-  };
+{ static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasRsqrt;
 };
 
 /** \internal
@@ -484,10 +487,10 @@ template<typename Scalar> struct scalar_cos_op {
 template<typename Scalar>
 struct functor_traits<scalar_cos_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasCos
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasCos;
 };
 
 /** \internal
@@ -503,10 +506,10 @@ template<typename Scalar> struct scalar_sin_op {
 template<typename Scalar>
 struct functor_traits<scalar_sin_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasSin
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasSin;
 };
 
 
@@ -523,10 +526,10 @@ template<typename Scalar> struct scalar_tan_op {
 template<typename Scalar>
 struct functor_traits<scalar_tan_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasTan
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasTan;
 };
 
 /** \internal
@@ -542,10 +545,10 @@ template<typename Scalar> struct scalar_acos_op {
 template<typename Scalar>
 struct functor_traits<scalar_acos_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasACos
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasACos;
 };
 
 /** \internal
@@ -561,10 +564,10 @@ template<typename Scalar> struct scalar_asin_op {
 template<typename Scalar>
 struct functor_traits<scalar_asin_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasASin
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasASin;
 };
 
 
@@ -581,10 +584,10 @@ template<typename Scalar> struct scalar_atan_op {
 template<typename Scalar>
 struct functor_traits<scalar_atan_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasATan
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasATan;
 };
 
 /** \internal
@@ -601,8 +604,9 @@ struct scalar_tanh_op {
 
 template <typename Scalar>
 struct functor_traits<scalar_tanh_op<Scalar> > {
-  enum {
-    PacketAccess = packet_traits<Scalar>::HasTanh,
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasTanh;
+  static constexpr int
     Cost = ( (EIGEN_FAST_MATH && is_same<Scalar,float>::value)
 // The following numbers are based on the AVX implementation,
 #ifdef EIGEN_VECTORIZE_FMA
@@ -620,8 +624,7 @@ struct functor_traits<scalar_tanh_op<Scalar> > {
                 : (6 * NumTraits<Scalar>::AddCost +
                    3 * NumTraits<Scalar>::MulCost +
                    2 * scalar_div_cost<Scalar,packet_traits<Scalar>::HasDiv>::value +
-                   functor_traits<scalar_exp_op<Scalar> >::Cost))
-  };
+                   functor_traits<scalar_exp_op<Scalar> >::Cost));
 };
 
 #if EIGEN_HAS_CXX11_MATH
@@ -637,7 +640,7 @@ struct scalar_atanh_op {
 
 template <typename Scalar>
 struct functor_traits<scalar_atanh_op<Scalar> > {
-  enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess = false };
+  static constexpr int Cost = 5 * NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = false;
 };
 #endif
 
@@ -654,10 +657,10 @@ template<typename Scalar> struct scalar_sinh_op {
 template<typename Scalar>
 struct functor_traits<scalar_sinh_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasSinh
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasSinh;
 };
 
 #if EIGEN_HAS_CXX11_MATH
@@ -673,7 +676,7 @@ struct scalar_asinh_op {
 
 template <typename Scalar>
 struct functor_traits<scalar_asinh_op<Scalar> > {
-  enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess = false };
+  static constexpr int Cost = 5 * NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = false;
 };
 #endif
 
@@ -690,10 +693,10 @@ template<typename Scalar> struct scalar_cosh_op {
 template<typename Scalar>
 struct functor_traits<scalar_cosh_op<Scalar> >
 {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasCosh
-  };
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasCosh;
 };
 
 #if EIGEN_HAS_CXX11_MATH
@@ -709,7 +712,7 @@ struct scalar_acosh_op {
 
 template <typename Scalar>
 struct functor_traits<scalar_acosh_op<Scalar> > {
-  enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess = false };
+  static constexpr int Cost = 5 * NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = false;
 };
 #endif
 
@@ -727,15 +730,15 @@ struct scalar_inverse_op {
 };
 template <typename Scalar>
 struct functor_traits<scalar_inverse_op<Scalar> > {
-  enum {
-    PacketAccess = packet_traits<Scalar>::HasDiv,
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasDiv;
     // If packet_traits<Scalar>::HasReciprocal then the Estimated cost is that
     // of computing an approximation plus a single Newton-Raphson step, which
     // consists of 1 pmul + 1 pmadd.
+  static constexpr int
     Cost = (packet_traits<Scalar>::HasReciprocal
                 ? 4 * NumTraits<Scalar>::MulCost
-                : scalar_div_cost<Scalar, PacketAccess>::value)
-  };
+                : scalar_div_cost<Scalar, PacketAccess>::value);
 };
 
 /** \internal
@@ -752,7 +755,7 @@ struct scalar_square_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_square_op<Scalar> >
-{ enum { Cost = NumTraits<Scalar>::MulCost, PacketAccess = packet_traits<Scalar>::HasMul }; };
+{ static constexpr int Cost = NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = packet_traits<Scalar>::HasMul; };
 
 // Boolean specialization to avoid -Wint-in-bool-context warnings on GCC.
 template<>
@@ -765,7 +768,7 @@ struct scalar_square_op<bool> {
 };
 template<>
 struct functor_traits<scalar_square_op<bool> >
-{ enum { Cost = 0, PacketAccess = packet_traits<bool>::Vectorizable }; };
+{ static constexpr int Cost = 0; static constexpr bool PacketAccess = packet_traits<bool>::Vectorizable; };
 
 /** \internal
   * \brief Template functor to compute the cube of a scalar
@@ -781,7 +784,7 @@ struct scalar_cube_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_cube_op<Scalar> >
-{ enum { Cost = 2*NumTraits<Scalar>::MulCost, PacketAccess = packet_traits<Scalar>::HasMul }; };
+{ static constexpr int Cost = 2*NumTraits<Scalar>::MulCost; static constexpr bool PacketAccess = packet_traits<Scalar>::HasMul; };
 
 // Boolean specialization to avoid -Wint-in-bool-context warnings on GCC.
 template<>
@@ -794,7 +797,7 @@ struct scalar_cube_op<bool> {
 };
 template<>
 struct functor_traits<scalar_cube_op<bool> >
-{ enum { Cost = 0, PacketAccess = packet_traits<bool>::Vectorizable }; };
+{ static constexpr int Cost = 0; static constexpr bool PacketAccess = packet_traits<bool>::Vectorizable; };
 
 /** \internal
   * \brief Template functor to compute the rounded value of a scalar
@@ -809,10 +812,10 @@ template<typename Scalar> struct scalar_round_op {
 template<typename Scalar>
 struct functor_traits<scalar_round_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasRound
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasRound;
 };
 
 /** \internal
@@ -828,10 +831,10 @@ template<typename Scalar> struct scalar_floor_op {
 template<typename Scalar>
 struct functor_traits<scalar_floor_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasFloor
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasFloor;
 };
 
 /** \internal
@@ -847,10 +850,10 @@ template<typename Scalar> struct scalar_rint_op {
 template<typename Scalar>
 struct functor_traits<scalar_rint_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasRint
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasRint;
 };
 
 /** \internal
@@ -866,10 +869,10 @@ template<typename Scalar> struct scalar_ceil_op {
 template<typename Scalar>
 struct functor_traits<scalar_ceil_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::MulCost,
-    PacketAccess = packet_traits<Scalar>::HasCeil
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasCeil;
 };
 
 /** \internal
@@ -890,10 +893,10 @@ template<typename Scalar> struct scalar_isnan_op {
 template<typename Scalar>
 struct functor_traits<scalar_isnan_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::MulCost,
-    PacketAccess = false
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = false;
 };
 
 /** \internal
@@ -914,10 +917,10 @@ template<typename Scalar> struct scalar_isinf_op {
 template<typename Scalar>
 struct functor_traits<scalar_isinf_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::MulCost,
-    PacketAccess = false
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = false;
 };
 
 /** \internal
@@ -938,10 +941,10 @@ template<typename Scalar> struct scalar_isfinite_op {
 template<typename Scalar>
 struct functor_traits<scalar_isfinite_op<Scalar> >
 {
-  enum {
-    Cost = NumTraits<Scalar>::MulCost,
-    PacketAccess = false
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::MulCost;
+  static constexpr bool
+    PacketAccess = false;
 };
 
 /** \internal
@@ -955,10 +958,10 @@ template<typename Scalar> struct scalar_boolean_not_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_boolean_not_op<Scalar> > {
-  enum {
-    Cost = NumTraits<bool>::AddCost,
-    PacketAccess = false
-  };
+  static constexpr int
+    Cost = NumTraits<bool>::AddCost;
+  static constexpr bool
+    PacketAccess = false;
 };
 
 /** \internal
@@ -1008,13 +1011,14 @@ struct scalar_sign_op<Scalar,true, is_integer> {
 };
 template<typename Scalar>
 struct functor_traits<scalar_sign_op<Scalar> >
-{ enum {
+{
+  static constexpr int
     Cost =
         NumTraits<Scalar>::IsComplex
         ? ( 8*NumTraits<Scalar>::MulCost  ) // roughly
-        : ( 3*NumTraits<Scalar>::AddCost),
-    PacketAccess = packet_traits<Scalar>::HasSign
-  };
+        : ( 3*NumTraits<Scalar>::AddCost);
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::HasSign;
 };
 
 /** \internal
@@ -1132,21 +1136,21 @@ struct scalar_logistic_op<float> {
 
 template <typename T>
 struct functor_traits<scalar_logistic_op<T> > {
-  enum {
+  static constexpr int
     // The cost estimate for float here here is for the common(?) case where
     // all arguments are greater than -9.
     Cost = scalar_div_cost<T, packet_traits<T>::HasDiv>::value +
            (internal::is_same<T, float>::value
                 ? NumTraits<T>::AddCost * 15 + NumTraits<T>::MulCost * 11
                 : NumTraits<T>::AddCost * 2 +
-                      functor_traits<scalar_exp_op<T> >::Cost),
+                      functor_traits<scalar_exp_op<T> >::Cost);
+  static constexpr bool
     PacketAccess =
         packet_traits<T>::HasAdd && packet_traits<T>::HasDiv &&
         (internal::is_same<T, float>::value
              ? packet_traits<T>::HasMul && packet_traits<T>::HasMax &&
                    packet_traits<T>::HasMin
-             : packet_traits<T>::HasNegate && packet_traits<T>::HasExp)
-  };
+             : packet_traits<T>::HasNegate && packet_traits<T>::HasExp);
 };
 
 } // end namespace internal

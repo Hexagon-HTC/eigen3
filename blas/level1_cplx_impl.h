@@ -18,7 +18,8 @@ namespace Eigen {
   namespace internal {
     template<> struct functor_traits<scalar_norm1_op >
     {
-      enum { Cost = 3 * NumTraits<Scalar>::AddCost, PacketAccess = 0 };
+      static constexpr int Cost = 3 * NumTraits<Scalar>::AddCost;
+      static constexpr bool PacketAccess = false;
     };
   }
 }

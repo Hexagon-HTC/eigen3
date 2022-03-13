@@ -86,14 +86,14 @@ template <typename Index, int Mode, \
 struct product_triangular_matrix_matrix_trmm<EIGTYPE,Index,Mode,true, \
          LhsStorageOrder,ConjugateLhs,RhsStorageOrder,ConjugateRhs,ColMajor> \
 { \
-  enum { \
+  static constexpr bool \
     IsLower = (Mode&Lower) == Lower, \
-    SetDiag = (Mode&(ZeroDiag|UnitDiag)) ? 0 : 1, \
-    IsUnitDiag  = (Mode&UnitDiag) ? 1 : 0, \
-    IsZeroDiag  = (Mode&ZeroDiag) ? 1 : 0, \
-    LowUp = IsLower ? Lower : Upper, \
-    conjA = ((LhsStorageOrder==ColMajor) && ConjugateLhs) ? 1 : 0 \
-  }; \
+    IsUnitDiag  = (Mode&UnitDiag) == UnitDiag, \
+    IsZeroDiag  = (Mode&ZeroDiag) == ZeroDiag, \
+    conjA = (LhsStorageOrder==ColMajor) && ConjugateLhs, \
+    SetDiag = !(Mode&(ZeroDiag|UnitDiag)); \
+  static constexpr int \
+    LowUp = IsLower ? Lower : Upper; \
 \
   static void run( \
     Index _rows, Index _cols, Index _depth, \
@@ -204,14 +204,14 @@ template <typename Index, int Mode, \
 struct product_triangular_matrix_matrix_trmm<EIGTYPE,Index,Mode,false, \
          LhsStorageOrder,ConjugateLhs,RhsStorageOrder,ConjugateRhs,ColMajor> \
 { \
-  enum { \
+  static constexpr bool \
     IsLower = (Mode&Lower) == Lower, \
-    SetDiag = (Mode&(ZeroDiag|UnitDiag)) ? 0 : 1, \
-    IsUnitDiag  = (Mode&UnitDiag) ? 1 : 0, \
-    IsZeroDiag  = (Mode&ZeroDiag) ? 1 : 0, \
-    LowUp = IsLower ? Lower : Upper, \
-    conjA = ((RhsStorageOrder==ColMajor) && ConjugateRhs) ? 1 : 0 \
-  }; \
+    SetDiag = !(Mode&(ZeroDiag|UnitDiag)), \
+    IsUnitDiag  = (Mode&UnitDiag) == UnitDiag, \
+    IsZeroDiag  = (Mode&ZeroDiag) == ZeroDiag, \
+    conjA = (RhsStorageOrder==ColMajor) && ConjugateRhs; \
+  static constexpr int
+    LowUp = IsLower ? Lower : Upper; \
 \
   static void run( \
     Index _rows, Index _cols, Index _depth, \

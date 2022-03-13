@@ -35,7 +35,7 @@ struct traits<Product<Lhs, Rhs, Option> >
   typedef typename promote_index_type<typename LhsTraits::StorageIndex,
                                       typename RhsTraits::StorageIndex>::type StorageIndex;
 
-  enum {
+  static constexpr int
     RowsAtCompileTime    = LhsTraits::RowsAtCompileTime,
     ColsAtCompileTime    = RhsTraits::ColsAtCompileTime,
     MaxRowsAtCompileTime = LhsTraits::MaxRowsAtCompileTime,
@@ -49,8 +49,7 @@ struct traits<Product<Lhs, Rhs, Option> >
           : (MaxColsAtCompileTime==1 && MaxRowsAtCompileTime!=1) ? 0
           : (   ((LhsTraits::Flags&NoPreferredStorageOrderBit) && (RhsTraits::Flags&RowMajorBit))
              || ((RhsTraits::Flags&NoPreferredStorageOrderBit) && (LhsTraits::Flags&RowMajorBit)) ) ? RowMajorBit
-          : NoPreferredStorageOrderBit
-  };
+          : NoPreferredStorageOrderBit;
 };
 
 } // end namespace internal
@@ -161,11 +160,10 @@ class ProductImpl<Lhs,Rhs,Option,Dense>
     typedef typename internal::dense_product_base<Lhs, Rhs, Option> Base;
     EIGEN_DENSE_PUBLIC_INTERFACE(Derived)
   protected:
-    enum {
+    static constexpr bool
       IsOneByOne = (RowsAtCompileTime == 1 || RowsAtCompileTime == Dynamic) &&
                    (ColsAtCompileTime == 1 || ColsAtCompileTime == Dynamic),
-      EnableCoeff = IsOneByOne || Option==LazyProduct
-    };
+      EnableCoeff = IsOneByOne || Option==LazyProduct;
 
   public:
 

@@ -23,7 +23,7 @@ struct traits<TridiagonalizationMatrixTReturnType<MatrixType> >
   : public traits<typename MatrixType::PlainObject>
 {
   typedef typename MatrixType::PlainObject ReturnType; // FIXME shall it be a BandMatrix?
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 template<typename MatrixType, typename CoeffVectorType>
@@ -74,13 +74,12 @@ template<typename MatrixType_> class Tridiagonalization
     typedef typename NumTraits<Scalar>::Real RealScalar;
     typedef Eigen::Index Index; ///< \deprecated since Eigen 3.3
 
-    enum {
+    static constexpr int
       Size = MatrixType::RowsAtCompileTime,
       SizeMinusOne = Size == Dynamic ? Dynamic : (Size > 1 ? Size - 1 : 1),
       Options = MatrixType::Options,
       MaxSize = MatrixType::MaxRowsAtCompileTime,
-      MaxSizeMinusOne = MaxSize == Dynamic ? Dynamic : (MaxSize > 1 ? MaxSize - 1 : 1)
-    };
+      MaxSizeMinusOne = MaxSize == Dynamic ? Dynamic : (MaxSize > 1 ? MaxSize - 1 : 1);
 
     typedef Matrix<Scalar, SizeMinusOne, 1, Options & ~RowMajor, MaxSizeMinusOne, 1> CoeffVectorType;
     typedef typename internal::plain_col_type<MatrixType, RealScalar>::type DiagonalType;

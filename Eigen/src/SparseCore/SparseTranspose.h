@@ -75,12 +75,11 @@ struct unary_evaluator<Transpose<ArgType>, IteratorBased>
       Index row() const { return EvalIterator::col(); }
       Index col() const { return EvalIterator::row(); }
     };
-    
-    enum {
+
+    static constexpr int
       CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
-      Flags = XprType::Flags
-    };
-    
+      Flags = XprType::Flags;
+
     explicit unary_evaluator(const XprType& op) :m_argImpl(op.nestedExpression()) {}
 
   protected:

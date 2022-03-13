@@ -153,15 +153,15 @@ EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC Tgt bit_cast(const Src& src) {
 
 template<typename T> struct GenericNumTraits
 {
-  enum {
+  static constexpr bool
     IsInteger = std::numeric_limits<T>::is_integer,
     IsSigned = std::numeric_limits<T>::is_signed,
-    IsComplex = 0,
-    RequireInitialization = internal::is_arithmetic<T>::value ? 0 : 1,
+    IsComplex = false,
+    RequireInitialization = !internal::is_arithmetic<T>::value;
+  static constexpr int
     ReadCost = 1,
     AddCost = 1,
-    MulCost = 1
-  };
+    MulCost = 1;
 
   typedef T Real;
   typedef std::conditional_t<IsInteger, std::conditional_t<sizeof(T)<=2, float, double>, T> NonInteger;
@@ -255,13 +255,13 @@ template<typename Real_> struct NumTraits<std::complex<Real_> >
 {
   typedef Real_ Real;
   typedef typename NumTraits<Real_>::Literal Literal;
-  enum {
+  static constexpr bool
     IsComplex = 1,
-    RequireInitialization = NumTraits<Real_>::RequireInitialization,
+    RequireInitialization = NumTraits<Real_>::RequireInitialization;
+  static constexpr int
     ReadCost = 2 * NumTraits<Real_>::ReadCost,
     AddCost = 2 * NumTraits<Real>::AddCost,
-    MulCost = 4 * NumTraits<Real>::MulCost + 2 * NumTraits<Real>::AddCost
-  };
+    MulCost = 4 * NumTraits<Real>::MulCost + 2 * NumTraits<Real>::AddCost;
 
   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
   static inline Real epsilon() { return NumTraits<Real>::epsilon(); }
@@ -282,15 +282,15 @@ struct NumTraits<Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols> >
   typedef ArrayType & Nested;
   typedef typename NumTraits<Scalar>::Literal Literal;
 
-  enum {
+  static constexpr bool
     IsComplex = NumTraits<Scalar>::IsComplex,
     IsInteger = NumTraits<Scalar>::IsInteger,
     IsSigned  = NumTraits<Scalar>::IsSigned,
-    RequireInitialization = 1,
-    ReadCost = ArrayType::SizeAtCompileTime==Dynamic ? HugeCost : ArrayType::SizeAtCompileTime * int(NumTraits<Scalar>::ReadCost),
-    AddCost  = ArrayType::SizeAtCompileTime==Dynamic ? HugeCost : ArrayType::SizeAtCompileTime * int(NumTraits<Scalar>::AddCost),
-    MulCost  = ArrayType::SizeAtCompileTime==Dynamic ? HugeCost : ArrayType::SizeAtCompileTime * int(NumTraits<Scalar>::MulCost)
-  };
+    RequireInitialization = true;
+  static constexpr int
+    ReadCost = ArrayType::SizeAtCompileTime==Dynamic ? HugeCost : ArrayType::SizeAtCompileTime * NumTraits<Scalar>::ReadCost,
+    AddCost  = ArrayType::SizeAtCompileTime==Dynamic ? HugeCost : ArrayType::SizeAtCompileTime * NumTraits<Scalar>::AddCost,
+    MulCost  = ArrayType::SizeAtCompileTime==Dynamic ? HugeCost : ArrayType::SizeAtCompileTime * NumTraits<Scalar>::MulCost;
 
   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
   static inline RealScalar epsilon() { return NumTraits<RealScalar>::epsilon(); }
@@ -304,12 +304,12 @@ struct NumTraits<Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols> >
 template<> struct NumTraits<std::string>
   : GenericNumTraits<std::string>
 {
-  enum {
-    RequireInitialization = 1,
+  static constexpr bool
+    RequireInitialization = true;
+  static constexpr int
     ReadCost = HugeCost,
     AddCost  = HugeCost,
-    MulCost  = HugeCost
-  };
+    MulCost  = HugeCost;
 
   EIGEN_CONSTEXPR
   static inline int digits10() { return 0; }

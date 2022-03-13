@@ -50,9 +50,8 @@ class QuaternionBase : public RotationBase<Derived, 3>
                                   Scalar&, CoeffReturnType> NonConstCoeffReturnType;
 
 
-  enum {
-    Flags = Eigen::internal::traits<Derived>::Flags
-  };
+  static constexpr int
+    Flags = Eigen::internal::traits<Derived>::Flags;
 
  // typedef typename Matrix<Scalar,4,1> Coefficients;
   /** the type of a 3D vector */
@@ -264,10 +263,9 @@ struct traits<Quaternion<Scalar_,Options_> >
   typedef Quaternion<Scalar_,Options_> PlainObject;
   typedef Scalar_ Scalar;
   typedef Matrix<Scalar_,4,1,Options_> Coefficients;
-  enum{
+  static constexpr int
     Alignment = internal::traits<Coefficients>::Alignment,
-    Flags = LvalueBit
-  };
+    Flags = LvalueBit;
 };
 }
 
@@ -276,7 +274,7 @@ class Quaternion : public QuaternionBase<Quaternion<Scalar_,Options_> >
 {
 public:
   typedef QuaternionBase<Quaternion<Scalar_,Options_> > Base;
-  enum { NeedsAlignment = internal::traits<Quaternion>::Alignment>0 };
+  static constexpr bool NeedsAlignment = internal::traits<Quaternion>::Alignment>0;
 
   typedef Scalar_ Scalar;
 
@@ -380,9 +378,8 @@ namespace internal {
   {
     typedef Map<const Matrix<Scalar_,4,1>, Options_> Coefficients;
     typedef traits<Quaternion<Scalar_, (int(Options_)&Aligned)==Aligned ? AutoAlign : DontAlign> > TraitsBase;
-    enum {
-      Flags = TraitsBase::Flags & ~LvalueBit
-    };
+    static constexpr int
+      Flags = TraitsBase::Flags & ~LvalueBit;
   };
 }
 

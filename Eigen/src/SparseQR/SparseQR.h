@@ -25,10 +25,9 @@ namespace internal {
     typedef typename SparseQRType::MatrixType ReturnType;
     typedef typename ReturnType::StorageIndex StorageIndex;
     typedef typename ReturnType::StorageKind StorageKind;
-    enum {
+    static constexpr int
       RowsAtCompileTime = Dynamic,
-      ColsAtCompileTime = Dynamic
-    };
+      ColsAtCompileTime = Dynamic;
   };
   template <typename SparseQRType> struct traits<SparseQRMatrixQTransposeReturnType<SparseQRType> >
   {
@@ -100,11 +99,10 @@ class SparseQR : public SparseSolverBase<SparseQR<MatrixType_,OrderingType_> >
     typedef Matrix<Scalar, Dynamic, 1> ScalarVector;
     typedef PermutationMatrix<Dynamic, Dynamic, StorageIndex> PermutationType;
 
-    enum {
+    static constexpr int
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
-    
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
+
   public:
     SparseQR () :  m_analysisIsok(false), m_lastError(""), m_useDefaultThreshold(true),m_isQSorted(false),m_isEtreeOk(false)
     { }
@@ -677,10 +675,9 @@ struct SparseQRMatrixQReturnType : public EigenBase<SparseQRMatrixQReturnType<Sp
 {  
   typedef typename SparseQRType::Scalar Scalar;
   typedef Matrix<Scalar,Dynamic,Dynamic> DenseMatrix;
-  enum {
+  static constexpr int
     RowsAtCompileTime = Dynamic,
-    ColsAtCompileTime = Dynamic
-  };
+    ColsAtCompileTime = Dynamic;
   explicit SparseQRMatrixQReturnType(const SparseQRType& qr) : m_qr(qr) {}
   template<typename Derived>
   SparseQR_QProduct<SparseQRType, Derived> operator*(const MatrixBase<Derived>& other)

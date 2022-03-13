@@ -21,13 +21,12 @@ template<typename Derived>
 struct traits<ReturnByValue<Derived> >
   : public traits<typename traits<Derived>::ReturnType>
 {
-  enum {
+  static constexpr int
     // We're disabling the DirectAccess because e.g. the constructor of
     // the Block-with-DirectAccess expression requires to have a coeffRef method.
     // Also, we don't want to have to implement the stride stuff.
     Flags = (traits<typename traits<Derived>::ReturnType>::Flags
-             | EvalBeforeNestingBit) & ~DirectAccessBit
-  };
+             | EvalBeforeNestingBit) & ~DirectAccessBit;
 };
 
 /* The ReturnByValue object doesn't even have a coeff() method.

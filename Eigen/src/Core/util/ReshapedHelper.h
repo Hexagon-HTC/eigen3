@@ -22,7 +22,7 @@ namespace internal {
 
 template<typename SizeType,typename OtherSize, int TotalSize>
 struct get_compiletime_reshape_size {
-  enum { value = get_fixed_value<SizeType>::value };
+  static constexpr int value = get_fixed_value<SizeType>::value;
 };
 
 template<typename SizeType>
@@ -32,9 +32,9 @@ Index get_runtime_reshape_size(SizeType size, Index /*other*/, Index /*total*/) 
 
 template<typename OtherSize, int TotalSize>
 struct get_compiletime_reshape_size<AutoSize_t,OtherSize,TotalSize> {
-  enum {
+  static constexpr int
     other_size = get_fixed_value<OtherSize>::value,
-    value = (TotalSize==Dynamic || other_size==Dynamic) ? Dynamic : TotalSize / other_size };
+    value = (TotalSize==Dynamic || other_size==Dynamic) ? Dynamic : TotalSize / other_size;
 };
 
 inline Index get_runtime_reshape_size(AutoSize_t /*size*/, Index other, Index total) {
@@ -43,7 +43,7 @@ inline Index get_runtime_reshape_size(AutoSize_t /*size*/, Index other, Index to
 
 template<int Flags, int Order>
 struct get_compiletime_reshape_order {
-  enum { value = Order == AutoOrder ? Flags & RowMajorBit : Order };
+  static constexpr int value = Order == AutoOrder ? Flags & RowMajorBit : Order;
 };
 
 }

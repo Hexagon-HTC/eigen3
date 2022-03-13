@@ -63,13 +63,12 @@ template<typename MatrixType_> class HessenbergDecomposition
     /** \brief Synonym for the template parameter \p MatrixType_. */
     typedef MatrixType_ MatrixType;
 
-    enum {
+    static constexpr int
       Size = MatrixType::RowsAtCompileTime,
       SizeMinusOne = Size == Dynamic ? Dynamic : Size - 1,
       Options = MatrixType::Options,
       MaxSize = MatrixType::MaxRowsAtCompileTime,
-      MaxSizeMinusOne = MaxSize == Dynamic ? Dynamic : MaxSize - 1
-    };
+      MaxSizeMinusOne = MaxSize == Dynamic ? Dynamic : MaxSize - 1;
 
     /** \brief Scalar type for matrices of type #MatrixType. */
     typedef typename MatrixType::Scalar Scalar;

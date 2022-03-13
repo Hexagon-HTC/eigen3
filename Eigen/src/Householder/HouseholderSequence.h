@@ -64,15 +64,14 @@ struct traits<HouseholderSequence<VectorsType,CoeffsType,Side> >
   typedef typename VectorsType::Scalar Scalar;
   typedef typename VectorsType::StorageIndex StorageIndex;
   typedef typename VectorsType::StorageKind StorageKind;
-  enum {
+  static constexpr int
     RowsAtCompileTime = Side==OnTheLeft ? traits<VectorsType>::RowsAtCompileTime
                                         : traits<VectorsType>::ColsAtCompileTime,
     ColsAtCompileTime = RowsAtCompileTime,
     MaxRowsAtCompileTime = Side==OnTheLeft ? traits<VectorsType>::MaxRowsAtCompileTime
                                            : traits<VectorsType>::MaxColsAtCompileTime,
     MaxColsAtCompileTime = MaxRowsAtCompileTime,
-    Flags = 0
-  };
+    Flags = 0;
 };
 
 struct HouseholderSequenceShape {};
@@ -124,12 +123,11 @@ template<typename VectorsType, typename CoeffsType, int Side> class HouseholderS
     typedef typename internal::hseq_side_dependent_impl<VectorsType,CoeffsType,Side>::EssentialVectorType EssentialVectorType;
 
   public:
-    enum {
+    static constexpr int
       RowsAtCompileTime = internal::traits<HouseholderSequence>::RowsAtCompileTime,
       ColsAtCompileTime = internal::traits<HouseholderSequence>::ColsAtCompileTime,
       MaxRowsAtCompileTime = internal::traits<HouseholderSequence>::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = internal::traits<HouseholderSequence>::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = internal::traits<HouseholderSequence>::MaxColsAtCompileTime;
     typedef typename internal::traits<HouseholderSequence>::Scalar Scalar;
 
     typedef HouseholderSequence<
@@ -500,7 +498,7 @@ template<typename VectorsType, typename CoeffsType, int Side> class HouseholderS
     bool m_reverse;
     Index m_length;
     Index m_shift;
-    enum { BlockSize = 48 };
+    static constexpr int BlockSize = 48;
 };
 
 /** \brief Computes the product of a matrix with a Householder sequence.

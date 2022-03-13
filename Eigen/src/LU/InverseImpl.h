@@ -128,12 +128,11 @@ template<typename MatrixType, int i, int j>
 EIGEN_DEVICE_FUNC 
 inline typename MatrixType::Scalar cofactor_3x3(const MatrixType& m)
 {
-  enum {
+  static constexpr int
     i1 = (i+1) % 3,
     i2 = (i+2) % 3,
     j1 = (j+1) % 3,
-    j2 = (j+2) % 3
-  };
+    j2 = (j+2) % 3;
   return m.coeff(i1, j1) * m.coeff(i2, j2)
        - m.coeff(i1, j2) * m.coeff(i2, j1);
 }
@@ -219,14 +218,13 @@ template<typename MatrixType, int i, int j>
 EIGEN_DEVICE_FUNC 
 inline typename MatrixType::Scalar cofactor_4x4(const MatrixType& matrix)
 {
-  enum {
+  static constexpr int
     i1 = (i+1) % 4,
     i2 = (i+2) % 4,
     i3 = (i+3) % 4,
     j1 = (j+1) % 4,
     j2 = (j+2) % 4,
-    j3 = (j+3) % 4
-  };
+    j3 = (j+3) % 4;
   return general_det3_helper(matrix, i1, i2, i3, j1, j2, j3)
        + general_det3_helper(matrix, i2, i3, i1, j1, j2, j3)
        + general_det3_helper(matrix, i3, i1, i2, j1, j2, j3);

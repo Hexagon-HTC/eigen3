@@ -344,10 +344,9 @@ struct apply_rotation_in_the_plane_selector<Scalar,OtherScalar,SizeAtCompileTime
 {
   static inline void run(Scalar *x, Index incrx, Scalar *y, Index incry, Index size, OtherScalar c, OtherScalar s)
   {
-    enum {
+    static constexpr int
       PacketSize = packet_traits<Scalar>::size,
-      OtherPacketSize = packet_traits<OtherScalar>::size
-    };
+      OtherPacketSize = packet_traits<OtherScalar>::size;
     typedef typename packet_traits<Scalar>::type Packet;
     typedef typename packet_traits<OtherScalar>::type OtherPacket;
 
@@ -355,7 +354,7 @@ struct apply_rotation_in_the_plane_selector<Scalar,OtherScalar,SizeAtCompileTime
     if(SizeAtCompileTime == Dynamic && ((incrx==1 && incry==1) || PacketSize == 1))
     {
       // both vectors are sequentially stored in memory => vectorization
-      enum { Peeling = 2 };
+      static constexpr int Peeling = 2;
 
       Index alignedStart = internal::first_default_aligned(y, size);
       Index alignedEnd = alignedStart + ((size-alignedStart)/PacketSize)*PacketSize;

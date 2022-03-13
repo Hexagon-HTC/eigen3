@@ -143,9 +143,8 @@ struct tribb_kernel
   typedef gebp_traits<LhsScalar,RhsScalar,ConjLhs,ConjRhs> Traits;
   typedef typename Traits::ResScalar ResScalar;
 
-  enum {
-    BlockSize  = meta_least_common_multiple<plain_enum_max(mr, nr), plain_enum_min(mr,nr)>::ret
-  };
+  static constexpr int
+    BlockSize  = meta_least_common_multiple<(std::max)(mr, nr), (std::min)(mr,nr)>::ret;
   void operator()(ResScalar* _res, Index resIncr, Index resStride, const LhsScalar* blockA, const RhsScalar* blockB, Index size, Index depth, const ResScalar& alpha)
   {
     typedef blas_data_mapper<ResScalar, Index, ColMajor, Unaligned, ResInnerStride> ResMapper;
@@ -227,12 +226,12 @@ struct general_product_to_triangular_selector<MatrixType,ProductType,UpLo,true>
     if(!beta)
       mat.template triangularView<UpLo>().setZero();
 
-    enum {
-      StorageOrder = (internal::traits<MatrixType>::Flags&RowMajorBit) ? RowMajor : ColMajor,
+    static constexpr int
+      StorageOrder = (internal::traits<MatrixType>::Flags&RowMajorBit) ? RowMajor : ColMajor;
+    static constexpr bool
       UseLhsDirectly = ActualLhs_::InnerStrideAtCompileTime==1,
-      UseRhsDirectly = ActualRhs_::InnerStrideAtCompileTime==1
-    };
-    
+      UseRhsDirectly = ActualRhs_::InnerStrideAtCompileTime==1;
+
     internal::gemv_static_vector_if<Scalar,Lhs::SizeAtCompileTime,Lhs::MaxSizeAtCompileTime,!UseLhsDirectly> static_lhs;
     ei_declare_aligned_stack_constructed_variable(Scalar, actualLhsPtr, actualLhs.size(),
       (UseLhsDirectly ? const_cast<Scalar*>(actualLhs.data()) : static_lhs.data()));
@@ -273,12 +272,11 @@ struct general_product_to_triangular_selector<MatrixType,ProductType,UpLo,false>
     if(!beta)
       mat.template triangularView<UpLo>().setZero();
 
-    enum {
-      IsRowMajor = (internal::traits<MatrixType>::Flags&RowMajorBit) ? 1 : 0,
-      LhsIsRowMajor = ActualLhs_::Flags&RowMajorBit ? 1 : 0,
-      RhsIsRowMajor = ActualRhs_::Flags&RowMajorBit ? 1 : 0,
-      SkipDiag = (UpLo&(UnitDiag|ZeroDiag))!=0
-    };
+    static constexpr bool
+      IsRowMajor = (internal::traits<MatrixType>::Flags&RowMajorBit) == RowMajorBit,
+      LhsIsRowMajor = (ActualLhs_::Flags&RowMajorBit) == RowMajorBit,
+      RhsIsRowMajor = (ActualRhs_::Flags&RowMajorBit) == RowMajorBit,
+      SkipDiag = (UpLo&(UnitDiag|ZeroDiag))!=0;
 
     Index size = mat.cols();
     if(SkipDiag)

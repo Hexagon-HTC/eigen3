@@ -24,30 +24,32 @@ struct traits<Block<XprType, BlockRows, BlockCols, InnerPanel> > : traits<XprTyp
   typedef typename traits<XprType>::XprKind XprKind;
   typedef typename ref_selector<XprType>::type XprTypeNested;
   typedef std::remove_reference_t<XprTypeNested> XprTypeNested_;
-  enum{
+  static constexpr int
     MatrixRows = traits<XprType>::RowsAtCompileTime,
     MatrixCols = traits<XprType>::ColsAtCompileTime,
     RowsAtCompileTime = MatrixRows == 0 ? 0 : BlockRows,
     ColsAtCompileTime = MatrixCols == 0 ? 0 : BlockCols,
     MaxRowsAtCompileTime = BlockRows==0 ? 0
-                         : RowsAtCompileTime != Dynamic ? int(RowsAtCompileTime)
-                         : int(traits<XprType>::MaxRowsAtCompileTime),
+                         : RowsAtCompileTime != Dynamic ? RowsAtCompileTime
+                         : traits<XprType>::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = BlockCols==0 ? 0
-                         : ColsAtCompileTime != Dynamic ? int(ColsAtCompileTime)
-                         : int(traits<XprType>::MaxColsAtCompileTime),
+                         : ColsAtCompileTime != Dynamic ? ColsAtCompileTime
+                         : traits<XprType>::MaxColsAtCompileTime;
 
-    XprTypeIsRowMajor = (int(traits<XprType>::Flags)&RowMajorBit) != 0,
-    IsRowMajor = (MaxRowsAtCompileTime==1&&MaxColsAtCompileTime!=1) ? 1
-               : (MaxColsAtCompileTime==1&&MaxRowsAtCompileTime!=1) ? 0
+  static constexpr bool
+    XprTypeIsRowMajor = (traits<XprType>::Flags&RowMajorBit) != 0,
+    IsRowMajor = (MaxRowsAtCompileTime==1&&MaxColsAtCompileTime!=1) ? true
+               : (MaxColsAtCompileTime==1&&MaxRowsAtCompileTime!=1) ? false
                : XprTypeIsRowMajor,
-    HasSameStorageOrderAsXprType = (IsRowMajor == XprTypeIsRowMajor),
-    InnerSize = IsRowMajor ? int(ColsAtCompileTime) : int(RowsAtCompileTime),
+    HasSameStorageOrderAsXprType = (IsRowMajor == XprTypeIsRowMajor);
+  static constexpr int
+    InnerSize = IsRowMajor ? ColsAtCompileTime : RowsAtCompileTime,
     InnerStrideAtCompileTime = HasSameStorageOrderAsXprType
-                             ? int(inner_stride_at_compile_time<XprType>::ret)
-                             : int(outer_stride_at_compile_time<XprType>::ret),
+                             ? inner_stride_at_compile_time<XprType>::ret
+                             : outer_stride_at_compile_time<XprType>::ret,
     OuterStrideAtCompileTime = HasSameStorageOrderAsXprType
-                             ? int(outer_stride_at_compile_time<XprType>::ret)
-                             : int(inner_stride_at_compile_time<XprType>::ret),
+                             ? outer_stride_at_compile_time<XprType>::ret
+                             : inner_stride_at_compile_time<XprType>::ret,
 
     // FIXME, this traits is rather specialized for dense object and it needs to be cleaned further
     FlagsLvalueBit = is_lvalue<XprType>::value ? LvalueBit : 0,
@@ -57,8 +59,7 @@ struct traits<Block<XprType, BlockRows, BlockCols, InnerPanel> > : traits<XprTyp
     //
     // Alignment is needed by MapBase's assertions
     // We can sefely set it to false here. Internal alignment errors will be detected by an eigen_internal_assert in the respective evaluator
-    Alignment = 0
-  };
+    Alignment = 0;
 };
 
 template<typename XprType, int BlockRows=Dynamic, int BlockCols=Dynamic, bool InnerPanel = false,
@@ -333,9 +334,8 @@ class BlockImpl_dense<XprType,BlockRows,BlockCols, InnerPanel,true>
 {
     typedef Block<XprType, BlockRows, BlockCols, InnerPanel> BlockType;
     typedef typename internal::ref_selector<XprType>::non_const_type XprTypeNested;
-    enum {
-      XprTypeIsRowMajor = (int(traits<XprType>::Flags)&RowMajorBit) != 0
-    };
+    static constexpr bool
+      XprTypeIsRowMajor = (traits<XprType>::Flags&RowMajorBit) != 0;
   public:
 
     typedef MapBase<BlockType> Base;

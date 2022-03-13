@@ -21,23 +21,22 @@ struct traits<Map<PlainObjectType, MapOptions, StrideType> >
   : public traits<PlainObjectType>
 {
   typedef traits<PlainObjectType> TraitsBase;
-  enum {
+  static constexpr int
     PlainObjectTypeInnerSize = ((traits<PlainObjectType>::Flags&RowMajorBit)==RowMajorBit)
                              ? PlainObjectType::ColsAtCompileTime
                              : PlainObjectType::RowsAtCompileTime,
 
     InnerStrideAtCompileTime = StrideType::InnerStrideAtCompileTime == 0
-                             ? int(PlainObjectType::InnerStrideAtCompileTime)
-                             : int(StrideType::InnerStrideAtCompileTime),
+                             ? PlainObjectType::InnerStrideAtCompileTime
+                             : StrideType::InnerStrideAtCompileTime,
     OuterStrideAtCompileTime = StrideType::OuterStrideAtCompileTime == 0
                              ? (InnerStrideAtCompileTime==Dynamic || PlainObjectTypeInnerSize==Dynamic
                                 ? Dynamic
-                                : int(InnerStrideAtCompileTime) * int(PlainObjectTypeInnerSize))
-                             : int(StrideType::OuterStrideAtCompileTime),
-    Alignment = int(MapOptions)&int(AlignedMask),
+                                : InnerStrideAtCompileTime * PlainObjectTypeInnerSize)
+                             : StrideType::OuterStrideAtCompileTime,
+    Alignment = MapOptions&AlignedMask,
     Flags0 = TraitsBase::Flags & (~NestByRefBit),
-    Flags = is_lvalue<PlainObjectType>::value ? int(Flags0) : (int(Flags0) & ~LvalueBit)
-  };
+    Flags = is_lvalue<PlainObjectType>::value ? Flags0 : (Flags0 & ~LvalueBit);
 private:
   enum { Options }; // Expressions don't have Options
 };

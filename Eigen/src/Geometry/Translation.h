@@ -34,7 +34,7 @@ class Translation
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF_VECTORIZABLE_FIXED_SIZE(Scalar_,Dim_)
   /** dimension of the space */
-  enum { Dim = Dim_ };
+  static constexpr int Dim = Dim_;
   /** the scalar type of the coefficients */
   typedef Scalar_ Scalar;
   /** corresponding vector type */

@@ -402,12 +402,11 @@ EIGEN_STRONG_INLINE void gemv_col(
 
     const Index lhsStride = lhs.stride();
     // TODO: for padded aligned inputs, we could enable aligned reads
-    enum {
+    static constexpr int
         LhsAlignment = Unaligned,
         ResPacketSize = Traits::ResPacketSize,
         LhsPacketSize = Traits::LhsPacketSize,
-        RhsPacketSize = Traits::RhsPacketSize,
-    };
+        RhsPacketSize = Traits::RhsPacketSize;
 
 #ifndef GCC_ONE_VECTORPAIR_BUG
     const Index n8 = rows - 8 * ResPacketSize + 1;
@@ -1615,12 +1614,11 @@ EIGEN_STRONG_INLINE void gemv_complex_col(
 
     const Index lhsStride = lhs.stride();
     // TODO: for padded aligned inputs, we could enable aligned reads
-    enum {
+    static constexpr int
         LhsAlignment = Unaligned,
         ResPacketSize = PTraits::ResPacketSize,
         LhsPacketSize = PTraits::LhsPacketSize,
-        RhsPacketSize = PTraits::RhsPacketSize,
-    };
+        RhsPacketSize = PTraits::RhsPacketSize;
 #ifdef EIGEN_POWER_USE_GEMV_PREFETCH
     const Index prefetch_dist = 64 * LhsPacketSize;
 #endif
@@ -1957,12 +1955,11 @@ EIGEN_STRONG_INLINE void gemv_row(
 #endif
 
     // TODO: for padded aligned inputs, we could enable aligned reads
-    enum {
+    static constexpr int
         LhsAlignment = Unaligned,
         ResPacketSize = Traits::ResPacketSize,
         LhsPacketSize = Traits::LhsPacketSize,
-        RhsPacketSize = Traits::RhsPacketSize,
-    };
+        RhsPacketSize = Traits::RhsPacketSize;
 
     Index i = 0;
 #ifdef USE_GEMV_MMA
@@ -2271,12 +2268,11 @@ EIGEN_STRONG_INLINE void gemv_complex_row(
 #endif
 
     // TODO: for padded aligned inputs, we could enable aligned reads
-    enum {
+    static constexpr int
         LhsAlignment = Unaligned,
         ResPacketSize = PTraits::ResPacketSize,
         LhsPacketSize = PTraits::LhsPacketSize,
-        RhsPacketSize = PTraits::RhsPacketSize,
-    };
+        RhsPacketSize = PTraits::RhsPacketSize;
 
     Index i = 0, j;
     PResPacket c00, c01, c02, c03, c04, c05, c06, c07;

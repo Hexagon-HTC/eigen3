@@ -46,13 +46,12 @@ template<typename MatrixType, unsigned int Mode_> class SparseSelfAdjointView
   : public EigenBase<SparseSelfAdjointView<MatrixType,Mode_> >
 {
   public:
-    
-    enum {
+
+    static constexpr int
       Mode = Mode_,
       TransposeMode = ((Mode & Upper) ? Lower : 0) | ((Mode & Lower) ? Upper : 0),
       RowsAtCompileTime = internal::traits<SparseSelfAdjointView>::RowsAtCompileTime,
-      ColsAtCompileTime = internal::traits<SparseSelfAdjointView>::ColsAtCompileTime
-    };
+      ColsAtCompileTime = internal::traits<SparseSelfAdjointView>::ColsAtCompileTime;
 
     typedef EigenBase<SparseSelfAdjointView> Base;
     typedef typename MatrixType::Scalar Scalar;
@@ -282,16 +281,15 @@ inline void sparse_selfadjoint_time_dense_product(const SparseLhsType& lhs, cons
   typedef evaluator<SparseLhsTypeNestedCleaned> LhsEval;
   typedef typename LhsEval::InnerIterator LhsIterator;
   typedef typename SparseLhsType::Scalar LhsScalar;
-  
-  enum {
+
+  static constexpr bool
     LhsIsRowMajor = (LhsEval::Flags&RowMajorBit)==RowMajorBit,
     ProcessFirstHalf =
               ((Mode&(Upper|Lower))==(Upper|Lower))
           || ( (Mode&Upper) && !LhsIsRowMajor)
           || ( (Mode&Lower) && LhsIsRowMajor),
-    ProcessSecondHalf = !ProcessFirstHalf
-  };
-  
+    ProcessSecondHalf = !ProcessFirstHalf;
+
   SparseLhsTypeNested lhs_nested(lhs);
   LhsEval lhsEval(lhs_nested);
 
@@ -431,10 +429,9 @@ void permute_symm_to_fullsymm(const MatrixType& mat, SparseMatrix<typename Matri
   
   MatEval matEval(mat);
   Dest& dest(_dest.derived());
-  enum {
-    StorageOrderMatch = int(Dest::IsRowMajor) == int(MatrixType::IsRowMajor)
-  };
-  
+  static constexpr bool
+    StorageOrderMatch = Dest::IsRowMajor == MatrixType::IsRowMajor;
+
   Index size = mat.rows();
   VectorI count;
   count.resize(size);
@@ -519,12 +516,11 @@ void permute_symm_to_symm(const MatrixType& mat, SparseMatrix<typename MatrixTyp
   typedef evaluator<MatrixType> MatEval;
   typedef typename evaluator<MatrixType>::InnerIterator MatIterator;
 
-  enum {
+  static constexpr int
     SrcOrder = MatrixType::IsRowMajor ? RowMajor : ColMajor,
     StorageOrderMatch = int(SrcOrder) == int(DstOrder),
     DstMode = DstOrder==RowMajor ? (DstMode_==Upper ? Lower : Upper) : DstMode_,
-    SrcMode = SrcOrder==RowMajor ? (SrcMode_==Upper ? Lower : Upper) : SrcMode_
-  };
+    SrcMode = SrcOrder==RowMajor ? (SrcMode_==Upper ? Lower : Upper) : SrcMode_;
 
   MatEval matEval(mat);
   
@@ -595,10 +591,9 @@ class SparseSymmetricPermutationProduct
   public:
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::StorageIndex StorageIndex;
-    enum {
+    static constexpr int
       RowsAtCompileTime = internal::traits<SparseSymmetricPermutationProduct>::RowsAtCompileTime,
-      ColsAtCompileTime = internal::traits<SparseSymmetricPermutationProduct>::ColsAtCompileTime
-    };
+      ColsAtCompileTime = internal::traits<SparseSymmetricPermutationProduct>::ColsAtCompileTime;
   protected:
     typedef PermutationMatrix<Dynamic,Dynamic,StorageIndex> Perm;
   public:

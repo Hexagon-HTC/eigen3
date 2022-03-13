@@ -55,8 +55,8 @@ struct column_dfs_traits : no_assignment_operator
       m_luImpl.memXpand(lsub, m_glu.nzlmax, nextl, LSUB, m_glu.num_expansions); 
     if (chmark != (m_jcol-1)) m_jsuper_ref = emptyIdxLU;
   }
-  enum { ExpandMem = true };
-  
+  static constexpr bool ExpandMem = true;
+
   Index m_jcol;
   Index& m_jsuper_ref;
   typename SparseLUImpl<Scalar, StorageIndex>::GlobalLU_t& m_glu;

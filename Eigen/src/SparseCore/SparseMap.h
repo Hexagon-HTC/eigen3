@@ -22,9 +22,8 @@ struct traits<Map<SparseMatrix<MatScalar,MatOptions,MatIndex>, Options, StrideTy
 {
   typedef SparseMatrix<MatScalar,MatOptions,MatIndex> PlainObjectType;
   typedef traits<PlainObjectType> TraitsBase;
-  enum {
-    Flags = TraitsBase::Flags & (~NestByRefBit)
-  };
+  static constexpr int
+    Flags = TraitsBase::Flags & (~NestByRefBit);
 };
 
 template<typename MatScalar, int MatOptions, typename MatIndex, int Options, typename StrideType>
@@ -33,9 +32,8 @@ struct traits<Map<const SparseMatrix<MatScalar,MatOptions,MatIndex>, Options, St
 {
   typedef SparseMatrix<MatScalar,MatOptions,MatIndex> PlainObjectType;
   typedef traits<PlainObjectType> TraitsBase;
-  enum {
-    Flags = TraitsBase::Flags & (~ (NestByRefBit | LvalueBit))
-  };
+  static constexpr int
+    Flags = TraitsBase::Flags & (~ (NestByRefBit | LvalueBit));
 };
 
 } // end namespace internal
@@ -56,15 +54,15 @@ class SparseMapBase<Derived,ReadOnlyAccessors>
     typedef SparseCompressedBase<Derived> Base;
     typedef typename Base::Scalar Scalar;
     typedef typename Base::StorageIndex StorageIndex;
-    enum { IsRowMajor = Base::IsRowMajor };
+    static constexpr bool IsRowMajor = Base::IsRowMajor;
     using Base::operator=;
   protected:
-    
+
     typedef std::conditional_t<
-                 bool(internal::is_lvalue<Derived>::value),
+                 internal::is_lvalue<Derived>::value,
                  Scalar *, const Scalar *> ScalarPointer;
     typedef std::conditional_t<
-                 bool(internal::is_lvalue<Derived>::value),
+                 internal::is_lvalue<Derived>::value,
                  StorageIndex *, const StorageIndex *> IndexPointer;
 
     Index   m_outerSize;
@@ -156,8 +154,8 @@ class SparseMapBase<Derived,WriteAccessors>
     typedef SparseMapBase<Derived, ReadOnlyAccessors> Base;
     typedef typename Base::Scalar Scalar;
     typedef typename Base::StorageIndex StorageIndex;
-    enum { IsRowMajor = Base::IsRowMajor };
-    
+    static constexpr bool IsRowMajor = Base::IsRowMajor;
+
     using Base::operator=;
 
   public:
@@ -232,7 +230,7 @@ class Map<SparseMatrixType>
   public:
     typedef SparseMapBase<Map> Base;
     EIGEN_SPARSE_PUBLIC_INTERFACE(Map)
-    enum { IsRowMajor = Base::IsRowMajor };
+    static constexpr bool IsRowMajor = Base::IsRowMajor;
 
   public:
 
@@ -260,7 +258,7 @@ class Map<const SparseMatrix<MatScalar,MatOptions,MatIndex>, Options, StrideType
   public:
     typedef SparseMapBase<Map> Base;
     EIGEN_SPARSE_PUBLIC_INTERFACE(Map)
-    enum { IsRowMajor = Base::IsRowMajor };
+    static constexpr bool IsRowMajor = Base::IsRowMajor;
 
   public:
 #endif

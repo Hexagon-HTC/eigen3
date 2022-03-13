@@ -78,7 +78,7 @@ class SolverBase : public EigenBase<Derived>
     template<typename Derived_>
     friend struct internal::solve_assertion;
 
-    enum {
+    static constexpr int
       RowsAtCompileTime = internal::traits<Derived>::RowsAtCompileTime,
       ColsAtCompileTime = internal::traits<Derived>::ColsAtCompileTime,
       SizeAtCompileTime = (internal::size_at_compile_time<internal::traits<Derived>::RowsAtCompileTime,
@@ -86,11 +86,12 @@ class SolverBase : public EigenBase<Derived>
       MaxRowsAtCompileTime = internal::traits<Derived>::MaxRowsAtCompileTime,
       MaxColsAtCompileTime = internal::traits<Derived>::MaxColsAtCompileTime,
       MaxSizeAtCompileTime = (internal::size_at_compile_time<internal::traits<Derived>::MaxRowsAtCompileTime,
-                                                             internal::traits<Derived>::MaxColsAtCompileTime>::ret),
+                                                             internal::traits<Derived>::MaxColsAtCompileTime>::ret);
+    static constexpr bool
       IsVectorAtCompileTime = internal::traits<Derived>::MaxRowsAtCompileTime == 1
-                           || internal::traits<Derived>::MaxColsAtCompileTime == 1,
-      NumDimensions = int(MaxSizeAtCompileTime) == 1 ? 0 : bool(IsVectorAtCompileTime) ? 1 : 2
-    };
+                           || internal::traits<Derived>::MaxColsAtCompileTime == 1;
+    static constexpr int
+      NumDimensions = MaxSizeAtCompileTime == 1 ? 0 : IsVectorAtCompileTime ? 1 : 2;
 
     /** Default constructor */
     SolverBase()

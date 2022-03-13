@@ -24,7 +24,7 @@ struct traits<CwiseUnaryView<ViewOp, MatrixType, StrideType> >
                    >::type Scalar;
   typedef typename MatrixType::Nested MatrixTypeNested;
   typedef remove_all_t<MatrixTypeNested> MatrixTypeNested_;
-  enum {
+  static constexpr int
     FlagsLvalueBit = is_lvalue<MatrixType>::value ? LvalueBit : 0,
     Flags = traits<MatrixTypeNested_>::Flags & (RowMajorBit | FlagsLvalueBit | DirectAccessBit), // FIXME DirectAccessBit should not be handled by expressions
     MatrixTypeInnerStride =  inner_stride_at_compile_time<MatrixType>::ret,
@@ -32,16 +32,15 @@ struct traits<CwiseUnaryView<ViewOp, MatrixType, StrideType> >
     // "error: no integral type can represent all of the enumerator values
     InnerStrideAtCompileTime = StrideType::InnerStrideAtCompileTime == 0
                              ? (MatrixTypeInnerStride == Dynamic
-                               ? int(Dynamic)
-                               : int(MatrixTypeInnerStride) * int(sizeof(typename traits<MatrixType>::Scalar) / sizeof(Scalar)))
-                             : int(StrideType::InnerStrideAtCompileTime),
+                               ? Dynamic
+                               : MatrixTypeInnerStride * int(sizeof(typename traits<MatrixType>::Scalar) / sizeof(Scalar)))
+                             : StrideType::InnerStrideAtCompileTime,
 
     OuterStrideAtCompileTime = StrideType::OuterStrideAtCompileTime == 0
                              ? (outer_stride_at_compile_time<MatrixType>::ret == Dynamic
-                               ? int(Dynamic)
+                               ? Dynamic
                                : outer_stride_at_compile_time<MatrixType>::ret * int(sizeof(typename traits<MatrixType>::Scalar) / sizeof(Scalar)))
-                             : int(StrideType::OuterStrideAtCompileTime)
-  };
+                             : StrideType::OuterStrideAtCompileTime;
 };
 }
 

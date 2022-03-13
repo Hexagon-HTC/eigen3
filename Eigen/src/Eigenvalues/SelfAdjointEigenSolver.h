@@ -80,13 +80,12 @@ template<typename MatrixType_> class SelfAdjointEigenSolver
   public:
 
     typedef MatrixType_ MatrixType;
-    enum {
+    static constexpr int
       Size = MatrixType::RowsAtCompileTime,
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
       Options = MatrixType::Options,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
-    
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
+
     /** \brief Scalar type for matrices of type \p MatrixType_. */
     typedef typename MatrixType::Scalar Scalar;
     typedef Eigen::Index Index; ///< \deprecated since Eigen 3.3

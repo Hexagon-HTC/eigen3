@@ -180,7 +180,7 @@ protected:
 template<typename XprType>
 class pointer_based_stl_iterator
 {
-  enum { is_lvalue  = internal::is_lvalue<XprType>::value };
+  static constexpr bool is_lvalue  = internal::is_lvalue<XprType>::value;
   typedef pointer_based_stl_iterator<std::remove_const_t<XprType>> non_const_iterator;
   typedef pointer_based_stl_iterator<std::add_const_t<XprType>> const_iterator;
   typedef std::conditional_t<internal::is_const<XprType>::value,non_const_iterator,const_iterator> other_iterator;
@@ -274,10 +274,9 @@ public:
 
 protected:
 
-  enum {
-    has_direct_access = (internal::traits<XprType>::Flags & DirectAccessBit) ? 1 : 0,
-    is_lvalue  = internal::is_lvalue<XprType>::value
-  };
+  static constexpr bool
+    has_direct_access = bool(internal::traits<XprType>::Flags & DirectAccessBit),
+    is_lvalue  = internal::is_lvalue<XprType>::value;
 
   typedef indexed_based_stl_iterator_base<generic_randaccess_stl_iterator> Base;
   using Base::m_index;
@@ -316,7 +315,7 @@ class subvector_stl_iterator : public indexed_based_stl_iterator_base<subvector_
 {
 protected:
 
-  enum { is_lvalue  = internal::is_lvalue<XprType>::value };
+  static constexpr bool is_lvalue  = internal::is_lvalue<XprType>::value;
 
   typedef indexed_based_stl_iterator_base<subvector_stl_iterator> Base;
   using Base::m_index;
@@ -364,7 +363,7 @@ class subvector_stl_reverse_iterator : public indexed_based_stl_reverse_iterator
 {
 protected:
 
-  enum { is_lvalue  = internal::is_lvalue<XprType>::value };
+  static constexpr bool is_lvalue  = internal::is_lvalue<XprType>::value;
 
   typedef indexed_based_stl_reverse_iterator_base<subvector_stl_reverse_iterator> Base;
   using Base::m_index;

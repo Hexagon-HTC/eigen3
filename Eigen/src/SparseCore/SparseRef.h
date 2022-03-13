@@ -27,28 +27,25 @@ struct traits<Ref<SparseMatrix<MatScalar,MatOptions,MatIndex>, Options_, StrideT
   : public traits<SparseMatrix<MatScalar,MatOptions,MatIndex> >
 {
   typedef SparseMatrix<MatScalar,MatOptions,MatIndex> PlainObjectType;
-  enum {
+  static constexpr int
     Options = Options_,
-    Flags = traits<PlainObjectType>::Flags | CompressedAccessBit | NestByRefBit
-  };
+    Flags = traits<PlainObjectType>::Flags | CompressedAccessBit | NestByRefBit;
 
   template<typename Derived> struct match {
-    enum {
+    static constexpr bool
       StorageOrderMatch = PlainObjectType::IsVectorAtCompileTime || Derived::IsVectorAtCompileTime || ((PlainObjectType::Flags&RowMajorBit)==(Derived::Flags&RowMajorBit)),
-      MatchAtCompileTime = (Derived::Flags&CompressedAccessBit) && StorageOrderMatch
-    };
+      MatchAtCompileTime = (Derived::Flags&CompressedAccessBit) && StorageOrderMatch;
     typedef std::conditional_t<MatchAtCompileTime,internal::true_type,internal::false_type> type;
   };
-  
+
 };
 
 template<typename MatScalar, int MatOptions, typename MatIndex, int Options_, typename StrideType_>
 struct traits<Ref<const SparseMatrix<MatScalar,MatOptions,MatIndex>, Options_, StrideType_> >
   : public traits<Ref<SparseMatrix<MatScalar,MatOptions,MatIndex>, Options_, StrideType_> >
 {
-  enum {
-    Flags = (traits<SparseMatrix<MatScalar,MatOptions,MatIndex> >::Flags | CompressedAccessBit | NestByRefBit) & ~LvalueBit
-  };
+  static constexpr int
+    Flags = (traits<SparseMatrix<MatScalar,MatOptions,MatIndex> >::Flags | CompressedAccessBit | NestByRefBit) & ~LvalueBit;
 };
 
 template<typename MatScalar, int MatOptions, typename MatIndex, int Options_, typename StrideType_>
@@ -56,15 +53,13 @@ struct traits<Ref<SparseVector<MatScalar,MatOptions,MatIndex>, Options_, StrideT
   : public traits<SparseVector<MatScalar,MatOptions,MatIndex> >
 {
   typedef SparseVector<MatScalar,MatOptions,MatIndex> PlainObjectType;
-  enum {
+  static constexpr int
     Options = Options_,
-    Flags = traits<PlainObjectType>::Flags | CompressedAccessBit | NestByRefBit
-  };
+    Flags = traits<PlainObjectType>::Flags | CompressedAccessBit | NestByRefBit;
 
   template<typename Derived> struct match {
-    enum {
-      MatchAtCompileTime = (Derived::Flags&CompressedAccessBit) && Derived::IsVectorAtCompileTime
-    };
+    static constexpr bool
+      MatchAtCompileTime = (Derived::Flags&CompressedAccessBit) && Derived::IsVectorAtCompileTime;
     typedef std::conditional_t<MatchAtCompileTime,internal::true_type,internal::false_type> type;
   };
 
@@ -74,9 +69,8 @@ template<typename MatScalar, int MatOptions, typename MatIndex, int Options_, ty
 struct traits<Ref<const SparseVector<MatScalar,MatOptions,MatIndex>, Options_, StrideType_> >
   : public traits<Ref<SparseVector<MatScalar,MatOptions,MatIndex>, Options_, StrideType_> >
 {
-  enum {
-    Flags = (traits<SparseVector<MatScalar,MatOptions,MatIndex> >::Flags | CompressedAccessBit | NestByRefBit) & ~LvalueBit
-  };
+  static constexpr int
+    Flags = (traits<SparseVector<MatScalar,MatOptions,MatIndex> >::Flags | CompressedAccessBit | NestByRefBit) & ~LvalueBit;
 };
 
 template<typename Derived>

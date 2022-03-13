@@ -19,9 +19,8 @@ struct packed_triangular_solve_vector;
 template<typename LhsScalar, typename RhsScalar, typename Index, int Mode, bool Conjugate>
 struct packed_triangular_solve_vector<LhsScalar, RhsScalar, Index, OnTheLeft, Mode, Conjugate, RowMajor>
 {
-  enum {
-    IsLower = (Mode&Lower)==Lower
-  };
+  static constexpr bool
+    IsLower = (Mode&Lower)==Lower;
   static void run(Index size, const LhsScalar* lhs, RhsScalar* rhs)
   {
     internal::conj_if<Conjugate> cj;
@@ -47,9 +46,8 @@ struct packed_triangular_solve_vector<LhsScalar, RhsScalar, Index, OnTheLeft, Mo
 template<typename LhsScalar, typename RhsScalar, typename Index, int Mode, bool Conjugate>
 struct packed_triangular_solve_vector<LhsScalar, RhsScalar, Index, OnTheLeft, Mode, Conjugate, ColMajor>
 {
-  enum {
-    IsLower = (Mode&Lower)==Lower
-  };
+  static constexpr bool
+    IsLower = (Mode&Lower)==Lower;
   static void run(Index size, const LhsScalar* lhs, RhsScalar* rhs)
   {
     internal::conj_if<Conjugate> cj;

@@ -53,13 +53,12 @@ class PermutationBase : public EigenBase<Derived>
 
     #ifndef EIGEN_PARSED_BY_DOXYGEN
     typedef typename Traits::IndicesType IndicesType;
-    enum {
+    static constexpr int
       Flags = Traits::Flags,
       RowsAtCompileTime = Traits::RowsAtCompileTime,
       ColsAtCompileTime = Traits::ColsAtCompileTime,
       MaxRowsAtCompileTime = Traits::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = Traits::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = Traits::MaxColsAtCompileTime;
     typedef typename Traits::StorageIndex StorageIndex;
     typedef Matrix<StorageIndex,RowsAtCompileTime,ColsAtCompileTime,0,MaxRowsAtCompileTime,MaxColsAtCompileTime>
             DenseMatrixType;
@@ -463,13 +462,12 @@ struct traits<PermutationWrapper<IndicesType_> >
   typedef void Scalar;
   typedef typename IndicesType_::Scalar StorageIndex;
   typedef IndicesType_ IndicesType;
-  enum {
+  static constexpr int
     RowsAtCompileTime = IndicesType_::SizeAtCompileTime,
     ColsAtCompileTime = IndicesType_::SizeAtCompileTime,
     MaxRowsAtCompileTime = IndicesType::MaxSizeAtCompileTime,
     MaxColsAtCompileTime = IndicesType::MaxSizeAtCompileTime,
-    Flags = 0
-  };
+    Flags = 0;
 };
 }
 
@@ -548,12 +546,11 @@ class InverseImpl<PermutationType, PermutationStorage>
 
     #ifndef EIGEN_PARSED_BY_DOXYGEN
     typedef typename PermutationType::DenseMatrixType DenseMatrixType;
-    enum {
+    static constexpr int
       RowsAtCompileTime = PermTraits::RowsAtCompileTime,
       ColsAtCompileTime = PermTraits::ColsAtCompileTime,
       MaxRowsAtCompileTime = PermTraits::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = PermTraits::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = PermTraits::MaxColsAtCompileTime;
     #endif
 
     #ifndef EIGEN_PARSED_BY_DOXYGEN

@@ -41,14 +41,14 @@ typedef eigen_packet_wrapper<__m128i, 3> Packet8bf;
 typedef eigen_packet_wrapper<__m256i, 3> Packet4l;
 #endif
 
-template<> struct is_arithmetic<__m256>  { enum { value = true }; };
-template<> struct is_arithmetic<__m256i> { enum { value = true }; };
-template<> struct is_arithmetic<__m256d> { enum { value = true }; };
-template<> struct is_arithmetic<Packet8i> { enum { value = true }; };
-template<> struct is_arithmetic<Packet8h> { enum { value = true }; };
-template<> struct is_arithmetic<Packet8bf> { enum { value = true }; };
+template<> struct is_arithmetic<__m256>  { static constexpr bool value = true; };
+template<> struct is_arithmetic<__m256i> { static constexpr bool value = true; };
+template<> struct is_arithmetic<__m256d> { static constexpr bool value = true; };
+template<> struct is_arithmetic<Packet8i> { static constexpr bool value = true; };
+template<> struct is_arithmetic<Packet8h> { static constexpr bool value = true; };
+template<> struct is_arithmetic<Packet8bf> { static constexpr bool value = true; };
 #ifdef EIGEN_VECTORIZE_AVX2
-template<> struct is_arithmetic<Packet4l> { enum { value = true }; };
+template<> struct is_arithmetic<Packet4l> { static constexpr bool value = true; };
 #endif
 
 // Use the packet_traits defined in AVX512/PacketMath.h instead if we're going
@@ -58,56 +58,56 @@ template<> struct packet_traits<float>  : default_packet_traits
 {
   typedef Packet8f type;
   typedef Packet4f half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 8,
-    HasHalfPacket = 1,
+  static constexpr int
+    size = 8;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = true,
 
-    HasCmp  = 1,
-    HasDiv = 1,
-    HasReciprocal = EIGEN_FAST_MATH,
-    HasSin = EIGEN_FAST_MATH,
-    HasCos = EIGEN_FAST_MATH,
-    HasLog = 1,
-    HasLog1p = 1,
-    HasExpm1 = 1,
-    HasExp = 1,
-    HasNdtri = 1,
-    HasBessel = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasTanh = EIGEN_FAST_MATH,
-    HasErf = EIGEN_FAST_MATH,
-    HasBlend = 1,
-    HasRound = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasRint = 1
-  };
+    HasCmp  = true,
+    HasDiv = true,
+    HasReciprocal = bool(EIGEN_FAST_MATH),
+    HasSin = bool(EIGEN_FAST_MATH),
+    HasCos = bool(EIGEN_FAST_MATH),
+    HasLog = true,
+    HasLog1p = true,
+    HasExpm1 = true,
+    HasExp = true,
+    HasNdtri = true,
+    HasBessel = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasTanh = bool(EIGEN_FAST_MATH),
+    HasErf = bool(EIGEN_FAST_MATH),
+    HasBlend = true,
+    HasRound = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasRint = true;
 };
 template<> struct packet_traits<double> : default_packet_traits
 {
   typedef Packet4d type;
   typedef Packet2d half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size=4,
-    HasHalfPacket = 1,
+  static constexpr int
+    size=4;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = true,
 
-    HasCmp  = 1,
-    HasDiv  = 1,
-    HasLog  = 1,
-    HasExp  = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasBlend = 1,
-    HasRound = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasRint = 1
-  };
+    HasCmp  = true,
+    HasDiv  = true,
+    HasLog  = true,
+    HasExp  = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasBlend = true,
+    HasRound = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasRint = true;
 };
 
 template <>
@@ -115,42 +115,42 @@ struct packet_traits<Eigen::half> : default_packet_traits {
   typedef Packet8h type;
   // There is no half-size packet for Packet8h.
   typedef Packet8h half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 8,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 8;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasCmp    = 1,
-    HasAdd    = 1,
-    HasSub    = 1,
-    HasMul    = 1,
-    HasDiv    = 1,
-    HasSin    = EIGEN_FAST_MATH,
-    HasCos    = EIGEN_FAST_MATH,
-    HasNegate = 1,
-    HasAbs    = 1,
-    HasAbs2   = 0,
-    HasMin    = 1,
-    HasMax    = 1,
-    HasConj   = 1,
-    HasSetLinear = 0,
-    HasLog    = 1,
-    HasLog1p  = 1,
-    HasExpm1  = 1,
-    HasExp    = 1,
-    HasSqrt   = 1,
-    HasRsqrt  = 1,
-    HasTanh   = EIGEN_FAST_MATH,
-    HasErf    = EIGEN_FAST_MATH,
-    HasBlend  = 0,
-    HasRound  = 1,
-    HasFloor  = 1,
-    HasCeil   = 1,
-    HasRint   = 1,
-    HasBessel = 1,
-    HasNdtri  = 1
-  };
+    HasCmp    = true,
+    HasAdd    = true,
+    HasSub    = true,
+    HasMul    = true,
+    HasDiv    = true,
+    HasSin    = bool(EIGEN_FAST_MATH),
+    HasCos    = bool(EIGEN_FAST_MATH),
+    HasNegate = true,
+    HasAbs    = true,
+    HasAbs2   = false,
+    HasMin    = true,
+    HasMax    = true,
+    HasConj   = true,
+    HasSetLinear = false,
+    HasLog    = true,
+    HasLog1p  = true,
+    HasExpm1  = true,
+    HasExp    = true,
+    HasSqrt   = true,
+    HasRsqrt  = true,
+    HasTanh   = bool(EIGEN_FAST_MATH),
+    HasErf    = bool(EIGEN_FAST_MATH),
+    HasBlend  = false,
+    HasRound  = true,
+    HasFloor  = true,
+    HasCeil   = true,
+    HasRint   = true,
+    HasBessel = true,
+    HasNdtri  = true;
 };
 
 template <>
@@ -159,53 +159,53 @@ struct packet_traits<bfloat16> : default_packet_traits {
   // There is no half-size packet for current Packet8bf.
   // TODO: support as SSE path.
   typedef Packet8bf half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 8,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 8;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasCmp = 1,
-    HasAdd = 1,
-    HasSub = 1,
-    HasMul = 1,
-    HasDiv = 1,
-    HasSin = EIGEN_FAST_MATH,
-    HasCos = EIGEN_FAST_MATH,
-    HasNegate = 1,
-    HasAbs    = 1,
-    HasAbs2   = 0,
-    HasMin    = 1,
-    HasMax    = 1,
-    HasConj   = 1,
-    HasSetLinear = 0,
-    HasLog = 1,
-    HasLog1p  = 1,
-    HasExpm1  = 1,
-    HasExp = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasTanh = EIGEN_FAST_MATH,
-    HasErf = EIGEN_FAST_MATH,
-    HasBlend = 0,
-    HasRound = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasRint = 1,
-    HasBessel = 1,
-    HasNdtri  = 1
-  };
+    HasCmp = true,
+    HasAdd = true,
+    HasSub = true,
+    HasMul = true,
+    HasDiv = true,
+    HasSin = bool(EIGEN_FAST_MATH),
+    HasCos = bool(EIGEN_FAST_MATH),
+    HasNegate = true,
+    HasAbs    = true,
+    HasAbs2   = false,
+    HasMin    = true,
+    HasMax    = true,
+    HasConj   = true,
+    HasSetLinear = false,
+    HasLog = true,
+    HasLog1p  = true,
+    HasExpm1  = true,
+    HasExp = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasTanh = bool(EIGEN_FAST_MATH),
+    HasErf = bool(EIGEN_FAST_MATH),
+    HasBlend = false,
+    HasRound = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasRint = true,
+    HasBessel = true,
+    HasNdtri  = true;
 };
 
 template<> struct packet_traits<int> : default_packet_traits
 {
   typedef Packet8i type;
   typedef Packet4i half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size=8
-  };
+  static constexpr int
+    size = 8;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true;
 };
 
 #ifdef EIGEN_VECTORIZE_AVX2
@@ -215,54 +215,58 @@ template<> struct packet_traits<int64_t> : default_packet_traits
   // There is no half-size packet for current Packet4l.
   // TODO: support as SSE path.
   typedef Packet4l half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size=4,
+  static constexpr int
+    size = 4;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
 
     // requires AVX512
-    HasShift     = 0,
-  };
+    HasShift     = false;
 };
 #endif
 
 #endif
 
-template<> struct scalar_div_cost<float,true> { enum { value = 14 }; };
-template<> struct scalar_div_cost<double,true> { enum { value = 16 }; };
+template<> struct scalar_div_cost<float,true> { static constexpr int value = 14 };
+template<> struct scalar_div_cost<double,true> { static constexpr int value = 16 };
 
 template<> struct unpacket_traits<Packet8f> {
   typedef float     type;
   typedef Packet4f  half;
   typedef Packet8i  integer_packet;
   typedef uint8_t   mask_t;
-  enum {size=8, alignment=Aligned32, vectorizable=true, masked_load_available=true, masked_store_available=true
+  static constexpr int size=8, alignment=Aligned32;
+  static constexpr bool vectorizable=true, masked_load_available=true, masked_store_available=true;
 #ifdef EIGEN_VECTORIZE_AVX512
-    , masked_fpops_available=true
+  static constexpr bool masked_fpops_available=true;
 #endif
-  };
 };
 template<> struct unpacket_traits<Packet4d> {
   typedef double type;
   typedef Packet2d half;
-  enum {size=4, alignment=Aligned32, vectorizable=true, masked_load_available=false, masked_store_available=false};
+  static constexpr int size=4, alignment=Aligned32;
+  static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false;
 };
 template<> struct unpacket_traits<Packet8i> {
   typedef int    type;
   typedef Packet4i half;
-  enum {size=8, alignment=Aligned32, vectorizable=true, masked_load_available=false, masked_store_available=false};
+  static constexpr int size=8, alignment=Aligned32;
+  static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false;
 };
 #ifdef EIGEN_VECTORIZE_AVX2
 template<> struct unpacket_traits<Packet4l> {
   typedef int64_t    type;
   typedef Packet4l half;
-  enum {size=4, alignment=Aligned32, vectorizable=true, masked_load_available=false, masked_store_available=false};
+  static constexpr int size=4, alignment=Aligned32;
+  static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false;
 };
 #endif
 template<> struct unpacket_traits<Packet8bf> {
   typedef bfloat16 type;
   typedef Packet8bf half;
-  enum {size=8, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false};
+  static constexpr int size=8, alignment=Aligned16;
+  static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false;
 };
 
 // Helper function for bit packing snippet of low precision comparison.
@@ -1345,7 +1349,12 @@ template<> EIGEN_STRONG_INLINE Packet4d pblend(const Selector<4>& ifPacket, cons
 
 // Packet math for Eigen::half
 
-template<> struct unpacket_traits<Packet8h> { typedef Eigen::half type; enum {size=8, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet8h half; };
+template<> struct unpacket_traits<Packet8h> {
+  typedef Eigen::half type;
+  static constexpr int size=8, alignment=Aligned16;
+  static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false;
+  typedef Packet8h half;
+};
 
 template<> EIGEN_STRONG_INLINE Packet8h pset1<Packet8h>(const Eigen::half& from) {
   return _mm_set1_epi16(numext::bit_cast<numext::uint16_t>(from));

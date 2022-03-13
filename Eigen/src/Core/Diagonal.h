@@ -42,23 +42,22 @@ struct traits<Diagonal<MatrixType,DiagIndex> >
   typedef typename ref_selector<MatrixType>::type MatrixTypeNested;
   typedef std::remove_reference_t<MatrixTypeNested> MatrixTypeNested_;
   typedef typename MatrixType::StorageKind StorageKind;
-  enum {
-    RowsAtCompileTime = (int(DiagIndex) == DynamicIndex || int(MatrixType::SizeAtCompileTime) == Dynamic) ? Dynamic
-                      : (plain_enum_min(MatrixType::RowsAtCompileTime - plain_enum_max(-DiagIndex, 0),
-                                        MatrixType::ColsAtCompileTime - plain_enum_max( DiagIndex, 0))),
+  static constexpr int
+    RowsAtCompileTime = (DiagIndex == DynamicIndex || MatrixType::SizeAtCompileTime == Dynamic) ? Dynamic
+                      : ((std::min)(MatrixType::RowsAtCompileTime - (std::max)(-DiagIndex, 0),
+                                    MatrixType::ColsAtCompileTime - (std::max)( DiagIndex, 0))),
     ColsAtCompileTime = 1,
-    MaxRowsAtCompileTime = int(MatrixType::MaxSizeAtCompileTime) == Dynamic ? Dynamic
+    MaxRowsAtCompileTime = MatrixType::MaxSizeAtCompileTime == Dynamic ? Dynamic
                          : DiagIndex == DynamicIndex ? min_size_prefer_fixed(MatrixType::MaxRowsAtCompileTime,
                                                                              MatrixType::MaxColsAtCompileTime)
-                         : (plain_enum_min(MatrixType::MaxRowsAtCompileTime - plain_enum_max(-DiagIndex, 0),
-                                           MatrixType::MaxColsAtCompileTime - plain_enum_max( DiagIndex, 0))),
+                         : ((std::min)(MatrixType::MaxRowsAtCompileTime - (std::max)(-DiagIndex, 0),
+                                       MatrixType::MaxColsAtCompileTime - (std::max)( DiagIndex, 0))),
     MaxColsAtCompileTime = 1,
     MaskLvalueBit = is_lvalue<MatrixType>::value ? LvalueBit : 0,
-    Flags = (unsigned int)MatrixTypeNested_::Flags & (RowMajorBit | MaskLvalueBit | DirectAccessBit) & ~RowMajorBit, // FIXME DirectAccessBit should not be handled by expressions
+    Flags = MatrixTypeNested_::Flags & (RowMajorBit | MaskLvalueBit | DirectAccessBit) & ~RowMajorBit, // FIXME DirectAccessBit should not be handled by expressions
     MatrixTypeOuterStride = outer_stride_at_compile_time<MatrixType>::ret,
     InnerStrideAtCompileTime = MatrixTypeOuterStride == Dynamic ? Dynamic : MatrixTypeOuterStride+1,
-    OuterStrideAtCompileTime = 0
-  };
+    OuterStrideAtCompileTime = 0;
 };
 }
 
@@ -67,7 +66,7 @@ template<typename MatrixType, int DiagIndex_> class Diagonal
 {
   public:
 
-    enum { DiagIndex = DiagIndex_ };
+    static constexpr int DiagIndex = DiagIndex_;
     typedef typename internal::dense_xpr_base<Diagonal>::type Base;
     EIGEN_DENSE_PUBLIC_INTERFACE(Diagonal)
 

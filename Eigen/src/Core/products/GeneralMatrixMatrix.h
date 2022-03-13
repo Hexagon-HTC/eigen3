@@ -280,18 +280,17 @@ class gemm_blocking_space<StorageOrder,LhsScalar_,RhsScalar_,MaxRows, MaxCols, M
       std::conditional_t<StorageOrder==RowMajor,RhsScalar_,LhsScalar_>,
       std::conditional_t<StorageOrder==RowMajor,LhsScalar_,RhsScalar_>>
 {
-    enum {
-      Transpose = StorageOrder==RowMajor,
+    static constexpr bool
+      Transpose = StorageOrder==RowMajor;
+    static constexpr int
       ActualRows = Transpose ? MaxCols : MaxRows,
-      ActualCols = Transpose ? MaxRows : MaxCols
-    };
+      ActualCols = Transpose ? MaxRows : MaxCols;
     typedef std::conditional_t<Transpose,RhsScalar_,LhsScalar_> LhsScalar;
     typedef std::conditional_t<Transpose,LhsScalar_,RhsScalar_> RhsScalar;
     typedef gebp_traits<LhsScalar,RhsScalar> Traits;
-    enum {
+    static constexpr int
       SizeA = ActualRows * MaxDepth,
-      SizeB = ActualCols * MaxDepth
-    };
+      SizeB = ActualCols * MaxDepth;
 
 #if EIGEN_MAX_STATIC_ALIGN_BYTES >= EIGEN_DEFAULT_ALIGN_BYTES
     EIGEN_ALIGN_MAX LhsScalar m_staticA[SizeA];
@@ -331,9 +330,8 @@ class gemm_blocking_space<StorageOrder,LhsScalar_,RhsScalar_,MaxRows, MaxCols, M
       std::conditional_t<StorageOrder==RowMajor,RhsScalar_,LhsScalar_>,
       std::conditional_t<StorageOrder==RowMajor,LhsScalar_,RhsScalar_>>
 {
-    enum {
-      Transpose = StorageOrder==RowMajor
-    };
+    static constexpr bool
+      Transpose = StorageOrder==RowMajor;
     typedef std::conditional_t<Transpose,RhsScalar_,LhsScalar_> LhsScalar;
     typedef std::conditional_t<Transpose,LhsScalar_,RhsScalar_> RhsScalar;
     typedef gebp_traits<LhsScalar,RhsScalar> Traits;
@@ -421,9 +419,8 @@ struct generic_product_impl<Lhs,Rhs,DenseShape,DenseShape,GemmProduct>
   typedef typename RhsBlasTraits::DirectLinearAccessType ActualRhsType;
   typedef internal::remove_all_t<ActualRhsType> ActualRhsTypeCleaned;
 
-  enum {
-    MaxDepthAtCompileTime = min_size_prefer_fixed(Lhs::MaxColsAtCompileTime, Rhs::MaxRowsAtCompileTime)
-  };
+  static constexpr int
+    MaxDepthAtCompileTime = min_size_prefer_fixed(Lhs::MaxColsAtCompileTime, Rhs::MaxRowsAtCompileTime);
 
   typedef generic_product_impl<Lhs,Rhs,DenseShape,DenseShape,CoeffBasedProductMode> lazyproduct;
 

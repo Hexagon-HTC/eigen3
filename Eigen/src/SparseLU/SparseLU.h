@@ -32,10 +32,9 @@ public:
   typedef typename SparseLUType::MatrixType MatrixType;
   typedef typename SparseLUType::OrderingType OrderingType;
 
-  enum {
+  static constexpr int
     ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-    MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-  };
+    MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
   SparseLUTransposeView() : m_sparseLU(NULL) {}
   SparseLUTransposeView(const SparseLUTransposeView& view) {
@@ -150,11 +149,10 @@ class SparseLU : public SparseSolverBase<SparseLU<MatrixType_,OrderingType_> >, 
     typedef PermutationMatrix<Dynamic, Dynamic, StorageIndex> PermutationType;
     typedef internal::SparseLUImpl<Scalar, StorageIndex> Base;
 
-    enum {
+    static constexpr int
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
-    
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
+
   public:
 
     SparseLU():m_lastError(""),m_Ustore(0,0,0,0,0,0),m_symmetricmode(false),m_diagpivotthresh(1.0),m_detPermR(1)

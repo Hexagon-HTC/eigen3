@@ -428,21 +428,22 @@ public:
   PACKET_DECL_COND_POSTFIX(_, Rhs, PacketSize_);
   PACKET_DECL_COND_POSTFIX(_, Res, PacketSize_);
 
-  enum {
+  static constexpr bool
     ConjLhs = ConjLhs_,
     ConjRhs = ConjRhs_,
-    Vectorizable = unpacket_traits<LhsPacket_>::vectorizable && unpacket_traits<RhsPacket_>::vectorizable,
+    Vectorizable = unpacket_traits<LhsPacket_>::vectorizable && unpacket_traits<RhsPacket_>::vectorizable;
+  static constexpr int
     LhsPacketSize = Vectorizable ? unpacket_traits<LhsPacket_>::size : 1,
     RhsPacketSize = Vectorizable ? unpacket_traits<RhsPacket_>::size : 1,
     ResPacketSize = Vectorizable ? unpacket_traits<ResPacket_>::size : 1,
-    
+
     NumberOfRegisters = EIGEN_ARCH_DEFAULT_NUMBER_OF_REGISTERS,
 
     // register block size along the N direction must be 1 or 4
     nr = 4,
 
     // register block size along the M direction (currently, this one cannot be modified)
-    default_mr = (plain_enum_min(16, NumberOfRegisters)/2/nr)*LhsPacketSize,
+    default_mr = ((std::min)(16, NumberOfRegisters)/2/nr)*LhsPacketSize,
 #if defined(EIGEN_HAS_SINGLE_INSTRUCTION_MADD) && !defined(EIGEN_VECTORIZE_ALTIVEC) && !defined(EIGEN_VECTORIZE_VSX) \
     && ((!EIGEN_COMP_MSVC) || (EIGEN_COMP_MSVC>=1914))
     // we assume 16 registers or more
@@ -453,10 +454,9 @@ public:
 #else
     mr = default_mr,
 #endif
-    
+
     LhsProgress = LhsPacketSize,
-    RhsProgress = 1
-  };
+    RhsProgress = 1;
 
 
   typedef std::conditional_t<Vectorizable,LhsPacket_,LhsScalar> LhsPacket;
@@ -771,11 +771,12 @@ public:
   PACKET_DECL_COND(Real, PacketSize_);
   PACKET_DECL_COND_SCALAR(PacketSize_);
 
-  enum {
+  static constexpr bool
     ConjLhs = ConjLhs_,
     ConjRhs = ConjRhs_,
     Vectorizable = unpacket_traits<RealPacket>::vectorizable
-                && unpacket_traits<ScalarPacket>::vectorizable,
+                && unpacket_traits<ScalarPacket>::vectorizable;
+  static constexpr int
     ResPacketSize   = Vectorizable ? unpacket_traits<ResPacket_>::size : 1,
     LhsPacketSize = Vectorizable ? unpacket_traits<LhsPacket_>::size : 1,
     RhsPacketSize = Vectorizable ? unpacket_traits<RhsScalar>::size : 1,
@@ -786,9 +787,8 @@ public:
     mr = ResPacketSize,
 
     LhsProgress = ResPacketSize,
-    RhsProgress = 1
-  };
-  
+    RhsProgress = 1;
+
   typedef DoublePacket<RealPacket>                 DoublePacketType;
 
   typedef std::conditional_t<Vectorizable,ScalarPacket,Scalar> LhsPacket4Packing;
@@ -1091,16 +1091,16 @@ struct gebp_kernel
 
   typedef typename DataMapper::LinearMapper LinearMapper;
 
-  enum {
-    Vectorizable  = Traits::Vectorizable,
+  static constexpr bool
+    Vectorizable  = Traits::Vectorizable;
+  static constexpr int
     LhsProgress   = Traits::LhsProgress,
     LhsProgressHalf      = HalfTraits::LhsProgress,
     LhsProgressQuarter   = QuarterTraits::LhsProgress,
     RhsProgress   = Traits::RhsProgress,
     RhsProgressHalf      = HalfTraits::RhsProgress,
     RhsProgressQuarter   = QuarterTraits::RhsProgress,
-    ResPacketSize = Traits::ResPacketSize
-  };
+    ResPacketSize = Traits::ResPacketSize;
 
   EIGEN_DONT_INLINE
   void operator()(const DataMapper& res, const LhsScalar* blockA, const RhsScalar* blockB,
@@ -2380,7 +2380,7 @@ struct gemm_pack_rhs<Scalar, Index, DataMapper, nr, ColMajor, Conjugate, PanelMo
 {
   typedef typename packet_traits<Scalar>::type Packet;
   typedef typename DataMapper::LinearMapper LinearMapper;
-  enum { PacketSize = packet_traits<Scalar>::size };
+  static constexpr int PacketSize = packet_traits<Scalar>::size;
   EIGEN_DONT_INLINE void operator()(Scalar* blockB, const DataMapper& rhs, Index depth, Index cols, Index stride=0, Index offset=0);
 };
 
@@ -2506,9 +2506,10 @@ struct gemm_pack_rhs<Scalar, Index, DataMapper, nr, RowMajor, Conjugate, PanelMo
   typedef typename unpacket_traits<Packet>::half HalfPacket;
   typedef typename unpacket_traits<typename unpacket_traits<Packet>::half>::half QuarterPacket;
   typedef typename DataMapper::LinearMapper LinearMapper;
-  enum { PacketSize = packet_traits<Scalar>::size,
-         HalfPacketSize = unpacket_traits<HalfPacket>::size,
-		 QuarterPacketSize = unpacket_traits<QuarterPacket>::size};
+  static constexpr int
+     PacketSize = packet_traits<Scalar>::size,
+     HalfPacketSize = unpacket_traits<HalfPacket>::size,
+		 QuarterPacketSize = unpacket_traits<QuarterPacket>::size;
   EIGEN_DONT_INLINE void operator()(Scalar* blockB, const DataMapper& rhs, Index depth, Index cols, Index stride=0, Index offset=0)
   {
     EIGEN_ASM_COMMENT("EIGEN PRODUCT PACK RHS ROWMAJOR");

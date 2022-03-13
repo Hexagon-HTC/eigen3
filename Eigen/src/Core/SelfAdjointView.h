@@ -38,12 +38,12 @@ struct traits<SelfAdjointView<MatrixType, UpLo> > : traits<MatrixType>
   typedef remove_all_t<MatrixTypeNested> MatrixTypeNestedCleaned;
   typedef MatrixType ExpressionType;
   typedef typename MatrixType::PlainObject FullMatrixType;
-  enum {
-    Mode = UpLo | SelfAdjoint,
+  static constexpr int
+    Mode = UpLo | SelfAdjoint;
+  static constexpr int
     FlagsLvalueBit = is_lvalue<MatrixType>::value ? LvalueBit : 0,
     Flags =  MatrixTypeNestedCleaned::Flags & (HereditaryBits|FlagsLvalueBit)
-           & (~(PacketAccessBit | DirectAccessBit | LinearAccessBit)) // FIXME these flags should be preserved
-  };
+           & (~(PacketAccessBit | DirectAccessBit | LinearAccessBit)); // FIXME these flags should be preserved
 };
 }
 
@@ -66,11 +66,11 @@ template<typename MatrixType_, unsigned int UpLo> class SelfAdjointView
     typedef internal::remove_all_t<typename MatrixType::ConjugateReturnType> MatrixConjugateReturnType;
     typedef SelfAdjointView<std::add_const_t<MatrixType>, UpLo> ConstSelfAdjointView;
 
-    enum {
-      Mode = internal::traits<SelfAdjointView>::Mode,
+    static constexpr int
+      Mode = internal::traits<SelfAdjointView>::Mode;
+    static constexpr int
       Flags = internal::traits<SelfAdjointView>::Flags,
-      TransposeMode = ((int(Mode) & int(Upper)) ? Lower : 0) | ((int(Mode) & int(Lower)) ? Upper : 0)
-    };
+      TransposeMode = ((Mode & Upper) ? Lower : 0) | ((Mode & Lower) ? Upper : 0);
     typedef typename MatrixType::PlainObject PlainObject;
 
     EIGEN_DEVICE_FUNC

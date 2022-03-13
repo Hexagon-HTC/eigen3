@@ -62,12 +62,12 @@ void stable_norm_impl_inner_step(const VectorType &vec, RealScalar& ssq, RealSca
   typedef internal::remove_all_t<VectorTypeCopy> VectorTypeCopyClean;
   const VectorTypeCopy copy(vec);
   
-  enum {
-    CanAlign = (   (int(VectorTypeCopyClean::Flags)&DirectAccessBit)
-                || (int(internal::evaluator<VectorTypeCopyClean>::Alignment)>0) // FIXME Alignment)>0 might not be enough
+  static constexpr bool
+    CanAlign = (   (VectorTypeCopyClean::Flags&DirectAccessBit)
+                || (internal::evaluator<VectorTypeCopyClean>::Alignment>0) // FIXME Alignment)>0 might not be enough
                ) && (blockSize*sizeof(Scalar)*2<EIGEN_STACK_ALLOCATION_LIMIT)
-                 && (EIGEN_MAX_STATIC_ALIGN_BYTES>0) // if we cannot allocate on the stack, then let's not bother about this optimization
-  };
+                 && (EIGEN_MAX_STATIC_ALIGN_BYTES>0); // if we cannot allocate on the stack, then let's not bother about this optimization
+
   typedef std::conditional_t<CanAlign, Ref<const Matrix<Scalar,Dynamic,1,0,blockSize,1>, internal::evaluator<VectorTypeCopyClean>::Alignment>,
                                                    typename VectorTypeCopyClean::ConstSegmentReturnType> SegmentWrapper;
   Index n = vec.size();

@@ -44,28 +44,30 @@ template<typename Dst, typename Src>
 class vml_assign_traits
 {
   private:
-    enum {
-      DstHasDirectAccess = Dst::Flags & DirectAccessBit,
-      SrcHasDirectAccess = Src::Flags & DirectAccessBit,
-      StorageOrdersAgree = (int(Dst::IsRowMajor) == int(Src::IsRowMajor)),
-      InnerSize = int(Dst::IsVectorAtCompileTime) ? int(Dst::SizeAtCompileTime)
-                : int(Dst::Flags)&RowMajorBit ? int(Dst::ColsAtCompileTime)
-                : int(Dst::RowsAtCompileTime),
-      InnerMaxSize  = int(Dst::IsVectorAtCompileTime) ? int(Dst::MaxSizeAtCompileTime)
-                    : int(Dst::Flags)&RowMajorBit ? int(Dst::MaxColsAtCompileTime)
-                    : int(Dst::MaxRowsAtCompileTime),
-      MaxSizeAtCompileTime = Dst::SizeAtCompileTime,
-
+    static constexpr bool
+      DstHasDirectAccess = bool(Dst::Flags & DirectAccessBit),
+      SrcHasDirectAccess = bool(Src::Flags & DirectAccessBit_,
+      StorageOrdersAgree = (Dst::IsRowMajor == Src::IsRowMajor);
+    static constexpr int
+      InnerSize = Dst::IsVectorAtCompileTime ? Dst::SizeAtCompileTime
+                : Dst::Flags&RowMajorBit ? Dst::ColsAtCompileTime
+                : Dst::RowsAtCompileTime,
+      InnerMaxSize  = Dst::IsVectorAtCompileTime ? Dst::MaxSizeAtCompileTime
+                    : Dst::Flags&RowMajorBit ? Dst::MaxColsAtCompileTime
+                    : Dst::MaxRowsAtCompileTime,
+      MaxSizeAtCompileTime = Dst::SizeAtCompileTime;
+    static constexpr bool
       MightEnableVml = StorageOrdersAgree && DstHasDirectAccess && SrcHasDirectAccess && Src::InnerStrideAtCompileTime==1 && Dst::InnerStrideAtCompileTime==1,
-      MightLinearize = MightEnableVml && (int(Dst::Flags) & int(Src::Flags) & LinearAccessBit),
-      VmlSize = MightLinearize ? MaxSizeAtCompileTime : InnerMaxSize,
-      LargeEnough = VmlSize==Dynamic || VmlSize>=EIGEN_MKL_VML_THRESHOLD
-    };
+      MightLinearize = MightEnableVml && (Dst::Flags & Src::Flags & LinearAccessBit);
+    static constexpr int
+      VmlSize = MightLinearize ? MaxSizeAtCompileTime : InnerMaxSize;
+    static constexpr bool
+      LargeEnough = VmlSize==Dynamic || VmlSize>=EIGEN_MKL_VML_THRESHOLD;
   public:
-    enum {
-      EnableVml = MightEnableVml && LargeEnough,
-      Traversal = MightLinearize ? LinearTraversal : DefaultTraversal
-    };
+    static constexpr bool
+      EnableVml = MightEnableVml && LargeEnough;
+    static constexpr TraversalType
+      Traversal = MightLinearize ? LinearTraversal : DefaultTraversal;
 };
 
 #define EIGEN_PP_EXPAND(ARG) ARG

@@ -143,11 +143,10 @@ class PastixBase : public SparseSolverBase<Derived>
     typedef typename MatrixType::StorageIndex StorageIndex;
     typedef Matrix<Scalar,Dynamic,1> Vector;
     typedef SparseMatrix<Scalar, ColMajor> ColSpMatrix;
-    enum {
+    static constexpr int
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
-    
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
+
   public:
     
     PastixBase() : m_initisOk(false), m_analysisIsOk(false), m_factorizationIsOk(false), m_pastixdata(0), m_size(0)
@@ -531,7 +530,7 @@ class PastixLLT : public PastixBase< PastixLLT<MatrixType_, UpLo_> >
     typedef typename Base::ColSpMatrix ColSpMatrix;
     
   public:
-    enum { UpLo = UpLo_ };
+    static constexpr int UpLo = UpLo_;
     PastixLLT() : Base()
     {
       init();
@@ -613,21 +612,21 @@ class PastixLDLT : public PastixBase< PastixLDLT<MatrixType_, UpLo_> >
     typedef MatrixType_ MatrixType;
     typedef PastixBase<PastixLDLT<MatrixType, UpLo_> > Base;
     typedef typename Base::ColSpMatrix ColSpMatrix;
-    
+
   public:
-    enum { UpLo = UpLo_ };
+    static constexpr int UpLo = UpLo_;
     PastixLDLT():Base()
     {
       init();
     }
-    
+
     explicit PastixLDLT(const MatrixType& matrix):Base()
     {
       init();
       compute(matrix);
     }
 
-    /** Compute the L and D factors of the LDL^T factorization of \p matrix 
+    /** Compute the L and D factors of the LDL^T factorization of \p matrix
       * \sa analyzePattern() factorize()
       */
     void compute (const MatrixType& matrix)

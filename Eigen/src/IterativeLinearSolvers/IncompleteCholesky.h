@@ -59,11 +59,10 @@ class IncompleteCholesky : public SparseSolverBase<IncompleteCholesky<Scalar,UpL
     typedef Matrix<RealScalar,Dynamic,1> VectorRx;
     typedef Matrix<StorageIndex,Dynamic, 1> VectorIx;
     typedef std::vector<std::list<StorageIndex> > VectorList;
-    enum { UpLo = UpLo_ };
-    enum {
+    static constexpr int
+      UpLo = UpLo_,
       ColsAtCompileTime = Dynamic,
-      MaxColsAtCompileTime = Dynamic
-    };
+      MaxColsAtCompileTime = Dynamic;
   public:
 
     /** Default constructor leaving the object in a partly non-initialized stage.

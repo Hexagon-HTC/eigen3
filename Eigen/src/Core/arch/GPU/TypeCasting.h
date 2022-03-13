@@ -21,11 +21,11 @@ namespace internal {
 
 template <>
 struct type_casting_traits<Eigen::half, float> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 2
-  };
+    TgtCoeffRatio = 2;
 };
 
 template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pcast<half2, float4>(const half2& a, const half2& b) {
@@ -47,11 +47,11 @@ template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pcast<float4, Packet4
 
 template <>
 struct type_casting_traits<float, Eigen::half> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 2,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pcast<Packet4h2, float4>(const Packet4h2& a) {

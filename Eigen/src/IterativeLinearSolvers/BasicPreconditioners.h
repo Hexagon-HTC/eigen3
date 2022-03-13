@@ -41,10 +41,9 @@ class DiagonalPreconditioner
     typedef Matrix<Scalar,Dynamic,1> Vector;
   public:
     typedef typename Vector::StorageIndex StorageIndex;
-    enum {
+    static constexpr int
       ColsAtCompileTime = Dynamic,
-      MaxColsAtCompileTime = Dynamic
-    };
+      MaxColsAtCompileTime = Dynamic;
 
     DiagonalPreconditioner() : m_isInitialized(false) {}
 

@@ -54,13 +54,12 @@ template<typename MatrixType_> class ComplexSchur
 {
   public:
     typedef MatrixType_ MatrixType;
-    enum {
+    static constexpr int
       RowsAtCompileTime = MatrixType::RowsAtCompileTime,
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
       Options = MatrixType::Options,
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
     /** \brief Scalar type for matrices of type \p MatrixType_. */
     typedef typename MatrixType::Scalar Scalar;

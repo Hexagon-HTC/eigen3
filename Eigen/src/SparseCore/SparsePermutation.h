@@ -27,14 +27,14 @@ struct permutation_matrix_product<ExpressionType, Side, Transposed, SparseShape>
     typedef typename MatrixTypeCleaned::Scalar Scalar;
     typedef typename MatrixTypeCleaned::StorageIndex StorageIndex;
 
-    enum {
-      SrcStorageOrder = MatrixTypeCleaned::Flags&RowMajorBit ? RowMajor : ColMajor,
-      MoveOuter = SrcStorageOrder==RowMajor ? Side==OnTheLeft : Side==OnTheRight
-    };
-    
+    static constexpr StorageOptions
+      SrcStorageOrder = MatrixTypeCleaned::Flags&RowMajorBit ? RowMajor : ColMajor;
+    static constexpr bool
+      MoveOuter = SrcStorageOrder==RowMajor ? Side==OnTheLeft : Side==OnTheRight;
+
     typedef std::conditional_t<MoveOuter,
         SparseMatrix<Scalar,SrcStorageOrder,StorageIndex>,
-        SparseMatrix<Scalar,int(SrcStorageOrder)==RowMajor?ColMajor:RowMajor,StorageIndex> > ReturnType;
+        SparseMatrix<Scalar,SrcStorageOrder==RowMajor?ColMajor:RowMajor,StorageIndex>> ReturnType;
 
     template<typename Dest,typename PermutationType>
     static inline void run(Dest& dst, const PermutationType& perm, const ExpressionType& xpr)
@@ -102,9 +102,8 @@ struct product_evaluator<Product<Lhs, Rhs, AliasFreeProduct>, ProductTag, Permut
   typedef typename permutation_matrix_product<Rhs,OnTheLeft,false,SparseShape>::ReturnType PlainObject;
   typedef evaluator<PlainObject> Base;
 
-  enum {
-    Flags = Base::Flags | EvalBeforeNestingBit
-  };
+  static constexpr int
+    Flags = Base::Flags | EvalBeforeNestingBit;
 
   explicit product_evaluator(const XprType& xpr)
     : m_result(xpr.rows(), xpr.cols())
@@ -125,9 +124,8 @@ struct product_evaluator<Product<Lhs, Rhs, AliasFreeProduct>, ProductTag, Sparse
   typedef typename permutation_matrix_product<Lhs,OnTheRight,false,SparseShape>::ReturnType PlainObject;
   typedef evaluator<PlainObject> Base;
 
-  enum {
-    Flags = Base::Flags | EvalBeforeNestingBit
-  };
+  static constexpr int
+    Flags = Base::Flags | EvalBeforeNestingBit;
 
   explicit product_evaluator(const XprType& xpr)
     : m_result(xpr.rows(), xpr.cols())

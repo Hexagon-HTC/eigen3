@@ -36,25 +36,26 @@ template<int Rows, int Cols, int Depth> struct product_type_selector;
 
 template<int Size, int MaxSize> struct product_size_category
 {
-  enum {
-    #ifndef EIGEN_GPU_COMPILE_PHASE
+  #ifndef EIGEN_GPU_COMPILE_PHASE
+  static constexpr bool
     is_large = MaxSize == Dynamic ||
                Size >= EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD ||
-               (Size==Dynamic && MaxSize>=EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD),
-    #else
-    is_large = 0,
-    #endif
+               (Size==Dynamic && MaxSize>=EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD);
+  #else
+  static constexpr bool
+    is_large = 0;
+  #endif
+  static constexpr int
     value = is_large  ? Large
           : Size == 1 ? 1
-                      : Small
-  };
+                      : Small;
 };
 
 template<typename Lhs, typename Rhs> struct product_type
 {
   typedef remove_all_t<Lhs> Lhs_;
   typedef remove_all_t<Rhs> Rhs_;
-  enum {
+  static constexpr int
     MaxRows = traits<Lhs_>::MaxRowsAtCompileTime,
     Rows    = traits<Lhs_>::RowsAtCompileTime,
     MaxCols = traits<Rhs_>::MaxColsAtCompileTime,
@@ -62,24 +63,21 @@ template<typename Lhs, typename Rhs> struct product_type
     MaxDepth = min_size_prefer_fixed(traits<Lhs_>::MaxColsAtCompileTime,
                                      traits<Rhs_>::MaxRowsAtCompileTime),
     Depth = min_size_prefer_fixed(traits<Lhs_>::ColsAtCompileTime,
-                                  traits<Rhs_>::RowsAtCompileTime)
-  };
+                                  traits<Rhs_>::RowsAtCompileTime);
 
   // the splitting into different lines of code here, introducing the _select enums and the typedef below,
   // is to work around an internal compiler error with gcc 4.1 and 4.2.
 private:
-  enum {
+  static constexpr int
     rows_select = product_size_category<Rows,MaxRows>::value,
     cols_select = product_size_category<Cols,MaxCols>::value,
-    depth_select = product_size_category<Depth,MaxDepth>::value
-  };
+    depth_select = product_size_category<Depth,MaxDepth>::value;
   typedef product_type_selector<rows_select, cols_select, depth_select> selector;
 
 public:
-  enum {
+  static constexpr int
     value = selector::ret,
-    ret = selector::ret
-  };
+    ret = selector::ret;
 #ifdef EIGEN_DEBUG_PRODUCT
   static void debug()
   {
@@ -98,31 +96,30 @@ public:
  * based on the three dimensions of the product.
  * This is a compile time mapping from {1,Small,Large}^3 -> {product types} */
 // FIXME I'm not sure the current mapping is the ideal one.
-template<int M, int N>  struct product_type_selector<M,N,1>              { enum { ret = OuterProduct }; };
-template<int M>         struct product_type_selector<M, 1, 1>            { enum { ret = LazyCoeffBasedProductMode }; };
-template<int N>         struct product_type_selector<1, N, 1>            { enum { ret = LazyCoeffBasedProductMode }; };
-template<int Depth>     struct product_type_selector<1,    1,    Depth>  { enum { ret = InnerProduct }; };
-template<>              struct product_type_selector<1,    1,    1>      { enum { ret = InnerProduct }; };
-template<>              struct product_type_selector<Small,1,    Small>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<1,    Small,Small>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<Small,Small,Small>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<Small, Small, 1>    { enum { ret = LazyCoeffBasedProductMode }; };
-template<>              struct product_type_selector<Small, Large, 1>    { enum { ret = LazyCoeffBasedProductMode }; };
-template<>              struct product_type_selector<Large, Small, 1>    { enum { ret = LazyCoeffBasedProductMode }; };
-template<>              struct product_type_selector<1,    Large,Small>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<1,    Large,Large>  { enum { ret = GemvProduct }; };
-template<>              struct product_type_selector<1,    Small,Large>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<Large,1,    Small>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<Large,1,    Large>  { enum { ret = GemvProduct }; };
-template<>              struct product_type_selector<Small,1,    Large>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<Small,Small,Large>  { enum { ret = GemmProduct }; };
-template<>              struct product_type_selector<Large,Small,Large>  { enum { ret = GemmProduct }; };
-template<>              struct product_type_selector<Small,Large,Large>  { enum { ret = GemmProduct }; };
-template<>              struct product_type_selector<Large,Large,Large>  { enum { ret = GemmProduct }; };
-template<>              struct product_type_selector<Large,Small,Small>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<Small,Large,Small>  { enum { ret = CoeffBasedProductMode }; };
-template<>              struct product_type_selector<Large,Large,Small>  { enum { ret = GemmProduct }; };
-
+template<int M, int N>  struct product_type_selector<M,N,1>              { static constexpr int ret = OuterProduct; };
+template<int M>         struct product_type_selector<M, 1, 1>            { static constexpr int ret = LazyCoeffBasedProductMode; };
+template<int N>         struct product_type_selector<1, N, 1>            { static constexpr int ret = LazyCoeffBasedProductMode; };
+template<int Depth>     struct product_type_selector<1,    1,    Depth>  { static constexpr int ret = InnerProduct; };
+template<>              struct product_type_selector<1,    1,    1>      { static constexpr int ret = InnerProduct; };
+template<>              struct product_type_selector<Small,1,    Small>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<1,    Small,Small>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<Small,Small,Small>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<Small, Small, 1>    { static constexpr int ret = LazyCoeffBasedProductMode; };
+template<>              struct product_type_selector<Small, Large, 1>    { static constexpr int ret = LazyCoeffBasedProductMode; };
+template<>              struct product_type_selector<Large, Small, 1>    { static constexpr int ret = LazyCoeffBasedProductMode; };
+template<>              struct product_type_selector<1,    Large,Small>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<1,    Large,Large>  { static constexpr int ret = GemvProduct; };
+template<>              struct product_type_selector<1,    Small,Large>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<Large,1,    Small>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<Large,1,    Large>  { static constexpr int ret = GemvProduct; };
+template<>              struct product_type_selector<Small,1,    Large>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<Small,Small,Large>  { static constexpr int ret = GemmProduct; };
+template<>              struct product_type_selector<Large,Small,Large>  { static constexpr int ret = GemmProduct; };
+template<>              struct product_type_selector<Small,Large,Large>  { static constexpr int ret = GemmProduct; };
+template<>              struct product_type_selector<Large,Large,Large>  { static constexpr int ret = GemmProduct; };
+template<>              struct product_type_selector<Large,Small,Small>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<Small,Large,Small>  { static constexpr int ret = CoeffBasedProductMode; };
+template<>              struct product_type_selector<Large,Large,Small>  { static constexpr int ret = GemmProduct; };
 } // end namespace internal
 
 /***********************************************************************
@@ -177,10 +174,10 @@ struct gemv_static_vector_if<Scalar,Size,Dynamic,true>
 template<typename Scalar,int Size,int MaxSize>
 struct gemv_static_vector_if<Scalar,Size,MaxSize,true>
 {
-  enum {
-    ForceAlignment  = internal::packet_traits<Scalar>::Vectorizable,
-    PacketSize      = internal::packet_traits<Scalar>::size
-  };
+  static constexpr bool
+    ForceAlignment  = packet_traits<Scalar>::Vectorizable;
+  static constexpr int
+    PacketSize      = packet_traits<Scalar>::size;
   #if EIGEN_MAX_STATIC_ALIGN_BYTES!=0
   internal::plain_array<Scalar, internal::min_size_prefer_fixed(Size, MaxSize), 0,
                         internal::plain_enum_min(AlignedMax, PacketSize)> m_data;
@@ -205,7 +202,7 @@ struct gemv_dense_selector<OnTheLeft,StorageOrder,BlasCompatible>
   static void run(const Lhs &lhs, const Rhs &rhs, Dest& dest, const typename Dest::Scalar& alpha)
   {
     Transpose<Dest> destT(dest);
-    enum { OtherStorageOrder = StorageOrder == RowMajor ? ColMajor : RowMajor };
+    static constexpr StorageOptions OtherStorageOrder = StorageOrder == RowMajor ? ColMajor : RowMajor;
     gemv_dense_selector<OnTheRight,OtherStorageOrder,BlasCompatible>
       ::run(rhs.transpose(), lhs.transpose(), destT, alpha);
   }
@@ -235,13 +232,12 @@ template<> struct gemv_dense_selector<OnTheRight,ColMajor,true>
     // make sure Dest is a compile-time vector type (bug 1166)
     typedef std::conditional_t<Dest::IsVectorAtCompileTime, Dest, typename Dest::ColXpr> ActualDest;
 
-    enum {
       // FIXME find a way to allow an inner stride on the result if packet_traits<Scalar>::size==1
       // on, the other hand it is good for the cache to pack the vector anyways...
+    static constexpr bool
       EvalToDestAtCompileTime = (ActualDest::InnerStrideAtCompileTime==1),
       ComplexByReal = (NumTraits<LhsScalar>::IsComplex) && (!NumTraits<RhsScalar>::IsComplex),
-      MightCannotUseDest = ((!EvalToDestAtCompileTime) || ComplexByReal) && (ActualDest::MaxSizeAtCompileTime!=0)
-    };
+      MightCannotUseDest = ((!EvalToDestAtCompileTime) || ComplexByReal) && (ActualDest::MaxSizeAtCompileTime!=0);
 
     typedef const_blas_data_mapper<LhsScalar,Index,ColMajor> LhsMapper;
     typedef const_blas_data_mapper<RhsScalar,Index,RowMajor> RhsMapper;
@@ -323,11 +319,10 @@ template<> struct gemv_dense_selector<OnTheRight,RowMajor,true>
 
     ResScalar actualAlpha = combine_scalar_factors(alpha, lhs, rhs);
 
-    enum {
+    static constexpr bool
       // FIXME find a way to allow an inner stride on the result if packet_traits<Scalar>::size==1
       // on, the other hand it is good for the cache to pack the vector anyways...
-      DirectlyUseRhs = ActualRhsTypeCleaned::InnerStrideAtCompileTime==1 || ActualRhsTypeCleaned::MaxSizeAtCompileTime==0
-    };
+      DirectlyUseRhs = ActualRhsTypeCleaned::InnerStrideAtCompileTime==1 || ActualRhsTypeCleaned::MaxSizeAtCompileTime==0;
 
     gemv_static_vector_if<RhsScalar,ActualRhsTypeCleaned::SizeAtCompileTime,ActualRhsTypeCleaned::MaxSizeAtCompileTime,!DirectlyUseRhs> static_rhs;
 
@@ -404,13 +399,12 @@ MatrixBase<Derived>::operator*(const MatrixBase<OtherDerived> &other) const
   // not be inlined since DenseStorage is an unwindable object for dynamic
   // matrices and product types are holding a member to store the result.
   // Thus it does not help tagging this function with EIGEN_STRONG_INLINE.
-  enum {
+  static constexpr bool
     ProductIsValid =  Derived::ColsAtCompileTime==Dynamic
                    || OtherDerived::RowsAtCompileTime==Dynamic
                    || int(Derived::ColsAtCompileTime)==int(OtherDerived::RowsAtCompileTime),
     AreVectors = Derived::IsVectorAtCompileTime && OtherDerived::IsVectorAtCompileTime,
-    SameSizes = EIGEN_PREDICATE_SAME_MATRIX_SIZE(Derived,OtherDerived)
-  };
+    SameSizes = EIGEN_PREDICATE_SAME_MATRIX_SIZE(Derived,OtherDerived);
   // note to the lost user:
   //    * for a dot product use: v1.dot(v2)
   //    * for a coeff-wise product use: v1.cwiseProduct(v2)
@@ -443,13 +437,12 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
 const Product<Derived,OtherDerived,LazyProduct>
 MatrixBase<Derived>::lazyProduct(const MatrixBase<OtherDerived> &other) const
 {
-  enum {
+  static constexpr bool
     ProductIsValid =  Derived::ColsAtCompileTime==Dynamic
                    || OtherDerived::RowsAtCompileTime==Dynamic
-                   || int(Derived::ColsAtCompileTime)==int(OtherDerived::RowsAtCompileTime),
+                   || Derived::ColsAtCompileTime==OtherDerived::RowsAtCompileTime,
     AreVectors = Derived::IsVectorAtCompileTime && OtherDerived::IsVectorAtCompileTime,
-    SameSizes = EIGEN_PREDICATE_SAME_MATRIX_SIZE(Derived,OtherDerived)
-  };
+    SameSizes = EIGEN_PREDICATE_SAME_MATRIX_SIZE(Derived,OtherDerived);
   // note to the lost user:
   //    * for a dot product use: v1.dot(v2)
   //    * for a coeff-wise product use: v1.cwiseProduct(v2)

@@ -55,10 +55,9 @@ class Stride
 {
   public:
     typedef Eigen::Index Index; ///< \deprecated since Eigen 3.3
-    enum {
+    static constexpr int
       InnerStrideAtCompileTime = InnerStrideAtCompileTime_,
-      OuterStrideAtCompileTime = OuterStrideAtCompileTime_
-    };
+      OuterStrideAtCompileTime = OuterStrideAtCompileTime_;
 
     /** Default constructor, for use when strides are fixed at compile time */
     EIGEN_DEVICE_FUNC

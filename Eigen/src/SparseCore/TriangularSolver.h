@@ -182,7 +182,7 @@ void TriangularViewImpl<ExpressionType,Mode,Sparse>::solveInPlace(MatrixBase<Oth
   eigen_assert(derived().cols() == derived().rows() && derived().cols() == other.rows());
   eigen_assert((!(Mode & ZeroDiag)) && bool(Mode & (Upper|Lower)));
 
-  enum { copy = internal::traits<OtherDerived>::Flags & RowMajorBit };
+  static constexpr bool copy = (internal::traits<OtherDerived>::Flags & RowMajorBit) == RowMajorBit;
 
   typedef std::conditional_t<copy,
     typename internal::plain_matrix_type_column_major<OtherDerived>::type, OtherDerived&> OtherCopy;

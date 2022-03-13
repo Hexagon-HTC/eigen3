@@ -23,12 +23,11 @@ struct traits<CwiseTernaryOp<TernaryOp, Arg1, Arg2, Arg3> > {
   // the potential to cause problems with MSVC
   typedef remove_all_t<Arg1> Ancestor;
   typedef typename traits<Ancestor>::XprKind XprKind;
-  enum {
+  static constexpr int
     RowsAtCompileTime = traits<Ancestor>::RowsAtCompileTime,
     ColsAtCompileTime = traits<Ancestor>::ColsAtCompileTime,
     MaxRowsAtCompileTime = traits<Ancestor>::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = traits<Ancestor>::MaxColsAtCompileTime
-  };
+    MaxColsAtCompileTime = traits<Ancestor>::MaxColsAtCompileTime;
 
   // even though we require Arg1, Arg2, and Arg3 to have the same scalar type
   // (see CwiseTernaryOp constructor),
@@ -46,7 +45,7 @@ struct traits<CwiseTernaryOp<TernaryOp, Arg1, Arg2, Arg3> > {
   typedef std::remove_reference_t<Arg1Nested> Arg1Nested_;
   typedef std::remove_reference_t<Arg2Nested> Arg2Nested_;
   typedef std::remove_reference_t<Arg3Nested> Arg3Nested_;
-  enum { Flags = Arg1Nested_::Flags & RowMajorBit };
+  static constexpr int Flags = Arg1Nested_::Flags & RowMajorBit;
 };
 }  // end namespace internal
 

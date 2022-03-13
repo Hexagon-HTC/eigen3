@@ -20,11 +20,10 @@ namespace internal {
 template<class Derived, class OtherDerived>
 struct quat_product<Architecture::Target, Derived, OtherDerived, float>
 {
-  enum {
+  static constexpr int
     AAlignment = traits<Derived>::Alignment,
     BAlignment = traits<OtherDerived>::Alignment,
-    ResAlignment = traits<Quaternion<float> >::Alignment
-  };
+    ResAlignment = traits<Quaternion<float> >::Alignment;
   static inline Quaternion<float> run(const QuaternionBase<Derived>& _a, const QuaternionBase<OtherDerived>& _b)
   {
     evaluator<typename Derived::Coefficients> ae(_a.coeffs());
@@ -51,9 +50,8 @@ struct quat_product<Architecture::Target, Derived, OtherDerived, float>
 template<class Derived>
 struct quat_conj<Architecture::Target, Derived, float>
 {
-  enum {
-    ResAlignment = traits<Quaternion<float> >::Alignment
-  };
+  static constexpr int
+    ResAlignment = traits<Quaternion<float> >::Alignment;
   static inline Quaternion<float> run(const QuaternionBase<Derived>& q)
   {
     evaluator<typename Derived::Coefficients> qe(q.coeffs());
@@ -70,9 +68,8 @@ struct quat_conj<Architecture::Target, Derived, float>
 template<typename VectorLhs,typename VectorRhs>
 struct cross3_impl<Architecture::Target,VectorLhs,VectorRhs,float,true>
 {
-  enum {
-    ResAlignment = traits<typename plain_matrix_type<VectorLhs>::type>::Alignment
-  };
+  static constexpr int
+    ResAlignment = traits<typename plain_matrix_type<VectorLhs>::type>::Alignment;
   static inline typename plain_matrix_type<VectorLhs>::type
   run(const VectorLhs& lhs, const VectorRhs& rhs)
   {
@@ -95,10 +92,9 @@ struct cross3_impl<Architecture::Target,VectorLhs,VectorRhs,float,true>
 template<class Derived, class OtherDerived>
 struct quat_product<Architecture::Target, Derived, OtherDerived, double>
 {
-  enum {
+  static constexpr int
     BAlignment = traits<OtherDerived>::Alignment,
-    ResAlignment = traits<Quaternion<double> >::Alignment
-  };
+    ResAlignment = traits<Quaternion<double> >::Alignment;
 
   static inline Quaternion<double> run(const QuaternionBase<Derived>& _a, const QuaternionBase<OtherDerived>& _b)
   {
@@ -143,9 +139,8 @@ struct quat_product<Architecture::Target, Derived, OtherDerived, double>
 template<class Derived>
 struct quat_conj<Architecture::Target, Derived, double>
 {
-  enum {
-    ResAlignment = traits<Quaternion<double> >::Alignment
-  };
+  static constexpr int
+    ResAlignment = traits<Quaternion<double> >::Alignment;
   static inline Quaternion<double> run(const QuaternionBase<Derived>& q)
   {
     evaluator<typename Derived::Coefficients> qe(q.coeffs());

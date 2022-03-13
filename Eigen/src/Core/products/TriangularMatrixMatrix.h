@@ -90,11 +90,11 @@ struct product_triangular_matrix_matrix<Scalar,Index,Mode,true,
 {
   
   typedef gebp_traits<Scalar,Scalar> Traits;
-  enum {
-    SmallPanelWidth   = 2 * plain_enum_max(Traits::mr, Traits::nr),
+  static constexpr int
+    SmallPanelWidth   = 2 * (std::max)(Traits::mr, Traits::nr);
+  static constexpr bool
     IsLower = (Mode&Lower) == Lower,
-    SetDiag = (Mode&(ZeroDiag|UnitDiag)) ? 0 : 1
-  };
+    SetDiag = !(Mode&(ZeroDiag|UnitDiag));
 
   static EIGEN_DONT_INLINE void run(
     Index _rows, Index _cols, Index _depth,
@@ -248,11 +248,11 @@ struct product_triangular_matrix_matrix<Scalar,Index,Mode,false,
                                         RhsStorageOrder,ConjugateRhs,ColMajor,ResInnerStride,Version>
 {
   typedef gebp_traits<Scalar,Scalar> Traits;
-  enum {
-    SmallPanelWidth   = plain_enum_max(Traits::mr, Traits::nr),
+  static constexpr int
+    SmallPanelWidth   = (std::max)(Traits::mr, Traits::nr);
+  static constexpr bool
     IsLower = (Mode&Lower) == Lower,
-    SetDiag = (Mode&(ZeroDiag|UnitDiag)) ? 0 : 1
-  };
+    SetDiag = !(Mode&(ZeroDiag|UnitDiag));
 
   static EIGEN_DONT_INLINE void run(
     Index _rows, Index _cols, Index _depth,
@@ -429,7 +429,7 @@ struct triangular_product_impl<Mode,LhsIsTriangular,Lhs,false,Rhs,false>
     typedef internal::gemm_blocking_space<(Dest::Flags&RowMajorBit) ? RowMajor : ColMajor,Scalar,Scalar,
               Lhs::MaxRowsAtCompileTime, Rhs::MaxColsAtCompileTime, Lhs::MaxColsAtCompileTime,4> BlockingType;
 
-    enum { IsLower = (Mode&Lower) == Lower };
+    static constexpr bool IsLower = (Mode&Lower) == Lower;
     Index stripedRows  = ((!LhsIsTriangular) || (IsLower))  ? lhs.rows() : (std::min)(lhs.rows(),lhs.cols());
     Index stripedCols  = ((LhsIsTriangular)  || (!IsLower)) ? rhs.cols() : (std::min)(rhs.cols(),rhs.rows());
     Index stripedDepth = LhsIsTriangular ? ((!IsLower) ? lhs.cols() : (std::min)(lhs.cols(),lhs.rows()))

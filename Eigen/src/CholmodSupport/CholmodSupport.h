@@ -221,15 +221,14 @@ class CholmodBase : public SparseSolverBase<Derived>
     using Base::m_isInitialized;
   public:
     typedef MatrixType_ MatrixType;
-    enum { UpLo = UpLo_ };
+    static constexpr int UpLo = UpLo_;
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::RealScalar RealScalar;
     typedef MatrixType CholMatrixType;
     typedef typename MatrixType::StorageIndex StorageIndex;
-    enum {
+    static constexpr int
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
   public:
 

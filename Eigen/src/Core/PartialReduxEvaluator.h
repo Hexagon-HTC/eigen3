@@ -44,12 +44,11 @@ namespace internal {
 template<typename Func, typename Evaluator>
 struct packetwise_redux_traits
 {
-  enum {
-    OuterSize = int(Evaluator::IsRowMajor) ? Evaluator::RowsAtCompileTime : Evaluator::ColsAtCompileTime,
+  static constexpr int
+    OuterSize = Evaluator::IsRowMajor ? Evaluator::RowsAtCompileTime : Evaluator::ColsAtCompileTime,
     Cost = OuterSize == Dynamic ? HugeCost
          : OuterSize * Evaluator::CoeffReadCost + (OuterSize-1) * functor_traits<Func>::Cost,
-    Unrolling = Cost <= EIGEN_UNROLLING_LIMIT ? CompleteUnrolling : NoUnrolling
-  };
+    Unrolling = Cost <= EIGEN_UNROLLING_LIMIT ? CompleteUnrolling : NoUnrolling;
 
 };
 
@@ -145,29 +144,27 @@ struct evaluator<PartialReduxExpr<ArgType, MemberOp, Direction> >
   typedef internal::remove_all_t<ArgTypeNested> ArgTypeNestedCleaned;
   typedef typename ArgType::Scalar InputScalar;
   typedef typename XprType::Scalar Scalar;
-  enum {
-    TraversalSize = Direction==int(Vertical) ? int(ArgType::RowsAtCompileTime) :  int(ArgType::ColsAtCompileTime)
-  };
+  static constexpr int
+    TraversalSize = Direction==Vertical ? ArgType::RowsAtCompileTime :  ArgType::ColsAtCompileTime;
   typedef typename MemberOp::template Cost<int(TraversalSize)> CostOpType;
-  enum {
+  static constexpr int
     CoeffReadCost = TraversalSize==Dynamic ? HugeCost
                   : TraversalSize==0 ? 1
-                  : int(TraversalSize) * int(evaluator<ArgType>::CoeffReadCost) + int(CostOpType::value),
-    
-    ArgFlags_ = evaluator<ArgType>::Flags,
+                  : TraversalSize * evaluator<ArgType>::CoeffReadCost + CostOpType::value,
 
+    ArgFlags_ = evaluator<ArgType>::Flags;
+  static constexpr bool
     Vectorizable_ =  bool(int(ArgFlags_)&PacketAccessBit)
-                  && bool(MemberOp::Vectorizable)
-                  && (Direction==int(Vertical) ? bool(ArgFlags_&RowMajorBit) : (ArgFlags_&RowMajorBit)==0)
-                  && (TraversalSize!=0),
-                  
+                  && MemberOp::Vectorizable
+                  && (Direction==Vertical ? bool(ArgFlags_&RowMajorBit) : (ArgFlags_&RowMajorBit)==0)
+                  && (TraversalSize!=0);
+  static constexpr int
     Flags = (traits<XprType>::Flags&RowMajorBit)
           | (evaluator<ArgType>::Flags&(HereditaryBits&(~RowMajorBit)))
           | (Vectorizable_ ? PacketAccessBit : 0)
           | LinearAccessBit,
-    
-    Alignment = 0 // FIXME this will need to be improved once PartialReduxExpr is vectorized
-  };
+
+    Alignment = 0; // FIXME this will need to be improved once PartialReduxExpr is vectorized
 
   EIGEN_DEVICE_FUNC explicit evaluator(const XprType xpr)
     : m_arg(xpr.nestedExpression()), m_functor(xpr.functor())
@@ -201,7 +198,7 @@ struct evaluator<PartialReduxExpr<ArgType, MemberOp, Direction> >
   EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC
   PacketType packet(Index idx) const
   {
-    enum { PacketSize = internal::unpacket_traits<PacketType>::size };
+    static constexpr int PacketSize = internal::unpacket_traits<PacketType>::size;
     typedef Block<const ArgTypeNestedCleaned,
                   Direction==Vertical ? int(ArgType::RowsAtCompileTime) : int(PacketSize),
                   Direction==Vertical ? int(PacketSize) : int(ArgType::ColsAtCompileTime),

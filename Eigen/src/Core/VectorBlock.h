@@ -63,9 +63,8 @@ template<typename VectorType, int Size> class VectorBlock
     typedef Block<VectorType,
                      internal::traits<VectorType>::Flags & RowMajorBit ? 1 : Size,
                      internal::traits<VectorType>::Flags & RowMajorBit ? Size : 1> Base;
-    enum {
-      IsColVector = !(internal::traits<VectorType>::Flags & RowMajorBit)
-    };
+    static constexpr bool
+      IsColVector = !(internal::traits<VectorType>::Flags & RowMajorBit);
   public:
     EIGEN_DENSE_PUBLIC_INTERFACE(VectorBlock)
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorBlock)

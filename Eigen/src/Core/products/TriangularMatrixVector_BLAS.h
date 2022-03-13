@@ -76,13 +76,13 @@ EIGEN_BLAS_TRMV_SPECIALIZE(scomplex)
 #define EIGEN_BLAS_TRMV_CM(EIGTYPE, BLASTYPE, EIGPREFIX, BLASPREFIX, BLASPOSTFIX) \
 template<typename Index, int Mode, bool ConjLhs, bool ConjRhs> \
 struct triangular_matrix_vector_product_trmv<Index,Mode,EIGTYPE,ConjLhs,EIGTYPE,ConjRhs,ColMajor> { \
-  enum { \
+  static constexpr bool \
     IsLower = (Mode&Lower) == Lower, \
-    SetDiag = (Mode&(ZeroDiag|UnitDiag)) ? 0 : 1, \
-    IsUnitDiag  = (Mode&UnitDiag) ? 1 : 0, \
-    IsZeroDiag  = (Mode&ZeroDiag) ? 1 : 0, \
-    LowUp = IsLower ? Lower : Upper \
-  }; \
+    SetDiag = !(Mode&(ZeroDiag|UnitDiag)), \
+    IsUnitDiag  = (Mode&UnitDiag) == UnitDiag, \
+    IsZeroDiag  = (Mode&ZeroDiag) == ZeroDiag; \
+  static constexpr int
+    LowUp = IsLower ? Lower : Upper; \
  static void run(Index _rows, Index _cols, const EIGTYPE* _lhs, Index lhsStride, \
                  const EIGTYPE* _rhs, Index rhsIncr, EIGTYPE* _res, Index resIncr, EIGTYPE alpha) \
  { \
@@ -165,13 +165,13 @@ EIGEN_BLAS_TRMV_CM(scomplex, float,  cf, c, _)
 #define EIGEN_BLAS_TRMV_RM(EIGTYPE, BLASTYPE, EIGPREFIX, BLASPREFIX, BLASPOSTFIX) \
 template<typename Index, int Mode, bool ConjLhs, bool ConjRhs> \
 struct triangular_matrix_vector_product_trmv<Index,Mode,EIGTYPE,ConjLhs,EIGTYPE,ConjRhs,RowMajor> { \
-  enum { \
+  static constexpr bool \
     IsLower = (Mode&Lower) == Lower, \
-    SetDiag = (Mode&(ZeroDiag|UnitDiag)) ? 0 : 1, \
-    IsUnitDiag  = (Mode&UnitDiag) ? 1 : 0, \
-    IsZeroDiag  = (Mode&ZeroDiag) ? 1 : 0, \
-    LowUp = IsLower ? Lower : Upper \
-  }; \
+    SetDiag = !(Mode&(ZeroDiag|UnitDiag)), \
+    IsUnitDiag  = (Mode&UnitDiag) == UnitDiag, \
+    IsZeroDiag  = (Mode&ZeroDiag) == ZeroDiag; \
+  static constexpr int
+    LowUp = IsLower ? Lower : Upper; \
  static void run(Index _rows, Index _cols, const EIGTYPE* _lhs, Index lhsStride, \
                  const EIGTYPE* _rhs, Index rhsIncr, EIGTYPE* _res, Index resIncr, EIGTYPE alpha) \
  { \

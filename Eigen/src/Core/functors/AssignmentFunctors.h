@@ -35,10 +35,10 @@ template<typename DstScalar> struct assign_op<DstScalar,void> {};
 
 template<typename DstScalar,typename SrcScalar>
 struct functor_traits<assign_op<DstScalar,SrcScalar> > {
-  enum {
-    Cost = NumTraits<DstScalar>::ReadCost,
-    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::Vectorizable && packet_traits<SrcScalar>::Vectorizable
-  };
+  static constexpr int
+    Cost = NumTraits<DstScalar>::ReadCost;
+  static constexpr bool
+    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::Vectorizable && packet_traits<SrcScalar>::Vectorizable;
 };
 
 /** \internal
@@ -56,10 +56,10 @@ template<typename DstScalar,typename SrcScalar> struct add_assign_op {
 };
 template<typename DstScalar,typename SrcScalar>
 struct functor_traits<add_assign_op<DstScalar,SrcScalar> > {
-  enum {
-    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::AddCost,
-    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasAdd
-  };
+  static constexpr int
+    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::AddCost;
+  static constexpr bool
+    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasAdd;
 };
 
 /** \internal
@@ -77,10 +77,10 @@ template<typename DstScalar,typename SrcScalar> struct sub_assign_op {
 };
 template<typename DstScalar,typename SrcScalar>
 struct functor_traits<sub_assign_op<DstScalar,SrcScalar> > {
-  enum {
-    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::AddCost,
-    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasSub
-  };
+  static constexpr int
+    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::AddCost;
+  static constexpr bool
+    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasSub;
 };
 
 /** \internal
@@ -99,10 +99,10 @@ struct mul_assign_op {
 };
 template<typename DstScalar, typename SrcScalar>
 struct functor_traits<mul_assign_op<DstScalar,SrcScalar> > {
-  enum {
-    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::MulCost,
-    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasMul
-  };
+  static constexpr int
+    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::MulCost;
+  static constexpr bool
+    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasMul;
 };
 
 /** \internal
@@ -120,10 +120,10 @@ template<typename DstScalar, typename SrcScalar=DstScalar> struct div_assign_op 
 };
 template<typename DstScalar, typename SrcScalar>
 struct functor_traits<div_assign_op<DstScalar,SrcScalar> > {
-  enum {
-    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::MulCost,
-    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasDiv
-  };
+  static constexpr int
+    Cost = NumTraits<DstScalar>::ReadCost + NumTraits<DstScalar>::MulCost;
+  static constexpr bool
+    PacketAccess = is_same<DstScalar,SrcScalar>::value && packet_traits<DstScalar>::HasDiv;
 };
 
 /** \internal
@@ -157,19 +157,19 @@ template<typename Scalar> struct swap_assign_op {
 };
 template<typename Scalar>
 struct functor_traits<swap_assign_op<Scalar> > {
-  enum {
-    Cost = 3 * NumTraits<Scalar>::ReadCost,
-    PacketAccess = 
+  static constexpr int
+    Cost = 3 * NumTraits<Scalar>::ReadCost;
+  static constexpr bool
+    PacketAccess =
     #if defined(EIGEN_VECTORIZE_AVX) && EIGEN_COMP_CLANG && (EIGEN_COMP_CLANG<800 || defined(__apple_build_version__))
     // This is a partial workaround for a bug in clang generating bad code
     // when mixing 256/512 bits loads and 128 bits moves.
     // See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1684
     //     https://bugs.llvm.org/show_bug.cgi?id=40815
-    0
+    false;
     #else
-    packet_traits<Scalar>::Vectorizable
+    packet_traits<Scalar>::Vectorizable;
     #endif
-  };
 };
 
 } // namespace internal

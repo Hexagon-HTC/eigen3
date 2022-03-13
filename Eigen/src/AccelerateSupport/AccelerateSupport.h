@@ -160,8 +160,8 @@ class AccelerateImpl : public SparseSolverBase<AccelerateImpl<MatrixType_, UpLo_
   typedef MatrixType_ MatrixType;
   typedef typename MatrixType::Scalar Scalar;
   typedef typename MatrixType::StorageIndex StorageIndex;
-  enum { ColsAtCompileTime = Dynamic, MaxColsAtCompileTime = Dynamic };
-  enum { UpLo = UpLo_ };
+  static constexpr int ColsAtCompileTime = Dynamic, MaxColsAtCompileTime = Dynamic;
+  static constexpr int UpLo = UpLo_;
 
   using AccelDenseVector = typename internal::SparseTypesTrait<Scalar>::AccelDenseVector;
   using AccelDenseMatrix = typename internal::SparseTypesTrait<Scalar>::AccelDenseMatrix;

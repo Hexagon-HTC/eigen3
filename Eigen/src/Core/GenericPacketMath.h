@@ -43,91 +43,90 @@ namespace internal {
 
 struct default_packet_traits
 {
-  enum {
-    HasHalfPacket = 0,
+  static constexpr bool
+    HasHalfPacket  = false,
 
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 0,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 1,
-    HasBlend     = 0,
+    HasAdd        = true,
+    HasSub        = true,
+    HasShift      = true,
+    HasMul        = true,
+    HasNegate     = true,
+    HasAbs        = true,
+    HasArg        = false,
+    HasAbs2       = true,
+    HasAbsDiff    = false,
+    HasMin        = true,
+    HasMax        = true,
+    HasConj       = true,
+    HasSetLinear  = true,
+    HasBlend      = false,
     // This flag is used to indicate whether packet comparison is supported.
     // pcmp_eq, pcmp_lt and pcmp_le should be defined for it to be true.
-    HasCmp       = 0,
+    HasCmp        = false,
 
-    HasDiv    = 0,
-    HasReciprocal = 0,
-    HasSqrt   = 0,
-    HasRsqrt  = 0,
-    HasExp    = 0,
-    HasExpm1  = 0,
-    HasLog    = 0,
-    HasLog1p  = 0,
-    HasLog10  = 0,
-    HasPow    = 0,
+    HasDiv     = false,
+    HasReciprocal  = false,
+    HasSqrt    = false,
+    HasRsqrt   = false,
+    HasExp     = false,
+    HasExpm1   = false,
+    HasLog     = false,
+    HasLog1p   = false,
+    HasLog10   = false,
+    HasPow     = false,
 
-    HasSin    = 0,
-    HasCos    = 0,
-    HasTan    = 0,
-    HasASin   = 0,
-    HasACos   = 0,
-    HasATan   = 0,
-    HasSinh   = 0,
-    HasCosh   = 0,
-    HasTanh   = 0,
-    HasLGamma = 0,
-    HasDiGamma = 0,
-    HasZeta = 0,
-    HasPolygamma = 0,
-    HasErf = 0,
-    HasErfc = 0,
-    HasNdtri = 0,
-    HasBessel = 0,
-    HasIGamma = 0,
-    HasIGammaDerA = 0,
-    HasGammaSampleDerAlpha = 0,
-    HasIGammac = 0,
-    HasBetaInc = 0,
+    HasSin     = false,
+    HasCos     = false,
+    HasTan     = false,
+    HasASin    = false,
+    HasACos    = false,
+    HasATan    = false,
+    HasSinh    = false,
+    HasCosh    = false,
+    HasTanh    = false,
+    HasLGamma  = false,
+    HasDiGamma  = false,
+    HasZeta  = false,
+    HasPolygamma  = false,
+    HasErf  = false,
+    HasErfc  = false,
+    HasNdtri  = false,
+    HasBessel  = false,
+    HasIGamma  = false,
+    HasIGammaDerA  = false,
+    HasGammaSampleDerAlpha  = false,
+    HasIGammac  = false,
+    HasBetaInc  = false,
 
-    HasRound  = 0,
-    HasRint   = 0,
-    HasFloor  = 0,
-    HasCeil   = 0,
-    HasSign   = 0
-  };
+    HasRound   = false,
+    HasRint    = false,
+    HasFloor   = false,
+    HasCeil    = false,
+    HasSign    = false;
 };
 
 template<typename T> struct packet_traits : default_packet_traits
 {
   typedef T type;
   typedef T half;
-  enum {
-    Vectorizable = 0,
-    size = 1,
-    AlignedOnScalar = 0,
-    HasHalfPacket = 0
-  };
-  enum {
-    HasAdd    = 0,
-    HasSub    = 0,
-    HasMul    = 0,
-    HasNegate = 0,
-    HasAbs    = 0,
-    HasAbs2   = 0,
-    HasMin    = 0,
-    HasMax    = 0,
-    HasConj   = 0,
-    HasSetLinear = 0
-  };
+  static constexpr int
+    size = 1;
+
+  static constexpr bool
+    Vectorizable = false,
+    AlignedOnScalar = false,
+    HasHalfPacket  = false;
+  static constexpr bool
+    HasAdd     = false,
+    HasSub     = false,
+    HasMul     = false,
+    HasNegate  = false,
+    HasAbs     = false,
+    HasAbs2    = false,
+    HasMin     = false,
+    HasMax     = false,
+    HasConj    = false,
+    HasSetLinear  = false;
 };
 
 template<typename T> struct packet_traits<const T> : packet_traits<T> { };
@@ -136,24 +135,23 @@ template<typename T> struct unpacket_traits
 {
   typedef T type;
   typedef T half;
-  enum
-  {
+  static constexpr int
     size = 1,
-    alignment = 1,
+    alignment = 1;
+  static constexpr bool
     vectorizable = false,
     masked_load_available=false,
-    masked_store_available=false
-  };
+    masked_store_available=false;
 };
 
 template<typename T> struct unpacket_traits<const T> : unpacket_traits<T> { };
 
 template <typename Src, typename Tgt> struct type_casting_traits {
-  enum {
-    VectorizedCast = 0,
+  static constexpr bool
+    VectorizedCast = false;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 /** \internal Wrapper to ensure that multiple packet types can map to the same
@@ -180,9 +178,8 @@ struct eigen_packet_wrapper
 template<typename Packet>
 struct is_scalar {
   typedef typename unpacket_traits<Packet>::type Scalar;
-  enum {
-    value = internal::is_same<Packet, Scalar>::value
-  };
+  static constexpr bool
+    value = internal::is_same<Packet, Scalar>::value;
 };
 
 /** \internal \returns static_cast<TgtType>(a) (coeff-wise) */

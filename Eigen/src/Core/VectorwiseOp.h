@@ -43,14 +43,13 @@ struct traits<PartialReduxExpr<MatrixType, MemberOp, Direction> >
   typedef typename traits<MatrixType>::StorageKind StorageKind;
   typedef typename traits<MatrixType>::XprKind XprKind;
   typedef typename MatrixType::Scalar InputScalar;
-  enum {
+  static constexpr int
     RowsAtCompileTime = Direction==Vertical   ? 1 : MatrixType::RowsAtCompileTime,
     ColsAtCompileTime = Direction==Horizontal ? 1 : MatrixType::ColsAtCompileTime,
     MaxRowsAtCompileTime = Direction==Vertical   ? 1 : MatrixType::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = Direction==Horizontal ? 1 : MatrixType::MaxColsAtCompileTime,
     Flags = RowsAtCompileTime == 1 ? RowMajorBit : 0,
-    TraversalSize = Direction==Vertical ? MatrixType::RowsAtCompileTime :  MatrixType::ColsAtCompileTime
-  };
+    TraversalSize = Direction==Vertical ? MatrixType::RowsAtCompileTime :  MatrixType::ColsAtCompileTime;
 };
 }
 
@@ -91,8 +90,8 @@ template<typename A,typename B> struct partial_redux_dummy_func;
     EIGEN_EMPTY_STRUCT_CTOR(member_##MEMBER)                                                \
     typedef ResultType result_type;                                                         \
     typedef BINARYOP<Scalar,Scalar> BinaryOp;   \
-    template<int Size> struct Cost { enum { value = COST }; };             \
-    enum { Vectorizable = VECTORIZABLE };                                                   \
+    template<int Size> struct Cost { static constexpr int value = COST; };                  \
+    static constexpr bool Vectorizable = VECTORIZABLE;                                      \
     template<typename XprType>                                                              \
     EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE                                                   \
     ResultType operator()(const XprType& mat) const                                         \
@@ -121,9 +120,9 @@ EIGEN_MAKE_PARTIAL_REDUX_FUNCTOR(prod, (Size-1)*NumTraits<Scalar>::MulCost, 1, i
 template <int p, typename ResultType,typename Scalar>
 struct member_lpnorm {
   typedef ResultType result_type;
-  enum { Vectorizable = 0 };
+  static const bool Vectorizable = 0;
   template<int Size> struct Cost
-  { enum { value = (Size+5) * NumTraits<Scalar>::MulCost + (Size-1)*NumTraits<Scalar>::AddCost }; };
+  { static constexpr int value = (Size+5) * NumTraits<Scalar>::MulCost + (Size-1)*NumTraits<Scalar>::AddCost; };
   EIGEN_DEVICE_FUNC member_lpnorm() {}
   template<typename XprType>
   EIGEN_DEVICE_FUNC inline ResultType operator()(const XprType& mat) const
@@ -137,8 +136,8 @@ struct member_redux {
                      BinaryOp(const Scalar&,const Scalar&)
                    >::type  result_type;
 
-  enum { Vectorizable = functor_traits<BinaryOp>::PacketAccess };
-  template<int Size> struct Cost { enum { value = (Size-1) * functor_traits<BinaryOp>::Cost }; };
+  static constexpr bool Vectorizable = functor_traits<BinaryOp>::PacketAccess;
+  template<int Size> struct Cost { static constexpr int value = (Size-1) * functor_traits<BinaryOp>::Cost; };
   EIGEN_DEVICE_FUNC explicit member_redux(const BinaryOp func) : m_functor(func) {}
   template<typename Derived>
   EIGEN_DEVICE_FUNC inline result_type operator()(const DenseBase<Derived>& mat) const
@@ -212,10 +211,9 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
                               > Type;
     };
 
-    enum {
-      isVertical   = (Direction==Vertical) ? 1 : 0,
-      isHorizontal = (Direction==Horizontal) ? 1 : 0
-    };
+    static constexpr bool
+      isVertical   = (Direction==Vertical) ? true : false,
+      isHorizontal = (Direction==Horizontal) ? true : false;
 
   protected:
 
@@ -716,11 +714,10 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
     EIGEN_DEVICE_FUNC
     const CrossReturnType cross(const MatrixBase<OtherDerived>& other) const;
 
-    enum {
+    static constexpr int
       HNormalized_Size = Direction==Vertical ? internal::traits<ExpressionType>::RowsAtCompileTime
                                              : internal::traits<ExpressionType>::ColsAtCompileTime,
-      HNormalized_SizeMinusOne = HNormalized_Size==Dynamic ? Dynamic : HNormalized_Size-1
-    };
+      HNormalized_SizeMinusOne = HNormalized_Size==Dynamic ? Dynamic : HNormalized_Size-1;
     typedef Block<const ExpressionType,
                   Direction==Vertical   ? int(HNormalized_SizeMinusOne)
                                         : int(internal::traits<ExpressionType>::RowsAtCompileTime),

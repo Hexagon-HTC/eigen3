@@ -42,12 +42,11 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
   public:
 
     typedef typename internal::dense_xpr_base<Derived>::type Base;
-    enum {
+    static constexpr int
       RowsAtCompileTime = internal::traits<Derived>::RowsAtCompileTime,
       ColsAtCompileTime = internal::traits<Derived>::ColsAtCompileTime,
       InnerStrideAtCompileTime = internal::traits<Derived>::InnerStrideAtCompileTime,
-      SizeAtCompileTime = Base::SizeAtCompileTime
-    };
+      SizeAtCompileTime = Base::SizeAtCompileTime;
 
     typedef typename internal::traits<Derived>::StorageKind StorageKind;
     typedef typename internal::traits<Derived>::Scalar Scalar;

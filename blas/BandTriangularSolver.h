@@ -24,7 +24,7 @@ struct band_solve_triangular_selector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,Row
 {
   typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,RowMajor>, 0, OuterStride<> > LhsMap;
   typedef Map<Matrix<RhsScalar,Dynamic,1> > RhsMap;
-  enum { IsLower = (Mode&Lower) ? 1 : 0 };
+  static constexpr bool IsLower = (Mode&Lower) == Lower;
   static void run(Index size, Index k, const LhsScalar* _lhs, Index lhsStride, RhsScalar* _other)
   {
     const LhsMap lhs(_lhs,size,k+1,OuterStride<>(lhsStride));
@@ -58,7 +58,7 @@ struct band_solve_triangular_selector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,Col
 {
   typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,ColMajor>, 0, OuterStride<> > LhsMap;
   typedef Map<Matrix<RhsScalar,Dynamic,1> > RhsMap;
-  enum { IsLower = (Mode&Lower) ? 1 : 0 };
+  static constexpr IsLower = (Mode&Lower) == Lower;
   static void run(Index size, Index k, const LhsScalar* _lhs, Index lhsStride, RhsScalar* _other)
   {
     const LhsMap lhs(_lhs,k+1,size,OuterStride<>(lhsStride));

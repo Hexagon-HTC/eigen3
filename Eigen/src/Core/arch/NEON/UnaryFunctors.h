@@ -50,10 +50,9 @@ struct scalar_logistic_op<Eigen::half> {
 
 template<>
 struct functor_traits<scalar_logistic_op<Eigen::half>> {
-  enum {
+  static constexpr int
     Cost = functor_traits<scalar_logistic_op<float>>::Cost,
-    PacketAccess = functor_traits<scalar_logistic_op<float>>::PacketAccess,
-  };
+    PacketAccess = functor_traits<scalar_logistic_op<float>>::PacketAccess;
 };
 #endif  // EIGEN_HAS_ARM64_FP16_VECTOR_ARITHMETIC
 

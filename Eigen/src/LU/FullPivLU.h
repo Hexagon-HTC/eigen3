@@ -21,7 +21,7 @@ template<typename MatrixType_> struct traits<FullPivLU<MatrixType_> >
   typedef MatrixXpr XprKind;
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 } // end namespace internal
@@ -68,10 +68,9 @@ template<typename MatrixType_> class FullPivLU
     friend class SolverBase<FullPivLU>;
 
     EIGEN_GENERIC_PUBLIC_INTERFACE(FullPivLU)
-    enum {
+    static constexpr int
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
     typedef typename internal::plain_row_type<MatrixType, StorageIndex>::type IntRowVectorType;
     typedef typename internal::plain_col_type<MatrixType, StorageIndex>::type IntColVectorType;
     typedef PermutationMatrix<ColsAtCompileTime, MaxColsAtCompileTime> PermutationQType;
@@ -616,10 +615,9 @@ struct kernel_retval<FullPivLU<MatrixType_> >
 {
   EIGEN_MAKE_KERNEL_HELPERS(FullPivLU<MatrixType_>)
 
-  enum { MaxSmallDimAtCompileTime = min_size_prefer_fixed(
+  static constexpr int MaxSmallDimAtCompileTime = min_size_prefer_fixed(
               MatrixType::MaxColsAtCompileTime,
-              MatrixType::MaxRowsAtCompileTime)
-  };
+              MatrixType::MaxRowsAtCompileTime);
 
   template<typename Dest> void evalTo(Dest& dst) const
   {
@@ -702,10 +700,9 @@ struct image_retval<FullPivLU<MatrixType_> >
 {
   EIGEN_MAKE_IMAGE_HELPERS(FullPivLU<MatrixType_>)
 
-  enum { MaxSmallDimAtCompileTime = min_size_prefer_fixed(
+  static constexpr int MaxSmallDimAtCompileTime = min_size_prefer_fixed(
               MatrixType::MaxColsAtCompileTime,
-              MatrixType::MaxRowsAtCompileTime)
-  };
+              MatrixType::MaxRowsAtCompileTime);
 
   template<typename Dest> void evalTo(Dest& dst) const
   {

@@ -35,82 +35,82 @@ namespace internal {
 // we'll use on the host side (SSE, AVX, ...)
 #if defined(EIGEN_GPUCC) && defined(EIGEN_USE_GPU)
 
-template<> struct is_arithmetic<float4>  { enum { value = true }; };
-template<> struct is_arithmetic<double2> { enum { value = true }; };
+template<> struct is_arithmetic<float4>  { static constexpr bool value = true; };
+template<> struct is_arithmetic<double2> { static constexpr bool value = true; };
 
 template<> struct packet_traits<float> : default_packet_traits
 {
   typedef float4 type;
   typedef float4 half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size=4,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 4;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasDiv  = 1,
-    HasSin  = 0,
-    HasCos  = 0,
-    HasLog  = 1,
-    HasExp  = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasLGamma = 1,
-    HasDiGamma = 1,
-    HasZeta = 1,
-    HasPolygamma = 1,
-    HasErf = 1,
-    HasErfc = 1,
-    HasNdtri = 1,
-    HasBessel = 1,
-    HasIGamma = 1,
-    HasIGammaDerA = 1,
-    HasGammaSampleDerAlpha = 1,
-    HasIGammac = 1,
-    HasBetaInc = 1,
+    HasDiv  = true,
+    HasSin  = false,
+    HasCos  = false,
+    HasLog  = true,
+    HasExp  = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasLGamma = true,
+    HasDiGamma = true,
+    HasZeta = true,
+    HasPolygamma = true,
+    HasErf = true,
+    HasErfc = true,
+    HasNdtri = true,
+    HasBessel = true,
+    HasIGamma = true,
+    HasIGammaDerA = true,
+    HasGammaSampleDerAlpha = true,
+    HasIGammac = true,
+    HasBetaInc = true,
 
-    HasBlend = 0,
-    HasFloor = 1,
-  };
+    HasBlend = false,
+    HasFloor = true;
 };
 
 template<> struct packet_traits<double> : default_packet_traits
 {
   typedef double2 type;
   typedef double2 half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size=2,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 2;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasDiv  = 1,
-    HasLog  = 1,
-    HasExp  = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasLGamma = 1,
-    HasDiGamma = 1,
-    HasZeta = 1,
-    HasPolygamma = 1,
-    HasErf = 1,
-    HasErfc = 1,
-    HasNdtri = 1,
-    HasBessel = 1,
-    HasIGamma = 1,
-    HasIGammaDerA = 1,
-    HasGammaSampleDerAlpha = 1,
-    HasIGammac = 1,
-    HasBetaInc = 1,
+    HasDiv  = true,
+    HasLog  = true,
+    HasExp  = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasLGamma = true,
+    HasDiGamma = true,
+    HasZeta = true,
+    HasPolygamma = true,
+    HasErf = true,
+    HasErfc = true,
+    HasNdtri = true,
+    HasBessel = true,
+    HasIGamma = true,
+    HasIGammaDerA = true,
+    HasGammaSampleDerAlpha = true,
+    HasIGammac = true,
+    HasBetaInc = true,
 
-    HasBlend = 0,
-    HasFloor = 1,
-  };
+    HasBlend = false,
+    HasFloor = true;
 };
 
 
-template<> struct unpacket_traits<float4>  { typedef float  type; enum {size=4, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef float4 half; };
-template<> struct unpacket_traits<double2> { typedef double type; enum {size=2, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef double2 half; };
+template<> struct unpacket_traits<float4>  { typedef float  type; static constexpr int size=4, alignment=Aligned16; static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false; typedef float4 half; };
+template<> struct unpacket_traits<double2> { typedef double type; static constexpr int size=2, alignment=Aligned16; static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false; typedef double2 half; };
 
 template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pset1<float4>(const float&  from) {
   return make_float4(from, from, from, from);
@@ -498,32 +498,32 @@ ptranspose(PacketBlock<double2,2>& kernel) {
 #if (defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16)) && defined(EIGEN_GPU_COMPILE_PHASE)
 
 typedef ulonglong2 Packet4h2;
-template<> struct unpacket_traits<Packet4h2> { typedef Eigen::half type; enum {size=8, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet4h2 half; };
-template<> struct is_arithmetic<Packet4h2> { enum { value = true }; };
+template<> struct unpacket_traits<Packet4h2> { typedef Eigen::half type; static constexpr int size=8, alignment=Aligned16; static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false; typedef Packet4h2 half; };
+template<> struct is_arithmetic<Packet4h2> { static constexpr bool value = true; };
 
-template<> struct unpacket_traits<half2> { typedef Eigen::half type; enum {size=2, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef half2 half; };
-template<> struct is_arithmetic<half2> { enum { value = true }; };
+template<> struct unpacket_traits<half2> { typedef Eigen::half type; static constexpr int size=2, alignment=Aligned16; static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false; typedef half2 half; };
+template<> struct is_arithmetic<half2> { static constexpr bool value = true; };
 
 template<> struct packet_traits<Eigen::half> : default_packet_traits
 {
   typedef Packet4h2 type;
   typedef Packet4h2 half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size=8,
-    HasHalfPacket = 0,
-    HasAdd    = 1,
-    HasSub    = 1,
-    HasMul    = 1,
-    HasDiv    = 1,
-    HasSqrt   = 1,
-    HasRsqrt  = 1,
-    HasExp    = 1,
-    HasExpm1  = 1,
-    HasLog    = 1,
-    HasLog1p  = 1
-  };
+  static constexpr int
+    size = 8;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
+    HasAdd    = true,
+    HasSub    = true,
+    HasMul    = true,
+    HasDiv    = true,
+    HasSqrt   = true,
+    HasRsqrt  = true,
+    HasExp    = true,
+    HasExpm1  = true,
+    HasLog    = true,
+    HasLog1p  = true;
 };
 
 template<>

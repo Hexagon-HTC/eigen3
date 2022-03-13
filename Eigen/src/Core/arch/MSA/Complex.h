@@ -103,30 +103,31 @@ template <>
 struct packet_traits<std::complex<float> > : default_packet_traits {
   typedef Packet2cf type;
   typedef Packet2cf half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 2,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 2;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasAdd = 1,
-    HasSub = 1,
-    HasMul = 1,
-    HasDiv = 1,
-    HasNegate = 1,
-    HasAbs = 0,
-    HasAbs2 = 0,
-    HasMin = 0,
-    HasMax = 0,
-    HasSetLinear = 0,
-    HasBlend = 1
-  };
+    HasAdd = true,
+    HasSub = true,
+    HasMul = true,
+    HasDiv = true,
+    HasNegate = true,
+    HasAbs = false,
+    HasAbs2 = false,
+    HasMin = false,
+    HasMax = false,
+    HasSetLinear = false,
+    HasBlend = true;
 };
 
 template <>
 struct unpacket_traits<Packet2cf> {
   typedef std::complex<float> type;
-  enum { size = 2, alignment = Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false };
+  static constexpr int size = 2, alignment = Aligned16;
+  static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false;
   typedef Packet2cf half;
 };
 
@@ -418,29 +419,31 @@ template <>
 struct packet_traits<std::complex<double> > : default_packet_traits {
   typedef Packet1cd type;
   typedef Packet1cd half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 0,
-    size = 1,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 1;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = false,
+    HasHalfPacket = false,
 
-    HasAdd = 1,
-    HasSub = 1,
-    HasMul = 1,
-    HasDiv = 1,
-    HasNegate = 1,
-    HasAbs = 0,
-    HasAbs2 = 0,
-    HasMin = 0,
-    HasMax = 0,
-    HasSetLinear = 0
+    HasAdd = true,
+    HasSub = true,
+    HasMul = true,
+    HasDiv = true,
+    HasNegate = true,
+    HasAbs = false,
+    HasAbs2 = false,
+    HasMin = false,
+    HasMax = false,
+    HasSetLinear = false
   };
 };
 
 template <>
 struct unpacket_traits<Packet1cd> {
   typedef std::complex<double> type;
-  enum { size = 1, alignment = Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false };
+  static constexpr int size = 1, alignment = Aligned16;
+  static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false;
   typedef Packet1cd half;
 };
 

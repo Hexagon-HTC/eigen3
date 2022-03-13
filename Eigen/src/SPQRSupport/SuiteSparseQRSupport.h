@@ -70,10 +70,9 @@ class SPQR : public SparseSolverBase<SPQR<MatrixType_> >
     typedef SuiteSparse_long StorageIndex ;
     typedef SparseMatrix<Scalar, ColMajor, StorageIndex> MatrixType;
     typedef Map<PermutationMatrix<Dynamic, Dynamic, StorageIndex> > PermutationType;
-    enum {
+    static constexpr int
       ColsAtCompileTime = Dynamic,
-      MaxColsAtCompileTime = Dynamic
-    };
+      MaxColsAtCompileTime = Dynamic;
   public:
     SPQR() 
       : m_analysisIsOk(false),

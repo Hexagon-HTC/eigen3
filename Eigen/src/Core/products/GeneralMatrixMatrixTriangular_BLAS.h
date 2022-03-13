@@ -77,11 +77,11 @@ EIGEN_BLAS_RANKUPDATE_SPECIALIZE(float)
 #define EIGEN_BLAS_RANKUPDATE_R(EIGTYPE, BLASTYPE, BLASFUNC) \
 template <typename Index, int AStorageOrder, bool ConjugateA, int  UpLo> \
 struct general_matrix_matrix_rankupdate<Index,EIGTYPE,AStorageOrder,ConjugateA,ColMajor,UpLo> { \
-  enum { \
+  static constexpr bool \
     IsLower = (UpLo&Lower) == Lower, \
-    LowUp = IsLower ? Lower : Upper, \
-    conjA = ((AStorageOrder==ColMajor) && ConjugateA) ? 1 : 0 \
-  }; \
+    conjA = ((AStorageOrder==ColMajor) && ConjugateA); \
+  static constexpr int \
+    LowUp = IsLower ? Lower : Upper; \
   static EIGEN_STRONG_INLINE void run(Index size, Index depth,const EIGTYPE* lhs, Index lhsStride, \
                           const EIGTYPE* /*rhs*/, Index /*rhsStride*/, EIGTYPE* res, Index resStride, EIGTYPE alpha, level3_blocking<EIGTYPE, EIGTYPE>& /*blocking*/) \
   { \
@@ -98,11 +98,11 @@ struct general_matrix_matrix_rankupdate<Index,EIGTYPE,AStorageOrder,ConjugateA,C
 #define EIGEN_BLAS_RANKUPDATE_C(EIGTYPE, BLASTYPE, RTYPE, BLASFUNC) \
 template <typename Index, int AStorageOrder, bool ConjugateA, int  UpLo> \
 struct general_matrix_matrix_rankupdate<Index,EIGTYPE,AStorageOrder,ConjugateA,ColMajor,UpLo> { \
-  enum { \
+  static constexpr bool \
     IsLower = (UpLo&Lower) == Lower, \
-    LowUp = IsLower ? Lower : Upper, \
-    conjA = (((AStorageOrder==ColMajor) && ConjugateA) || ((AStorageOrder==RowMajor) && !ConjugateA)) ? 1 : 0 \
-  }; \
+    conjA = (((AStorageOrder==ColMajor) && ConjugateA) || ((AStorageOrder==RowMajor) && !ConjugateA)); \
+  static constexpr int
+    LowUp = IsLower ? Lower : Upper; \
   static EIGEN_STRONG_INLINE void run(Index size, Index depth,const EIGTYPE* lhs, Index lhsStride, \
                           const EIGTYPE* /*rhs*/, Index /*rhsStride*/, EIGTYPE* res, Index resStride, EIGTYPE alpha, level3_blocking<EIGTYPE, EIGTYPE>& /*blocking*/) \
   { \

@@ -17,12 +17,12 @@ namespace internal {
 
 template <>
 struct type_casting_traits<float, numext::int32_t> {
-  enum { VectorizedCast = 1, SrcCoeffRatio = 1, TgtCoeffRatio = 1 };
+  static constexpr bool VectorizedCast = true; static constexpr int SrcCoeffRatio = 1, TgtCoeffRatio = 1;
 };
 
 template <>
 struct type_casting_traits<numext::int32_t, float> {
-  enum { VectorizedCast = 1, SrcCoeffRatio = 1, TgtCoeffRatio = 1 };
+  static constexpr bool VectorizedCast = true; static constexpr int SrcCoeffRatio = 1, TgtCoeffRatio = 1;
 };
 
 template <>

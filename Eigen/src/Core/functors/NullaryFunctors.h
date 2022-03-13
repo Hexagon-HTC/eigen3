@@ -27,8 +27,14 @@ struct scalar_constant_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_constant_op<Scalar> >
-{ enum { Cost = 0 /* as the constant value should be loaded in register only once for the whole expression */,
-         PacketAccess = packet_traits<Scalar>::Vectorizable, IsRepeatable = true }; };
+{
+  static constexpr int
+    Cost = 0; /* as the constant value should be loaded in register only once for the whole expression */
+
+  static constexpr bool
+    PacketAccess = packet_traits<Scalar>::Vectorizable,
+    IsRepeatable = true;
+};
 
 template<typename Scalar> struct scalar_identity_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_identity_op)
@@ -37,7 +43,14 @@ template<typename Scalar> struct scalar_identity_op {
 };
 template<typename Scalar>
 struct functor_traits<scalar_identity_op<Scalar> >
-{ enum { Cost = NumTraits<Scalar>::AddCost, PacketAccess = false, IsRepeatable = true }; };
+{
+  static constexpr int
+    Cost = NumTraits<Scalar>::AddCost;
+
+  static constexpr bool
+    PacketAccess = false,
+    IsRepeatable = true;
+};
 
 template <typename Scalar, bool IsInteger> struct linspaced_op_impl;
 
@@ -121,13 +134,13 @@ struct linspaced_op_impl<Scalar,/*IsInteger*/true>
 template <typename Scalar> struct linspaced_op;
 template <typename Scalar> struct functor_traits< linspaced_op<Scalar> >
 {
-  enum
-  {
-    Cost = 1,
+  static constexpr int
+    Cost = 1;
+
+  static constexpr bool
     PacketAccess =   (!NumTraits<Scalar>::IsInteger) && packet_traits<Scalar>::HasSetLinear && packet_traits<Scalar>::HasBlend,
                   /*&& ((!NumTraits<Scalar>::IsInteger) || packet_traits<Scalar>::HasDiv),*/ // <- vectorization for integer is currently disabled
-    IsRepeatable = true
-  };
+    IsRepeatable = true;
 };
 template <typename Scalar> struct linspaced_op
 {
@@ -150,38 +163,38 @@ template <typename Scalar> struct linspaced_op
 // If it exposes an operator()(i,j), then we assume the i and j coefficients are required independently
 // and linear access is not possible. In all other cases, linear access is enabled.
 // Users should not have to deal with this structure.
-template<typename Functor> struct functor_has_linear_access { enum { ret = !has_binary_operator<Functor>::value }; };
+template<typename Functor> struct functor_has_linear_access { static constexpr bool ret = !has_binary_operator<Functor>::value; };
 
 // For unreliable compilers, let's specialize the has_*ary_operator
 // helpers so that at least built-in nullary functors work fine.
 #if !( EIGEN_COMP_MSVC || EIGEN_COMP_GNUC || (EIGEN_COMP_ICC>=1600))
 template<typename Scalar,typename IndexType>
-struct has_nullary_operator<scalar_constant_op<Scalar>,IndexType> { enum { value = 1}; };
+struct has_nullary_operator<scalar_constant_op<Scalar>,IndexType> { static constexpr bool value = true; };
 template<typename Scalar,typename IndexType>
-struct has_unary_operator<scalar_constant_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_unary_operator<scalar_constant_op<Scalar>,IndexType> { static constexpr bool value = false; };
 template<typename Scalar,typename IndexType>
-struct has_binary_operator<scalar_constant_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_binary_operator<scalar_constant_op<Scalar>,IndexType> { static constexpr bool value = false; };
 
 template<typename Scalar,typename IndexType>
-struct has_nullary_operator<scalar_identity_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_nullary_operator<scalar_identity_op<Scalar>,IndexType> { static constexpr bool value = false; };
 template<typename Scalar,typename IndexType>
-struct has_unary_operator<scalar_identity_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_unary_operator<scalar_identity_op<Scalar>,IndexType> { static constexpr bool value = false; };
 template<typename Scalar,typename IndexType>
-struct has_binary_operator<scalar_identity_op<Scalar>,IndexType> { enum { value = 1}; };
+struct has_binary_operator<scalar_identity_op<Scalar>,IndexType> { static constexpr bool value = true; };
 
 template<typename Scalar,typename IndexType>
-struct has_nullary_operator<linspaced_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_nullary_operator<linspaced_op<Scalar>,IndexType> { static constexpr bool value = false; };
 template<typename Scalar,typename IndexType>
-struct has_unary_operator<linspaced_op<Scalar>,IndexType> { enum { value = 1}; };
+struct has_unary_operator<linspaced_op<Scalar>,IndexType> { static constexpr bool value = true; };
 template<typename Scalar,typename IndexType>
-struct has_binary_operator<linspaced_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_binary_operator<linspaced_op<Scalar>,IndexType> { static constexpr bool value = false; };
 
 template<typename Scalar,typename IndexType>
-struct has_nullary_operator<scalar_random_op<Scalar>,IndexType> { enum { value = 1}; };
+struct has_nullary_operator<scalar_random_op<Scalar>,IndexType> { static constexpr bool value = true; };
 template<typename Scalar,typename IndexType>
-struct has_unary_operator<scalar_random_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_unary_operator<scalar_random_op<Scalar>,IndexType> { static constexpr bool value = false; };
 template<typename Scalar,typename IndexType>
-struct has_binary_operator<scalar_random_op<Scalar>,IndexType> { enum { value = 0}; };
+struct has_binary_operator<scalar_random_op<Scalar>,IndexType> { static constexpr bool value = false; };
 #endif
 
 } // end namespace internal

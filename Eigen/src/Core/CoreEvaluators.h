@@ -84,7 +84,7 @@ struct evaluator_traits : public evaluator_traits_base<T>
 
 template<typename T, typename Shape = typename evaluator_traits<T>::Shape >
 struct evaluator_assume_aliasing {
-  static const bool value = false;
+  static constexpr bool value = false;
 };
 
 // By default, we assume a unary expression:
@@ -114,9 +114,7 @@ struct evaluator_base
   // TODO that's not very nice to have to propagate all these traits. They are currently only needed to handle outer,inner indices.
   typedef traits<ExpressionType> ExpressionTraits;
 
-  enum {
-    Alignment = 0
-  };
+  static constexpr int Alignment = 0;
   // noncopyable:
   // Don't make this class inherit noncopyable as this kills EBO (Empty Base Optimization)
   // and make complex evaluator much larger than then should do.
@@ -169,22 +167,22 @@ struct evaluator<PlainObjectBase<Derived> >
   typedef typename PlainObjectType::Scalar Scalar;
   typedef typename PlainObjectType::CoeffReturnType CoeffReturnType;
 
-  enum {
+  static constexpr bool
     IsRowMajor = PlainObjectType::IsRowMajor,
-    IsVectorAtCompileTime = PlainObjectType::IsVectorAtCompileTime,
+    IsVectorAtCompileTime = PlainObjectType::IsVectorAtCompileTime;
+  
+  static constexpr int
     RowsAtCompileTime = PlainObjectType::RowsAtCompileTime,
     ColsAtCompileTime = PlainObjectType::ColsAtCompileTime,
 
     CoeffReadCost = NumTraits<Scalar>::ReadCost,
     Flags = traits<Derived>::EvaluatorFlags,
-    Alignment = traits<Derived>::Alignment
-  };
-  enum {
+    Alignment = traits<Derived>::Alignment,
+
     // We do not need to know the outer stride for vectors
     OuterStrideAtCompileTime = IsVectorAtCompileTime  ? 0
                                                       : int(IsRowMajor) ? ColsAtCompileTime
-                                                                        : RowsAtCompileTime
-  };
+                                                                        : RowsAtCompileTime;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   evaluator()
@@ -309,11 +307,10 @@ struct unary_evaluator<Transpose<ArgType>, IndexBased>
 {
   typedef Transpose<ArgType> XprType;
 
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
     Flags = evaluator<ArgType>::Flags ^ RowMajorBit,
-    Alignment = evaluator<ArgType>::Alignment
-  };
+    Alignment = evaluator<ArgType>::Alignment;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit unary_evaluator(const XprType& t) : m_argImpl(t.nestedExpression()) {}
@@ -502,7 +499,7 @@ struct evaluator<CwiseNullaryOp<NullaryOp,PlainObjectType> >
   typedef CwiseNullaryOp<NullaryOp,PlainObjectType> XprType;
   typedef internal::remove_all_t<PlainObjectType> PlainObjectTypeCleaned;
 
-  enum {
+  static constexpr int
     CoeffReadCost = internal::functor_traits<NullaryOp>::Cost,
 
     Flags = (evaluator<PlainObjectTypeCleaned>::Flags
@@ -510,8 +507,7 @@ struct evaluator<CwiseNullaryOp<NullaryOp,PlainObjectType> >
               | (functor_has_linear_access<NullaryOp>::ret  ? LinearAccessBit : 0)
               | (functor_traits<NullaryOp>::PacketAccess    ? PacketAccessBit : 0)))
           | (functor_traits<NullaryOp>::IsRepeatable ? 0 : EvalBeforeNestingBit),
-    Alignment = AlignedMax
-  };
+    Alignment = AlignedMax;
 
   EIGEN_DEVICE_FUNC explicit evaluator(const XprType& n)
     : m_functor(n.functor()), m_wrapper()
@@ -562,13 +558,12 @@ struct unary_evaluator<CwiseUnaryOp<UnaryOp, ArgType>, IndexBased >
 {
   typedef CwiseUnaryOp<UnaryOp, ArgType> XprType;
 
-  enum {
+  static constexpr int
     CoeffReadCost = int(evaluator<ArgType>::CoeffReadCost) + int(functor_traits<UnaryOp>::Cost),
 
     Flags = evaluator<ArgType>::Flags
           & (HereditaryBits | LinearAccessBit | (functor_traits<UnaryOp>::PacketAccess ? PacketAccessBit : 0)),
-    Alignment = evaluator<ArgType>::Alignment
-  };
+    Alignment = evaluator<ArgType>::Alignment;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit unary_evaluator(const XprType& op) : m_d(op)
@@ -640,27 +635,27 @@ struct ternary_evaluator<CwiseTernaryOp<TernaryOp, Arg1, Arg2, Arg3>, IndexBased
 {
   typedef CwiseTernaryOp<TernaryOp, Arg1, Arg2, Arg3> XprType;
 
-  enum {
-    CoeffReadCost = int(evaluator<Arg1>::CoeffReadCost) + int(evaluator<Arg2>::CoeffReadCost) + int(evaluator<Arg3>::CoeffReadCost) + int(functor_traits<TernaryOp>::Cost),
+  static constexpr int
+    CoeffReadCost = evaluator<Arg1>::CoeffReadCost + evaluator<Arg2>::CoeffReadCost + evaluator<Arg3>::CoeffReadCost + functor_traits<TernaryOp>::Cost,
 
     Arg1Flags = evaluator<Arg1>::Flags,
     Arg2Flags = evaluator<Arg2>::Flags,
     Arg3Flags = evaluator<Arg3>::Flags,
-    SameType = is_same<typename Arg1::Scalar,typename Arg2::Scalar>::value && is_same<typename Arg1::Scalar,typename Arg3::Scalar>::value,
-    StorageOrdersAgree = (int(Arg1Flags)&RowMajorBit)==(int(Arg2Flags)&RowMajorBit) && (int(Arg1Flags)&RowMajorBit)==(int(Arg3Flags)&RowMajorBit),
-    Flags0 = (int(Arg1Flags) | int(Arg2Flags) | int(Arg3Flags)) & (
+    SameType = is_same<typename Arg1::Scalar,typename Arg2::Scalar>::value && is_same<typename Arg1::Scalar,typename Arg3::Scalar>::value;
+  static constexpr bool
+    StorageOrdersAgree = (Arg1Flags&RowMajorBit)==(Arg2Flags&RowMajorBit) && (Arg1Flags&RowMajorBit)==(Arg3Flags&RowMajorBit);
+  static constexpr int
+    Flags0 = (Arg1Flags | Arg2Flags | Arg3Flags) & (
         HereditaryBits
-        | (int(Arg1Flags) & int(Arg2Flags) & int(Arg3Flags) &
+        | (Arg1Flags & Arg2Flags & Arg3Flags &
            ( (StorageOrdersAgree ? LinearAccessBit : 0)
            | (functor_traits<TernaryOp>::PacketAccess && StorageOrdersAgree && SameType ? PacketAccessBit : 0)
            )
         )
      ),
     Flags = (Flags0 & ~RowMajorBit) | (Arg1Flags & RowMajorBit),
-    Alignment = plain_enum_min(
-            plain_enum_min(evaluator<Arg1>::Alignment, evaluator<Arg2>::Alignment),
-            evaluator<Arg3>::Alignment)
-  };
+    Alignment = (std::min)({evaluator<Arg1>::Alignment, evaluator<Arg2>::Alignment,
+            evaluator<Arg3>::Alignment});
 
   EIGEN_DEVICE_FUNC explicit ternary_evaluator(const XprType& xpr) : m_d(xpr)
   {
@@ -737,24 +732,25 @@ struct binary_evaluator<CwiseBinaryOp<BinaryOp, Lhs, Rhs>, IndexBased, IndexBase
 {
   typedef CwiseBinaryOp<BinaryOp, Lhs, Rhs> XprType;
 
-  enum {
-    CoeffReadCost = int(evaluator<Lhs>::CoeffReadCost) + int(evaluator<Rhs>::CoeffReadCost) + int(functor_traits<BinaryOp>::Cost),
+  static constexpr int
+    CoeffReadCost = evaluator<Lhs>::CoeffReadCost + evaluator<Rhs>::CoeffReadCost + functor_traits<BinaryOp>::Cost,
 
     LhsFlags = evaluator<Lhs>::Flags,
     RhsFlags = evaluator<Rhs>::Flags,
-    SameType = is_same<typename Lhs::Scalar,typename Rhs::Scalar>::value,
-    StorageOrdersAgree = (int(LhsFlags)&RowMajorBit)==(int(RhsFlags)&RowMajorBit),
-    Flags0 = (int(LhsFlags) | int(RhsFlags)) & (
+    SameType = is_same<typename Lhs::Scalar,typename Rhs::Scalar>::value;
+  static constexpr bool
+    StorageOrdersAgree = (LhsFlags&RowMajorBit)==(RhsFlags&RowMajorBit);
+  static constexpr int
+    Flags0 = (LhsFlags | RhsFlags) & (
         HereditaryBits
-      | (int(LhsFlags) & int(RhsFlags) &
+      | (LhsFlags & RhsFlags &
            ( (StorageOrdersAgree ? LinearAccessBit : 0)
            | (functor_traits<BinaryOp>::PacketAccess && StorageOrdersAgree && SameType ? PacketAccessBit : 0)
            )
         )
      ),
     Flags = (Flags0 & ~RowMajorBit) | (LhsFlags & RowMajorBit),
-    Alignment = plain_enum_min(evaluator<Lhs>::Alignment, evaluator<Rhs>::Alignment)
-  };
+    Alignment = (std::min)(evaluator<Lhs>::Alignment, evaluator<Rhs>::Alignment);
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit binary_evaluator(const XprType& xpr) : m_d(xpr)
@@ -818,13 +814,12 @@ struct unary_evaluator<CwiseUnaryView<UnaryOp, ArgType, StrideType>, IndexBased>
 {
   typedef CwiseUnaryView<UnaryOp, ArgType, StrideType> XprType;
 
-  enum {
-    CoeffReadCost = int(evaluator<ArgType>::CoeffReadCost) + int(functor_traits<UnaryOp>::Cost),
+  static constexpr int
+    CoeffReadCost = evaluator<ArgType>::CoeffReadCost + functor_traits<UnaryOp>::Cost,
 
     Flags = (evaluator<ArgType>::Flags & (HereditaryBits | LinearAccessBit | DirectAccessBit)),
 
-    Alignment = 0 // FIXME it is not very clear why alignment is necessarily lost...
-  };
+    Alignment = 0; // FIXME it is not very clear why alignment is necessarily lost...
 
   EIGEN_DEVICE_FUNC explicit unary_evaluator(const XprType& op) : m_d(op)
   {
@@ -890,11 +885,10 @@ struct mapbase_evaluator : evaluator_base<Derived>
   typedef typename XprType::Scalar Scalar;
   typedef typename XprType::CoeffReturnType CoeffReturnType;
 
-  enum {
+  static constexpr int
     IsRowMajor = XprType::RowsAtCompileTime,
     ColsAtCompileTime = XprType::ColsAtCompileTime,
-    CoeffReadCost = NumTraits<Scalar>::ReadCost
-  };
+    CoeffReadCost = NumTraits<Scalar>::ReadCost;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit mapbase_evaluator(const XprType& map)
@@ -985,24 +979,25 @@ struct evaluator<Map<PlainObjectType, MapOptions, StrideType> >
   // TODO: should check for smaller packet types once we can handle multi-sized packet types
   typedef typename packet_traits<Scalar>::type PacketScalar;
 
-  enum {
+  static constexpr int
     InnerStrideAtCompileTime = StrideType::InnerStrideAtCompileTime == 0
                              ? int(PlainObjectType::InnerStrideAtCompileTime)
                              : int(StrideType::InnerStrideAtCompileTime),
     OuterStrideAtCompileTime = StrideType::OuterStrideAtCompileTime == 0
                              ? int(PlainObjectType::OuterStrideAtCompileTime)
-                             : int(StrideType::OuterStrideAtCompileTime),
+                             : int(StrideType::OuterStrideAtCompileTime);
+  static constexpr bool
     HasNoInnerStride = InnerStrideAtCompileTime == 1,
     HasNoOuterStride = StrideType::OuterStrideAtCompileTime == 0,
     HasNoStride = HasNoInnerStride && HasNoOuterStride,
-    IsDynamicSize = PlainObjectType::SizeAtCompileTime==Dynamic,
+    IsDynamicSize = PlainObjectType::SizeAtCompileTime==Dynamic;
 
+  static constexpr int
     PacketAccessMask = bool(HasNoInnerStride) ? ~int(0) : ~int(PacketAccessBit),
     LinearAccessMask = bool(HasNoStride) || bool(PlainObjectType::IsVectorAtCompileTime) ? ~int(0) : ~int(LinearAccessBit),
-    Flags = int( evaluator<PlainObjectType>::Flags) & (LinearAccessMask&PacketAccessMask),
+    Flags = evaluator<PlainObjectType>::Flags & (LinearAccessMask&PacketAccessMask),
 
-    Alignment = int(MapOptions)&int(AlignedMask)
-  };
+    Alignment = int(MapOptions)&int(AlignedMask);
 
   EIGEN_DEVICE_FUNC explicit evaluator(const XprType& map)
     : mapbase_evaluator<XprType, PlainObjectType>(map)
@@ -1017,10 +1012,9 @@ struct evaluator<Ref<PlainObjectType, RefOptions, StrideType> >
 {
   typedef Ref<PlainObjectType, RefOptions, StrideType> XprType;
 
-  enum {
+  static constexpr int
     Flags = evaluator<Map<PlainObjectType, RefOptions, StrideType> >::Flags,
-    Alignment = evaluator<Map<PlainObjectType, RefOptions, StrideType> >::Alignment
-  };
+    Alignment = evaluator<Map<PlainObjectType, RefOptions, StrideType> >::Alignment;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit evaluator(const XprType& ref)
@@ -1042,20 +1036,21 @@ struct evaluator<Block<ArgType, BlockRows, BlockCols, InnerPanel> >
   // TODO: should check for smaller packet types once we can handle multi-sized packet types
   typedef typename packet_traits<Scalar>::type PacketScalar;
 
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
 
     RowsAtCompileTime = traits<XprType>::RowsAtCompileTime,
     ColsAtCompileTime = traits<XprType>::ColsAtCompileTime,
     MaxRowsAtCompileTime = traits<XprType>::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = traits<XprType>::MaxColsAtCompileTime,
-
-    ArgTypeIsRowMajor = (int(evaluator<ArgType>::Flags)&RowMajorBit) != 0,
+    MaxColsAtCompileTime = traits<XprType>::MaxColsAtCompileTime;
+  static constexpr bool
+    ArgTypeIsRowMajor = (evaluator<ArgType>::Flags&RowMajorBit) != 0,
     IsRowMajor = (MaxRowsAtCompileTime==1 && MaxColsAtCompileTime!=1) ? 1
                : (MaxColsAtCompileTime==1 && MaxRowsAtCompileTime!=1) ? 0
                : ArgTypeIsRowMajor,
-    HasSameStorageOrderAsArgType = (IsRowMajor == ArgTypeIsRowMajor),
-    InnerSize = IsRowMajor ? int(ColsAtCompileTime) : int(RowsAtCompileTime),
+    HasSameStorageOrderAsArgType = (IsRowMajor == ArgTypeIsRowMajor);
+  static constexpr int
+    InnerSize = IsRowMajor ? ColsAtCompileTime : RowsAtCompileTime,
     InnerStrideAtCompileTime = HasSameStorageOrderAsArgType
                              ? int(inner_stride_at_compile_time<ArgType>::ret)
                              : int(outer_stride_at_compile_time<ArgType>::ret),
@@ -1074,9 +1069,8 @@ struct evaluator<Block<ArgType, BlockRows, BlockCols, InnerPanel> >
     PacketAlignment = unpacket_traits<PacketScalar>::alignment,
     Alignment0 = (InnerPanel && (OuterStrideAtCompileTime!=Dynamic)
                              && (OuterStrideAtCompileTime!=0)
-                             && (((OuterStrideAtCompileTime * int(sizeof(Scalar))) % int(PacketAlignment)) == 0)) ? int(PacketAlignment) : 0,
-    Alignment = plain_enum_min(evaluator<ArgType>::Alignment, Alignment0)
-  };
+                             && (((OuterStrideAtCompileTime * sizeof(Scalar)) % PacketAlignment) == 0)) ? PacketAlignment : 0,
+    Alignment = (std::min)(evaluator<ArgType>::Alignment, Alignment0);
   typedef block_evaluator<ArgType, BlockRows, BlockCols, InnerPanel> block_evaluator_type;
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit evaluator(const XprType& block) : block_evaluator_type(block)
@@ -1115,10 +1109,10 @@ struct unary_evaluator<Block<ArgType, BlockRows, BlockCols, InnerPanel>, IndexBa
   typedef typename XprType::Scalar Scalar;
   typedef typename XprType::CoeffReturnType CoeffReturnType;
 
-  enum {
-    RowsAtCompileTime = XprType::RowsAtCompileTime,
-    ForwardLinearAccess = (InnerPanel || int(XprType::IsRowMajor)==int(ArgType::IsRowMajor)) && bool(evaluator<ArgType>::Flags&LinearAccessBit)
-  };
+  static constexpr int
+    RowsAtCompileTime = XprType::RowsAtCompileTime;
+  static constexpr bool
+    ForwardLinearAccess = (InnerPanel || XprType::IsRowMajor==ArgType::IsRowMajor) && bool(evaluator<ArgType>::Flags&LinearAccessBit);
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   CoeffReturnType coeff(Index row, Index col) const
@@ -1240,15 +1234,14 @@ struct evaluator<Select<ConditionMatrixType, ThenMatrixType, ElseMatrixType> >
   : evaluator_base<Select<ConditionMatrixType, ThenMatrixType, ElseMatrixType> >
 {
   typedef Select<ConditionMatrixType, ThenMatrixType, ElseMatrixType> XprType;
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ConditionMatrixType>::CoeffReadCost
-                  + plain_enum_max(evaluator<ThenMatrixType>::CoeffReadCost,
+                  + (std::max)(evaluator<ThenMatrixType>::CoeffReadCost,
                                              evaluator<ElseMatrixType>::CoeffReadCost),
 
     Flags = (unsigned int)evaluator<ThenMatrixType>::Flags & evaluator<ElseMatrixType>::Flags & HereditaryBits,
 
-    Alignment = plain_enum_min(evaluator<ThenMatrixType>::Alignment, evaluator<ElseMatrixType>::Alignment)
-  };
+    Alignment = (std::min)(evaluator<ThenMatrixType>::Alignment, evaluator<ElseMatrixType>::Alignment);
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit evaluator(const XprType& select)
@@ -1294,19 +1287,17 @@ struct unary_evaluator<Replicate<ArgType, RowFactor, ColFactor> >
 {
   typedef Replicate<ArgType, RowFactor, ColFactor> XprType;
   typedef typename XprType::CoeffReturnType CoeffReturnType;
-  enum {
-    Factor = (RowFactor==Dynamic || ColFactor==Dynamic) ? Dynamic : RowFactor*ColFactor
-  };
+  static constexpr int
+    Factor = (RowFactor==Dynamic || ColFactor==Dynamic) ? Dynamic : RowFactor*ColFactor;
   typedef typename internal::nested_eval<ArgType,Factor>::type ArgTypeNested;
   typedef internal::remove_all_t<ArgTypeNested> ArgTypeNestedCleaned;
 
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgTypeNestedCleaned>::CoeffReadCost,
     LinearAccessMask = XprType::IsVectorAtCompileTime ? LinearAccessBit : 0,
     Flags = (evaluator<ArgTypeNestedCleaned>::Flags & (HereditaryBits|LinearAccessMask) & ~RowMajorBit) | (traits<XprType>::Flags & RowMajorBit),
 
-    Alignment = evaluator<ArgTypeNestedCleaned>::Alignment
-  };
+    Alignment = evaluator<ArgTypeNestedCleaned>::Alignment;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit unary_evaluator(const XprType& replicate)
@@ -1383,11 +1374,10 @@ struct evaluator_wrapper_base
   : evaluator_base<XprType>
 {
   typedef remove_all_t<typename XprType::NestedExpressionType> ArgType;
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
     Flags = evaluator<ArgType>::Flags,
-    Alignment = evaluator<ArgType>::Alignment
-  };
+    Alignment = evaluator<ArgType>::Alignment;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit evaluator_wrapper_base(const ArgType& arg) : m_argImpl(arg) {}
@@ -1489,28 +1479,27 @@ struct unary_evaluator<Reverse<ArgType, Direction> >
   typedef typename XprType::Scalar Scalar;
   typedef typename XprType::CoeffReturnType CoeffReturnType;
 
-  enum {
+  static constexpr bool
     IsRowMajor = XprType::IsRowMajor,
     IsColMajor = !IsRowMajor,
     ReverseRow = (Direction == Vertical)   || (Direction == BothDirections),
     ReverseCol = (Direction == Horizontal) || (Direction == BothDirections),
     ReversePacket = (Direction == BothDirections)
                     || ((Direction == Vertical)   && IsColMajor)
-                    || ((Direction == Horizontal) && IsRowMajor),
-
+                    || ((Direction == Horizontal) && IsRowMajor);
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
 
     // let's enable LinearAccess only with vectorization because of the product overhead
     // FIXME enable DirectAccess with negative strides?
     Flags0 = evaluator<ArgType>::Flags,
-    LinearAccess = ( (Direction==BothDirections) && (int(Flags0)&PacketAccessBit) )
+    LinearAccess = ( (Direction==BothDirections) && (Flags0&PacketAccessBit) )
                   || ((ReverseRow && XprType::ColsAtCompileTime==1) || (ReverseCol && XprType::RowsAtCompileTime==1))
                  ? LinearAccessBit : 0,
 
     Flags = int(Flags0) & (HereditaryBits | PacketAccessBit | LinearAccess),
 
-    Alignment = 0 // FIXME in some rare cases, Alignment could be preserved, like a Vector4f.
-  };
+    Alignment = 0; // FIXME in some rare cases, Alignment could be preserved, like a Vector4f.
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit unary_evaluator(const XprType& reverse)
@@ -1549,11 +1538,10 @@ struct unary_evaluator<Reverse<ArgType, Direction> >
   EIGEN_STRONG_INLINE
   PacketType packet(Index row, Index col) const
   {
-    enum {
+    static constexpr int
       PacketSize = unpacket_traits<PacketType>::size,
       OffsetRow  = ReverseRow && IsColMajor ? PacketSize : 1,
-      OffsetCol  = ReverseCol && IsRowMajor ? PacketSize : 1
-    };
+      OffsetCol  = ReverseCol && IsRowMajor ? PacketSize : 1;
     typedef internal::reverse_packet_cond<PacketType,ReversePacket> reverse_packet;
     return reverse_packet::run(m_argImpl.template packet<LoadMode,PacketType>(
                                   ReverseRow ? m_rows.value() - row - OffsetRow : row,
@@ -1564,7 +1552,7 @@ struct unary_evaluator<Reverse<ArgType, Direction> >
   EIGEN_STRONG_INLINE
   PacketType packet(Index index) const
   {
-    enum { PacketSize = unpacket_traits<PacketType>::size };
+    static constexpr int PacketSize = unpacket_traits<PacketType>::size;
     return preverse(m_argImpl.template packet<LoadMode,PacketType>(m_rows.value() * m_cols.value() - index - PacketSize));
   }
 
@@ -1573,11 +1561,10 @@ struct unary_evaluator<Reverse<ArgType, Direction> >
   void writePacket(Index row, Index col, const PacketType& x)
   {
     // FIXME we could factorize some code with packet(i,j)
-    enum {
+    static constexpr int
       PacketSize = unpacket_traits<PacketType>::size,
       OffsetRow  = ReverseRow && IsColMajor ? PacketSize : 1,
-      OffsetCol  = ReverseCol && IsRowMajor ? PacketSize : 1
-    };
+      OffsetCol  = ReverseCol && IsRowMajor ? PacketSize : 1;
     typedef internal::reverse_packet_cond<PacketType,ReversePacket> reverse_packet;
     m_argImpl.template writePacket<LoadMode>(
                                   ReverseRow ? m_rows.value() - row - OffsetRow : row,
@@ -1589,7 +1576,7 @@ struct unary_evaluator<Reverse<ArgType, Direction> >
   EIGEN_STRONG_INLINE
   void writePacket(Index index, const PacketType& x)
   {
-    enum { PacketSize = unpacket_traits<PacketType>::size };
+    static constexpr int PacketSize = unpacket_traits<PacketType>::size;
     m_argImpl.template writePacket<LoadMode>
       (m_rows.value() * m_cols.value() - index - PacketSize, preverse(x));
   }
@@ -1612,13 +1599,12 @@ struct evaluator<Diagonal<ArgType, DiagIndex> >
 {
   typedef Diagonal<ArgType, DiagIndex> XprType;
 
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
 
     Flags = (unsigned int)(evaluator<ArgType>::Flags & (HereditaryBits | DirectAccessBit) & ~RowMajorBit) | LinearAccessBit,
 
-    Alignment = 0
-  };
+    Alignment = 0;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit evaluator(const XprType& diagonal)

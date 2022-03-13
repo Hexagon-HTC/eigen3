@@ -44,12 +44,11 @@ namespace internal {
 template <typename Index, int Mode, bool Conjugate, int TriStorageOrder> \
 struct triangular_solve_matrix<EIGTYPE,Index,OnTheLeft,Mode,Conjugate,TriStorageOrder,ColMajor,1> \
 { \
-  enum { \
+  static constexpr bool \
     IsLower = (Mode&Lower) == Lower, \
-    IsUnitDiag  = (Mode&UnitDiag) ? 1 : 0, \
-    IsZeroDiag  = (Mode&ZeroDiag) ? 1 : 0, \
-    conjA = ((TriStorageOrder==ColMajor) && Conjugate) ? 1 : 0 \
-  }; \
+    IsUnitDiag  = (Mode&UnitDiag) == UnitDiag, \
+    IsZeroDiag  = (Mode&ZeroDiag) == ZeroDiag, \
+    conjA = (TriStorageOrder==ColMajor) && Conjugate; \
   static void run( \
       Index size, Index otherSize, \
       const EIGTYPE* _tri, Index triStride, \
@@ -105,12 +104,11 @@ EIGEN_BLAS_TRSM_L(scomplex, float,  ctrsm_)
 template <typename Index, int Mode, bool Conjugate, int TriStorageOrder> \
 struct triangular_solve_matrix<EIGTYPE,Index,OnTheRight,Mode,Conjugate,TriStorageOrder,ColMajor,1> \
 { \
-  enum { \
+  static constexpr bool \
     IsLower = (Mode&Lower) == Lower, \
-    IsUnitDiag  = (Mode&UnitDiag) ? 1 : 0, \
-    IsZeroDiag  = (Mode&ZeroDiag) ? 1 : 0, \
-    conjA = ((TriStorageOrder==ColMajor) && Conjugate) ? 1 : 0 \
-  }; \
+    IsUnitDiag  = (Mode&UnitDiag) == UnitDiag, \
+    IsZeroDiag  = (Mode&ZeroDiag) == ZeroDiag, \
+    conjA = (TriStorageOrder==ColMajor) && Conjugate; \
   static void run( \
       Index size, Index otherSize, \
       const EIGTYPE* _tri, Index triStride, \

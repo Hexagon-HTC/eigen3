@@ -83,7 +83,7 @@ class inner_iterator_selector<XprType, IndexBased>
 protected:
   typedef evaluator<XprType> EvaluatorType;
   typedef typename traits<XprType>::Scalar Scalar;
-  enum { IsRowMajor = (XprType::Flags&RowMajorBit)==RowMajorBit };
+  static constexpr bool IsRowMajor = (XprType::Flags&RowMajorBit)==RowMajorBit;
   
 public:
   EIGEN_STRONG_INLINE inner_iterator_selector(const EvaluatorType &eval, const Index &outerId, const Index &innerSize)

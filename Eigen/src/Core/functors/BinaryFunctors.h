@@ -51,11 +51,11 @@ struct scalar_sum_op : binary_op_base<LhsScalar,RhsScalar>
 };
 template<typename LhsScalar,typename RhsScalar>
 struct functor_traits<scalar_sum_op<LhsScalar,RhsScalar> > {
-  enum {
-    Cost = (int(NumTraits<LhsScalar>::AddCost) + int(NumTraits<RhsScalar>::AddCost)) / 2, // rough estimate!
-    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasAdd && packet_traits<RhsScalar>::HasAdd
+  static constexpr int
+    Cost = (int(NumTraits<LhsScalar>::AddCost) + int(NumTraits<RhsScalar>::AddCost)) / 2; // rough estimate!
+  static constexpr bool
+    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasAdd && packet_traits<RhsScalar>::HasAdd;
     // TODO vectorize mixed sum
-  };
 };
 
 
@@ -89,11 +89,11 @@ struct scalar_product_op  : binary_op_base<LhsScalar,RhsScalar>
 };
 template<typename LhsScalar,typename RhsScalar>
 struct functor_traits<scalar_product_op<LhsScalar,RhsScalar> > {
-  enum {
-    Cost = (int(NumTraits<LhsScalar>::MulCost) + int(NumTraits<RhsScalar>::MulCost))/2, // rough estimate!
-    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasMul && packet_traits<RhsScalar>::HasMul
+  static constexpr int
+    Cost = (int(NumTraits<LhsScalar>::MulCost) + int(NumTraits<RhsScalar>::MulCost))/2; // rough estimate!
+  static constexpr bool
+    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasMul && packet_traits<RhsScalar>::HasMul;
     // TODO vectorize mixed product
-  };
 };
 
 template<>
@@ -109,9 +109,8 @@ template<typename LhsScalar,typename RhsScalar>
 struct scalar_conj_product_op  : binary_op_base<LhsScalar,RhsScalar>
 {
 
-  enum {
-    Conj = NumTraits<LhsScalar>::IsComplex
-  };
+  static constexpr bool
+    Conj = NumTraits<LhsScalar>::IsComplex;
 
   typedef typename ScalarBinaryOpTraits<LhsScalar,RhsScalar,scalar_conj_product_op>::ReturnType result_type;
 
@@ -125,10 +124,10 @@ struct scalar_conj_product_op  : binary_op_base<LhsScalar,RhsScalar>
 };
 template<typename LhsScalar,typename RhsScalar>
 struct functor_traits<scalar_conj_product_op<LhsScalar,RhsScalar> > {
-  enum {
-    Cost = NumTraits<LhsScalar>::MulCost,
-    PacketAccess = internal::is_same<LhsScalar, RhsScalar>::value && packet_traits<LhsScalar>::HasMul
-  };
+  static constexpr int
+    Cost = NumTraits<LhsScalar>::MulCost;
+  static constexpr bool
+    PacketAccess = internal::is_same<LhsScalar, RhsScalar>::value && packet_traits<LhsScalar>::HasMul;
 };
 
 /** \internal
@@ -158,10 +157,10 @@ struct scalar_min_op : binary_op_base<LhsScalar,RhsScalar>
 
 template<typename LhsScalar,typename RhsScalar, int NaNPropagation>
 struct functor_traits<scalar_min_op<LhsScalar,RhsScalar, NaNPropagation> > {
-  enum {
-    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2,
-    PacketAccess = internal::is_same<LhsScalar, RhsScalar>::value && packet_traits<LhsScalar>::HasMin
-  };
+  static constexpr int
+    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2;
+  static constexpr bool
+    PacketAccess = internal::is_same<LhsScalar, RhsScalar>::value && packet_traits<LhsScalar>::HasMin;
 };
 
 /** \internal
@@ -191,10 +190,10 @@ struct scalar_max_op : binary_op_base<LhsScalar,RhsScalar>
 
 template<typename LhsScalar,typename RhsScalar, int NaNPropagation>
 struct functor_traits<scalar_max_op<LhsScalar,RhsScalar, NaNPropagation> > {
-  enum {
-    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2,
-    PacketAccess = internal::is_same<LhsScalar, RhsScalar>::value && packet_traits<LhsScalar>::HasMax
-  };
+  static constexpr int
+    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2;
+  static constexpr bool
+    PacketAccess = internal::is_same<LhsScalar, RhsScalar>::value && packet_traits<LhsScalar>::HasMax;
 };
 
 /** \internal
@@ -205,14 +204,14 @@ template<typename LhsScalar, typename RhsScalar, ComparisonName cmp> struct scal
 
 template<typename LhsScalar, typename RhsScalar, ComparisonName cmp>
 struct functor_traits<scalar_cmp_op<LhsScalar,RhsScalar, cmp> > {
-  enum {
-    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2,
+  static constexpr int
+    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2;
+  static constexpr bool
     PacketAccess = is_same<LhsScalar, RhsScalar>::value &&
         packet_traits<LhsScalar>::HasCmp &&
         // Since return type is bool, we currently require the inputs
         // to be bool to enable packet access.
-        is_same<LhsScalar, bool>::value
-  };
+        is_same<LhsScalar, bool>::value;
 };
 
 template<ComparisonName Cmp, typename LhsScalar, typename RhsScalar>
@@ -353,16 +352,16 @@ struct scalar_pow_op  : binary_op_base<Scalar,Exponent>
 
 template<typename Scalar, typename Exponent>
 struct functor_traits<scalar_pow_op<Scalar,Exponent> > {
-  enum {
-    Cost = 5 * NumTraits<Scalar>::MulCost,
+  static constexpr int
+    Cost = 5 * NumTraits<Scalar>::MulCost;
+  static constexpr bool
     PacketAccess = (!NumTraits<Scalar>::IsComplex && !NumTraits<Scalar>::IsInteger &&
                     packet_traits<Scalar>::HasExp && packet_traits<Scalar>::HasLog &&
                     packet_traits<Scalar>::HasRound && packet_traits<Scalar>::HasCmp &&
                     // Temporarily disable packet access for half/bfloat16 until
                     // accuracy is improved.
                     !is_same<Scalar, half>::value && !is_same<Scalar, bfloat16>::value
-                    )
-  };
+                    );
 };
 
 //---------- non associative binary functors ----------
@@ -390,10 +389,10 @@ struct scalar_difference_op : binary_op_base<LhsScalar,RhsScalar>
 };
 template<typename LhsScalar,typename RhsScalar>
 struct functor_traits<scalar_difference_op<LhsScalar,RhsScalar> > {
-  enum {
-    Cost = (int(NumTraits<LhsScalar>::AddCost) + int(NumTraits<RhsScalar>::AddCost)) / 2,
-    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasSub && packet_traits<RhsScalar>::HasSub
-  };
+  static constexpr int
+    Cost = (int(NumTraits<LhsScalar>::AddCost) + int(NumTraits<RhsScalar>::AddCost)) / 2;
+  static constexpr bool
+    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasSub && packet_traits<RhsScalar>::HasSub;
 };
 
 /** \internal
@@ -420,10 +419,10 @@ struct scalar_quotient_op  : binary_op_base<LhsScalar,RhsScalar>
 template<typename LhsScalar,typename RhsScalar>
 struct functor_traits<scalar_quotient_op<LhsScalar,RhsScalar> > {
   typedef typename scalar_quotient_op<LhsScalar,RhsScalar>::result_type result_type;
-  enum {
-    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasDiv && packet_traits<RhsScalar>::HasDiv,
-    Cost = scalar_div_cost<result_type,PacketAccess>::value
-  };
+  static constexpr bool
+    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasDiv && packet_traits<RhsScalar>::HasDiv;
+  static constexpr int
+    Cost = scalar_div_cost<result_type,PacketAccess>::value;
 };
 
 
@@ -441,10 +440,10 @@ struct scalar_boolean_and_op {
   { return internal::pand(a,b); }
 };
 template<> struct functor_traits<scalar_boolean_and_op> {
-  enum {
-    Cost = NumTraits<bool>::AddCost,
-    PacketAccess = true
-  };
+  static constexpr int
+    Cost = NumTraits<bool>::AddCost;
+  static constexpr bool
+    PacketAccess = true;
 };
 
 /** \internal
@@ -460,10 +459,10 @@ struct scalar_boolean_or_op {
   { return internal::por(a,b); }
 };
 template<> struct functor_traits<scalar_boolean_or_op> {
-  enum {
-    Cost = NumTraits<bool>::AddCost,
-    PacketAccess = true
-  };
+  static constexpr int
+    Cost = NumTraits<bool>::AddCost;
+  static constexpr bool
+    PacketAccess = true;
 };
 
 /** \internal
@@ -479,10 +478,10 @@ struct scalar_boolean_xor_op {
   { return internal::pxor(a,b); }
 };
 template<> struct functor_traits<scalar_boolean_xor_op> {
-  enum {
-    Cost = NumTraits<bool>::AddCost,
-    PacketAccess = true
-  };
+  static constexpr int
+    Cost = NumTraits<bool>::AddCost;
+  static constexpr bool
+    PacketAccess = true;
 };
 
 /** \internal
@@ -509,10 +508,10 @@ struct scalar_absolute_difference_op : binary_op_base<LhsScalar,RhsScalar>
 };
 template<typename LhsScalar,typename RhsScalar>
 struct functor_traits<scalar_absolute_difference_op<LhsScalar,RhsScalar> > {
-  enum {
-    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2,
-    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasAbsDiff
-  };
+  static constexpr int
+    Cost = (NumTraits<LhsScalar>::AddCost+NumTraits<RhsScalar>::AddCost)/2;
+  static constexpr bool
+    PacketAccess = is_same<LhsScalar,RhsScalar>::value && packet_traits<LhsScalar>::HasAbsDiff;
 };
 
 

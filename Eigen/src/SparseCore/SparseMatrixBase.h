@@ -56,8 +56,7 @@ template<typename Derived> class SparseMatrixBase
     template<typename OtherDerived>
     Derived& operator=(const EigenBase<OtherDerived> &other);
 
-    enum {
-
+    static constexpr int
       RowsAtCompileTime = internal::traits<Derived>::RowsAtCompileTime,
         /**< The number of rows at compile-time. This is just a copy of the value provided
           * by the \a Derived type. If a value is not known at compile-time,
@@ -81,33 +80,37 @@ template<typename Derived> class SparseMatrixBase
       MaxColsAtCompileTime = ColsAtCompileTime,
 
       MaxSizeAtCompileTime = (internal::size_at_compile_time<MaxRowsAtCompileTime,
-                                                      MaxColsAtCompileTime>::ret),
+                                                      MaxColsAtCompileTime>::ret);
 
-      IsVectorAtCompileTime = RowsAtCompileTime == 1 || ColsAtCompileTime == 1,
+    static constexpr bool
+      IsVectorAtCompileTime = RowsAtCompileTime == 1 || ColsAtCompileTime == 1;
         /**< This is set to true if either the number of rows or the number of
           * columns is known at compile-time to be equal to 1. Indeed, in that case,
           * we are dealing with a column-vector (if there is only one column) or with
           * a row-vector (if there is only one row). */
 
-      NumDimensions = int(MaxSizeAtCompileTime) == 1 ? 0 : bool(IsVectorAtCompileTime) ? 1 : 2,
+    static constexpr int
+      NumDimensions = MaxSizeAtCompileTime == 1 ? 0 : IsVectorAtCompileTime ? 1 : 2,
         /**< This value is equal to Tensor::NumDimensions, i.e. 0 for scalars, 1 for vectors,
          * and 2 for matrices.
          */
 
-      Flags = internal::traits<Derived>::Flags,
+      Flags = internal::traits<Derived>::Flags;
         /**< This stores expression \ref flags flags which may or may not be inherited by new expressions
           * constructed from this one. See the \ref flags "list of flags".
           */
 
-      IsRowMajor = Flags&RowMajorBit ? 1 : 0,
-      
-      InnerSizeAtCompileTime = int(IsVectorAtCompileTime) ? int(SizeAtCompileTime)
-                             : int(IsRowMajor) ? int(ColsAtCompileTime) : int(RowsAtCompileTime),
+    static constexpr bool
+      IsRowMajor = (Flags&RowMajorBit) == RowMajorBit;
+
+    static constexpr int
+      InnerSizeAtCompileTime = IsVectorAtCompileTime ? SizeAtCompileTime
+                             : IsRowMajor ? ColsAtCompileTime : RowsAtCompileTime;
 
       #ifndef EIGEN_PARSED_BY_DOXYGEN
-      HasDirectAccess_ = (int(Flags)&DirectAccessBit) ? 1 : 0 // workaround sunCC
+    static constexpr bool
+      HasDirectAccess_ = (Flags&DirectAccessBit) == DirectAccessBit; // workaround sunCC
       #endif
-    };
 
     /** \internal the return type of MatrixBase::adjoint() */
     typedef std::conditional_t<NumTraits<Scalar>::IsComplex,

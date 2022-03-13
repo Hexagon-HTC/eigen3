@@ -23,11 +23,10 @@ template<typename Index, int Mode, typename LhsScalar, bool ConjLhs, typename Rh
 struct triangular_matrix_vector_product<Index,Mode,LhsScalar,ConjLhs,RhsScalar,ConjRhs,ColMajor,Version>
 {
   typedef typename ScalarBinaryOpTraits<LhsScalar, RhsScalar>::ReturnType ResScalar;
-  enum {
+  static constexpr bool
     IsLower = ((Mode&Lower)==Lower),
     HasUnitDiag = (Mode & UnitDiag)==UnitDiag,
-    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag
-  };
+    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag;
   static EIGEN_DONT_INLINE  void run(Index _rows, Index _cols, const LhsScalar* _lhs, Index lhsStride,
                                      const RhsScalar* _rhs, Index rhsIncr, ResScalar* _res, Index resIncr, const RhsScalar& alpha);
 };
@@ -94,11 +93,10 @@ template<typename Index, int Mode, typename LhsScalar, bool ConjLhs, typename Rh
 struct triangular_matrix_vector_product<Index,Mode,LhsScalar,ConjLhs,RhsScalar,ConjRhs,RowMajor,Version>
 {
   typedef typename ScalarBinaryOpTraits<LhsScalar, RhsScalar>::ReturnType ResScalar;
-  enum {
+  static constexpr bool
     IsLower = ((Mode&Lower)==Lower),
     HasUnitDiag = (Mode & UnitDiag)==UnitDiag,
-    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag
-  };
+    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag;
   static EIGEN_DONT_INLINE void run(Index _rows, Index _cols, const LhsScalar* _lhs, Index lhsStride,
                                     const RhsScalar* _rhs, Index rhsIncr, ResScalar* _res, Index resIncr, const ResScalar& alpha);
 };
@@ -226,13 +224,12 @@ template<int Mode> struct trmv_selector<Mode,ColMajor>
     RhsScalar rhs_alpha = RhsBlasTraits::extractScalarFactor(rhs);
     ResScalar actualAlpha = alpha * lhs_alpha * rhs_alpha;
 
-    enum {
+    static constexpr bool
       // FIXME find a way to allow an inner stride on the result if packet_traits<Scalar>::size==1
       // on, the other hand it is good for the cache to pack the vector anyways...
       EvalToDestAtCompileTime = Dest::InnerStrideAtCompileTime==1,
       ComplexByReal = (NumTraits<LhsScalar>::IsComplex) && (!NumTraits<RhsScalar>::IsComplex),
-      MightCannotUseDest = (Dest::InnerStrideAtCompileTime!=1) || ComplexByReal
-    };
+      MightCannotUseDest = (Dest::InnerStrideAtCompileTime!=1) || ComplexByReal;
 
     gemv_static_vector_if<ResScalar,Dest::SizeAtCompileTime,Dest::MaxSizeAtCompileTime,MightCannotUseDest> static_dest;
 
@@ -307,9 +304,8 @@ template<int Mode> struct trmv_selector<Mode,RowMajor>
     RhsScalar rhs_alpha = RhsBlasTraits::extractScalarFactor(rhs);
     ResScalar actualAlpha = alpha * lhs_alpha * rhs_alpha;
 
-    enum {
-      DirectlyUseRhs = ActualRhsTypeCleaned::InnerStrideAtCompileTime==1
-    };
+    static constexpr bool
+      DirectlyUseRhs = ActualRhsTypeCleaned::InnerStrideAtCompileTime==1;
 
     gemv_static_vector_if<RhsScalar,ActualRhsTypeCleaned::SizeAtCompileTime,ActualRhsTypeCleaned::MaxSizeAtCompileTime,!DirectlyUseRhs> static_rhs;
 

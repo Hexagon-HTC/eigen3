@@ -104,9 +104,8 @@ void assign_sparse_to_sparse(DstXprType &dst, const SrcXprType &src)
               (!((DstEvaluatorType::Flags & RowMajorBit) != (SrcEvaluatorType::Flags & RowMajorBit)))) &&
               "the transpose operation is supposed to be handled in SparseMatrix::operator=");
 
-    enum { Flip = (DstEvaluatorType::Flags & RowMajorBit) != (SrcEvaluatorType::Flags & RowMajorBit) };
+    static constexpr bool Flip = (DstEvaluatorType::Flags & RowMajorBit) != (SrcEvaluatorType::Flags & RowMajorBit);
 
-    
     DstXprType temp(src.rows(), src.cols());
 
     temp.reserve((std::min)(src.rows()*src.cols(), (std::max)(src.rows(),src.cols())*2));

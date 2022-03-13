@@ -52,7 +52,7 @@ struct traits<Reshaped<XprType, Rows, Cols, Order> > : traits<XprType>
   typedef typename traits<XprType>::Scalar Scalar;
   typedef typename traits<XprType>::StorageKind StorageKind;
   typedef typename traits<XprType>::XprKind XprKind;
-  enum{
+  static constexpr int
     MatrixRows = traits<XprType>::RowsAtCompileTime,
     MatrixCols = traits<XprType>::ColsAtCompileTime,
     RowsAtCompileTime = Rows,
@@ -64,16 +64,18 @@ struct traits<Reshaped<XprType, Rows, Cols, Order> > : traits<XprType>
                          : (ColsAtCompileTime == 1 && RowsAtCompileTime != 1) ? ColMajor
                          : XpxStorageOrder,
     HasSameStorageOrderAsXprType = (ReshapedStorageOrder == XpxStorageOrder),
-    InnerSize = (ReshapedStorageOrder==int(RowMajor)) ? int(ColsAtCompileTime) : int(RowsAtCompileTime),
+    InnerSize = (ReshapedStorageOrder==RowMajor) ? ColsAtCompileTime : RowsAtCompileTime,
     InnerStrideAtCompileTime = HasSameStorageOrderAsXprType
-                             ? int(inner_stride_at_compile_time<XprType>::ret)
+                             ? inner_stride_at_compile_time<XprType>::ret
                              : Dynamic,
-    OuterStrideAtCompileTime = Dynamic,
+    OuterStrideAtCompileTime = Dynamic;
 
+  static constexpr bool
     HasDirectAccess = internal::has_direct_access<XprType>::ret
-                    && (Order==int(XpxStorageOrder))
-                    && ((evaluator<XprType>::Flags&LinearAccessBit)==LinearAccessBit),
+                    && (Order==XpxStorageOrder)
+                    && ((evaluator<XprType>::Flags&LinearAccessBit)==LinearAccessBit);
 
+  static constexpr int
     MaskPacketAccessBit = (InnerSize == Dynamic || (InnerSize % packet_traits<Scalar>::size) == 0)
                        && (InnerStrideAtCompileTime == 1)
                         ? PacketAccessBit : 0,
@@ -84,8 +86,7 @@ struct traits<Reshaped<XprType, Rows, Cols, Order> > : traits<XprType>
     FlagsDirectAccessBit = HasDirectAccess ? DirectAccessBit : 0,
     Flags0 = traits<XprType>::Flags & ( (HereditaryBits & ~RowMajorBit) | MaskPacketAccessBit),
 
-    Flags = (Flags0 | FlagsLinearAccessBit | FlagsLvalueBit | FlagsRowMajorBit | FlagsDirectAccessBit)
-  };
+    Flags = (Flags0 | FlagsLinearAccessBit | FlagsLvalueBit | FlagsRowMajorBit | FlagsDirectAccessBit);
 };
 
 template<typename XprType, int Rows, int Cols, int Order, bool HasDirectAccess> class ReshapedImpl_dense;
@@ -271,7 +272,7 @@ struct evaluator<Reshaped<ArgType, Rows, Cols, Order> >
   // TODO: should check for smaller packet types
   typedef typename packet_traits<Scalar>::type PacketScalar;
 
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
     HasDirectAccess = traits<XprType>::HasDirectAccess,
 
@@ -292,8 +293,7 @@ struct evaluator<Reshaped<ArgType, Rows, Cols, Order> >
     Flags = Flags0 | FlagsLinearAccessBit | FlagsRowMajorBit | FlagsDirectAccessBit,
 
     PacketAlignment = unpacket_traits<PacketScalar>::alignment,
-    Alignment = evaluator<ArgType>::Alignment
-  };
+    Alignment = evaluator<ArgType>::Alignment;
   typedef reshaped_evaluator<ArgType, Rows, Cols, Order, HasDirectAccess> reshaped_evaluator_type;
   EIGEN_DEVICE_FUNC explicit evaluator(const XprType& xpr) : reshaped_evaluator_type(xpr)
   {
@@ -307,13 +307,12 @@ struct reshaped_evaluator<ArgType, Rows, Cols, Order, /* HasDirectAccess */ fals
 {
   typedef Reshaped<ArgType, Rows, Cols, Order> XprType;
 
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost /* TODO + cost of index computations */,
 
     Flags = (evaluator<ArgType>::Flags & (HereditaryBits /*| LinearAccessBit | DirectAccessBit*/)),
 
-    Alignment = 0
-  };
+    Alignment = 0;
 
   EIGEN_DEVICE_FUNC explicit reshaped_evaluator(const XprType& xpr) : m_argImpl(xpr.nestedExpression()), m_xpr(xpr)
   {
@@ -444,7 +443,7 @@ struct reshaped_evaluator<ArgType, Rows, Cols, Order, /* HasDirectAccess */ true
     : mapbase_evaluator<XprType, typename XprType::PlainObject>(xpr)
   {
     // TODO: for the 3.4 release, this should be turned to an internal assertion, but let's keep it as is for the beta lifetime
-    eigen_assert(((internal::UIntPtr(xpr.data()) % plain_enum_max(1, evaluator<XprType>::Alignment)) == 0) && "data is not aligned");
+    eigen_assert(((internal::UIntPtr(xpr.data()) % (std::max)(1, evaluator<XprType>::Alignment)) == 0) && "data is not aligned");
   }
 };
 

@@ -27,13 +27,13 @@ namespace Eigen {
 template<typename MatrixType, unsigned int Mode> class TriangularViewImpl<MatrixType,Mode,Sparse>
   : public SparseMatrixBase<TriangularView<MatrixType,Mode> >
 {
-    enum { SkipFirst = ((Mode&Lower) && !(MatrixType::Flags&RowMajorBit))
+    static constexpr bool
+           SkipFirst = ((Mode&Lower) && !(MatrixType::Flags&RowMajorBit))
                     || ((Mode&Upper) &&  (MatrixType::Flags&RowMajorBit)),
            SkipLast = !SkipFirst,
-           SkipDiag = (Mode&ZeroDiag) ? 1 : 0,
-           HasUnitDiag = (Mode&UnitDiag) ? 1 : 0
-    };
-    
+           SkipDiag = (Mode&ZeroDiag) == ZeroDiag,
+           HasUnitDiag = (Mode&UnitDiag) == UnitDiag;
+
     typedef TriangularView<MatrixType,Mode> TriangularViewType;
     
   protected:
@@ -79,20 +79,19 @@ protected:
   typedef typename XprType::StorageIndex StorageIndex;
   typedef typename evaluator<ArgType>::InnerIterator EvalIterator;
   
-  enum { SkipFirst = ((Mode&Lower) && !(ArgType::Flags&RowMajorBit))
+  static constexpr bool
+         SkipFirst = ((Mode&Lower) && !(ArgType::Flags&RowMajorBit))
                     || ((Mode&Upper) &&  (ArgType::Flags&RowMajorBit)),
          SkipLast = !SkipFirst,
-         SkipDiag = (Mode&ZeroDiag) ? 1 : 0,
-         HasUnitDiag = (Mode&UnitDiag) ? 1 : 0
-  };
-  
+         SkipDiag = (Mode&ZeroDiag) == ZeroDiag,
+         HasUnitDiag = (Mode&UnitDiag) == UnitDiag;
+
 public:
-  
-  enum {
+
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
-    Flags = XprType::Flags
-  };
-    
+    Flags = XprType::Flags;
+
   explicit unary_evaluator(const XprType &xpr) : m_argImpl(xpr.nestedExpression()), m_arg(xpr.nestedExpression()) {}
   
   inline Index nonZerosEstimate() const {

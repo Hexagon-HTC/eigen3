@@ -644,7 +644,7 @@ struct first_aligned_impl<Alignment, Derived, false>
 template<int Alignment, typename Derived>
 static inline Index first_aligned(const DenseBase<Derived>& m)
 {
-  enum { ReturnZero = (int(evaluator<Derived>::Alignment) >= Alignment) || !(Derived::Flags & DirectAccessBit) };
+  static constexpr bool ReturnZero = (evaluator<Derived>::Alignment >= Alignment) || !(Derived::Flags & DirectAccessBit);
   return first_aligned_impl<Alignment, Derived, ReturnZero>::run(m.derived());
 }
 
@@ -659,25 +659,25 @@ static inline Index first_default_aligned(const DenseBase<Derived>& m)
 template<typename Derived, bool HasDirectAccess = has_direct_access<Derived>::ret>
 struct inner_stride_at_compile_time
 {
-  enum { ret = traits<Derived>::InnerStrideAtCompileTime };
+  static constexpr int ret = traits<Derived>::InnerStrideAtCompileTime;
 };
 
 template<typename Derived>
 struct inner_stride_at_compile_time<Derived, false>
 {
-  enum { ret = 0 };
+  static constexpr int ret = 0;
 };
 
 template<typename Derived, bool HasDirectAccess = has_direct_access<Derived>::ret>
 struct outer_stride_at_compile_time
 {
-  enum { ret = traits<Derived>::OuterStrideAtCompileTime };
+  static constexpr int ret = traits<Derived>::OuterStrideAtCompileTime;
 };
 
 template<typename Derived>
 struct outer_stride_at_compile_time<Derived, false>
 {
-  enum { ret = 0 };
+  static constexpr int ret = 0;
 };
 
 } // end namespace internal

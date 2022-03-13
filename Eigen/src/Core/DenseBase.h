@@ -90,7 +90,7 @@ template<typename Derived> class DenseBase
     using Base::colStride;
     typedef typename Base::CoeffReturnType CoeffReturnType;
 
-    enum {
+    static constexpr int
 
       RowsAtCompileTime = internal::traits<Derived>::RowsAtCompileTime,
         /**< The number of rows at compile-time. This is just a copy of the value provided
@@ -134,7 +134,7 @@ template<typename Derived> class DenseBase
           */
 
       MaxSizeAtCompileTime = (internal::size_at_compile_time<internal::traits<Derived>::MaxRowsAtCompileTime,
-                                                      internal::traits<Derived>::MaxColsAtCompileTime>::ret),
+                                                      internal::traits<Derived>::MaxColsAtCompileTime>::ret);
         /**< This value is equal to the maximum possible number of coefficients that this expression
           * might have. If this expression might have an arbitrarily high number of coefficients,
           * this value is set to \a Dynamic.
@@ -144,36 +144,36 @@ template<typename Derived> class DenseBase
           *
           * \sa SizeAtCompileTime, MaxRowsAtCompileTime, MaxColsAtCompileTime
           */
-
+    static constexpr bool
       IsVectorAtCompileTime = internal::traits<Derived>::RowsAtCompileTime == 1
-                           || internal::traits<Derived>::ColsAtCompileTime == 1,
+                           || internal::traits<Derived>::ColsAtCompileTime == 1;
         /**< This is set to true if either the number of rows or the number of
           * columns is known at compile-time to be equal to 1. Indeed, in that case,
           * we are dealing with a column-vector (if there is only one column) or with
           * a row-vector (if there is only one row). */
-
-      NumDimensions = int(MaxSizeAtCompileTime) == 1 ? 0 : bool(IsVectorAtCompileTime) ? 1 : 2,
+    static constexpr int
+      NumDimensions = MaxSizeAtCompileTime == 1 ? 0 : IsVectorAtCompileTime ? 1 : 2;
         /**< This value is equal to Tensor::NumDimensions, i.e. 0 for scalars, 1 for vectors,
          * and 2 for matrices.
          */
-
-      Flags = internal::traits<Derived>::Flags,
+    static constexpr int
+      Flags = internal::traits<Derived>::Flags;
         /**< This stores expression \ref flags flags which may or may not be inherited by new expressions
           * constructed from this one. See the \ref flags "list of flags".
           */
+    static constexpr bool
+      IsRowMajor = int(Flags) & RowMajorBit; /**< True if this expression has row-major storage order. */
 
-      IsRowMajor = int(Flags) & RowMajorBit, /**< True if this expression has row-major storage order. */
-
-      InnerSizeAtCompileTime = int(IsVectorAtCompileTime) ? int(SizeAtCompileTime)
-                             : int(IsRowMajor) ? int(ColsAtCompileTime) : int(RowsAtCompileTime),
+    static constexpr int
+      InnerSizeAtCompileTime = IsVectorAtCompileTime ? SizeAtCompileTime
+                             : IsRowMajor ? ColsAtCompileTime : RowsAtCompileTime,
 
       InnerStrideAtCompileTime = internal::inner_stride_at_compile_time<Derived>::ret,
-      OuterStrideAtCompileTime = internal::outer_stride_at_compile_time<Derived>::ret
-    };
+      OuterStrideAtCompileTime = internal::outer_stride_at_compile_time<Derived>::ret;
 
     typedef typename internal::find_best_packet<Scalar,SizeAtCompileTime>::type PacketScalar;
 
-    enum { IsPlainObjectBase = 0 };
+    static constexpr int IsPlainObjectBase = 0;
 
     /** The plain matrix type corresponding to this expression.
       * \sa PlainObject */
@@ -213,7 +213,7 @@ template<typename Derived> class DenseBase
     Index outerSize() const
     {
       return IsVectorAtCompileTime ? 1
-           : int(IsRowMajor) ? this->rows() : this->cols();
+           : IsRowMajor ? this->rows() : this->cols();
     }
 
     /** \returns the inner size.
@@ -225,7 +225,7 @@ template<typename Derived> class DenseBase
     Index innerSize() const
     {
       return IsVectorAtCompileTime ? this->size()
-           : int(IsRowMajor) ? this->cols() : this->rows();
+           : IsRowMajor ? this->cols() : this->rows();
     }
 
     /** Only plain matrices/arrays, not expressions, may be resized; therefore the only useful resize methods are

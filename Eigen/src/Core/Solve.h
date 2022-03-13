@@ -51,10 +51,9 @@ struct traits<Solve<Decomposition, RhsType> >
   typedef typename solve_traits<Decomposition,RhsType,typename internal::traits<RhsType>::StorageKind>::PlainObject PlainObject;
   typedef typename promote_index_type<typename Decomposition::StorageIndex, typename RhsType::StorageIndex>::type StorageIndex;
   typedef traits<PlainObject> BaseTraits;
-  enum {
+  static constexpr int
     Flags = BaseTraits::Flags & RowMajorBit,
-    CoeffReadCost = HugeCost
-  };
+    CoeffReadCost = HugeCost;
 };
 
 }
@@ -120,7 +119,7 @@ struct evaluator<Solve<Decomposition,RhsType> >
   typedef typename SolveType::PlainObject PlainObject;
   typedef evaluator<PlainObject> Base;
 
-  enum { Flags = Base::Flags | EvalBeforeNestingBit };
+  static constexpr int Flags = Base::Flags | EvalBeforeNestingBit;
 
   EIGEN_DEVICE_FUNC explicit evaluator(const SolveType& solve)
     : m_result(solve.rows(), solve.cols())

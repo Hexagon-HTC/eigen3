@@ -31,7 +31,7 @@ template<typename Derived, int Dim_>
 class RotationBase
 {
   public:
-    enum { Dim = Dim_ };
+    static constexpr int Dim = Dim_;
     /** the scalar type of the coefficients */
     typedef typename internal::traits<Derived>::Scalar Scalar;
 
@@ -102,7 +102,7 @@ namespace internal {
 template<typename RotationDerived, typename MatrixType>
 struct rotation_base_generic_product_selector<RotationDerived,MatrixType,false>
 {
-  enum { Dim = RotationDerived::Dim };
+  static constexpr int Dim = RotationDerived::Dim;
   typedef Matrix<typename RotationDerived::Scalar,Dim,Dim> ReturnType;
   EIGEN_DEVICE_FUNC static inline ReturnType run(const RotationDerived& r, const MatrixType& m)
   { return r.toRotationMatrix() * m; }
@@ -123,7 +123,7 @@ struct rotation_base_generic_product_selector< RotationDerived, DiagonalMatrix<S
 template<typename RotationDerived,typename OtherVectorType>
 struct rotation_base_generic_product_selector<RotationDerived,OtherVectorType,true>
 {
-  enum { Dim = RotationDerived::Dim };
+  static constexpr int Dim = RotationDerived::Dim;
   typedef Matrix<typename RotationDerived::Scalar,Dim,1> ReturnType;
   EIGEN_DEVICE_FUNC static EIGEN_STRONG_INLINE ReturnType run(const RotationDerived& r, const OtherVectorType& v)
   {

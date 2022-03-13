@@ -19,9 +19,8 @@ namespace internal {
 template<typename ExpressionType>
 struct traits<NestByValue<ExpressionType> > : public traits<ExpressionType>
 {
-  enum {
-    Flags = traits<ExpressionType>::Flags & ~NestByRefBit
-  };
+  static constexpr int
+    Flags = traits<ExpressionType>::Flags & ~NestByRefBit;
 };
 }
 

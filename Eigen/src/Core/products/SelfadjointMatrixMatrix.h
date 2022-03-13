@@ -49,11 +49,13 @@ struct symm_pack_lhs
   {
     typedef typename unpacket_traits<typename packet_traits<Scalar>::type>::half HalfPacket;
     typedef typename unpacket_traits<typename unpacket_traits<typename packet_traits<Scalar>::type>::half>::half QuarterPacket;
-    enum { PacketSize = packet_traits<Scalar>::size,
+    static constexpr int
+           PacketSize = packet_traits<Scalar>::size,
            HalfPacketSize = unpacket_traits<HalfPacket>::size,
-           QuarterPacketSize = unpacket_traits<QuarterPacket>::size,
-           HasHalf = (int)HalfPacketSize < (int)PacketSize,
-           HasQuarter = (int)QuarterPacketSize < (int)HalfPacketSize};
+           QuarterPacketSize = unpacket_traits<QuarterPacket>::size;
+    static constexpr bool
+           HasHalf = HalfPacketSize < PacketSize,
+           HasQuarter = QuarterPacketSize < HalfPacketSize;
 
     const_blas_data_mapper<Scalar,Index,StorageOrder> lhs(_lhs,lhsStride);
     Index count = 0;
@@ -102,7 +104,7 @@ struct symm_pack_lhs
 template<typename Scalar, typename Index, int nr, int StorageOrder>
 struct symm_pack_rhs
 {
-  enum { PacketSize = packet_traits<Scalar>::size };
+  static constexpr int PacketSize = packet_traits<Scalar>::size;
   void operator()(Scalar* blockB, const Scalar* _rhs, Index rhsStride, Index rows, Index cols, Index k2)
   {
     Index end_k = k2 + rows;
@@ -498,14 +500,13 @@ struct selfadjoint_product_impl<Lhs,LhsMode,false,Rhs,RhsMode,false>
   typedef typename LhsBlasTraits::DirectLinearAccessType ActualLhsType;
   typedef internal::blas_traits<Rhs> RhsBlasTraits;
   typedef typename RhsBlasTraits::DirectLinearAccessType ActualRhsType;
-  
-  enum {
+
+  static constexpr bool
     LhsIsUpper = (LhsMode&(Upper|Lower))==Upper,
     LhsIsSelfAdjoint = (LhsMode&SelfAdjoint)==SelfAdjoint,
     RhsIsUpper = (RhsMode&(Upper|Lower))==Upper,
-    RhsIsSelfAdjoint = (RhsMode&SelfAdjoint)==SelfAdjoint
-  };
-  
+    RhsIsSelfAdjoint = (RhsMode&SelfAdjoint)==SelfAdjoint;
+
   template<typename Dest>
   static void run(Dest &dst, const Lhs &a_lhs, const Rhs &a_rhs, const Scalar& alpha)
   {

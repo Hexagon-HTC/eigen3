@@ -62,10 +62,9 @@ public:
   ArithmeticSequence(FirstType first, SizeType size) : m_first(first), m_size(size) {}
   ArithmeticSequence(FirstType first, SizeType size, IncrType incr) : m_first(first), m_size(size), m_incr(incr) {}
 
-  enum {
+  static constexpr int
     SizeAtCompileTime = internal::get_fixed_value<SizeType>::value,
-    IncrAtCompileTime = internal::get_fixed_value<IncrType,DynamicIndex>::value
-  };
+    IncrAtCompileTime = internal::get_fixed_value<IncrType,DynamicIndex>::value;
 
   /** \returns the size, i.e., number of elements, of the sequence */
   Index size()  const { return m_size; }
@@ -217,7 +216,7 @@ makeIndexedViewCompatible(const ArithmeticSequence<FirstType,SizeType,IncrType>&
 
 template<typename FirstType,typename SizeType,typename IncrType>
 struct get_compile_time_incr<ArithmeticSequence<FirstType,SizeType,IncrType> > {
-  enum { value = get_fixed_value<IncrType,DynamicIndex>::value };
+  static constexpr int value = get_fixed_value<IncrType,DynamicIndex>::value;
 };
 
 } // end namespace internal

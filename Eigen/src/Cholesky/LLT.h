@@ -22,7 +22,7 @@ template<typename MatrixType_, int UpLo_> struct traits<LLT<MatrixType_, UpLo_> 
   typedef MatrixXpr XprKind;
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 template<typename MatrixType, int UpLo> struct LLT_Traits;
@@ -74,15 +74,13 @@ template<typename MatrixType_, int UpLo_> class LLT
     friend class SolverBase<LLT>;
 
     EIGEN_GENERIC_PUBLIC_INTERFACE(LLT)
-    enum {
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+    static constexpr int
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
-    enum {
+    static constexpr int
       PacketSize = internal::packet_traits<Scalar>::size,
       AlignmentMask = int(PacketSize)-1,
-      UpLo = UpLo_
-    };
+      UpLo = UpLo_;
 
     typedef internal::LLT_Traits<MatrixType,UpLo> Traits;
 

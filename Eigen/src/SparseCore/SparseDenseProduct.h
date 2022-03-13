@@ -253,11 +253,10 @@ protected:
   typedef typename ProdXprType::Scalar Scalar;
   
 public:
-  enum {
+  static constexpr int
     Flags = NeedToTranspose ? RowMajorBit : 0,
-    CoeffReadCost = HugeCost
-  };
-  
+    CoeffReadCost = HugeCost;
+
   class InnerIterator : public LhsIterator
   {
   public:

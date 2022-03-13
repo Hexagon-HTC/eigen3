@@ -159,7 +159,7 @@ public:
 template<typename T>
 struct is_symbolic {
   // BaseExpr has no conversion ctor, so we only have to check whether T can be statically cast to its base class BaseExpr<T>.
-  enum { value = internal::is_convertible<T,BaseExpr<T> >::value };
+  static constexpr bool value = internal::is_convertible<T,BaseExpr<T> >::value;
 };
 
 /** Represents the actual value of a symbol identified by its tag

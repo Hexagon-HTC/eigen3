@@ -24,12 +24,11 @@ struct unary_evaluator<CwiseUnaryOp<UnaryOp,ArgType>, IteratorBased>
     typedef CwiseUnaryOp<UnaryOp, ArgType> XprType;
 
     class InnerIterator;
-    
-    enum {
-      CoeffReadCost = int(evaluator<ArgType>::CoeffReadCost) + int(functor_traits<UnaryOp>::Cost),
-      Flags = XprType::Flags
-    };
-    
+
+    static constexpr int
+      CoeffReadCost = evaluator<ArgType>::CoeffReadCost + functor_traits<UnaryOp>::Cost,
+      Flags = XprType::Flags;
+
     explicit unary_evaluator(const XprType& op) : m_functor(op.functor()), m_argImpl(op.nestedExpression())
     {
       EIGEN_INTERNAL_CHECK_COST_VALUE(functor_traits<UnaryOp>::Cost);
@@ -79,12 +78,11 @@ struct unary_evaluator<CwiseUnaryView<ViewOp,ArgType>, IteratorBased>
     typedef CwiseUnaryView<ViewOp, ArgType> XprType;
 
     class InnerIterator;
-    
-    enum {
-      CoeffReadCost = int(evaluator<ArgType>::CoeffReadCost) + int(functor_traits<ViewOp>::Cost),
-      Flags = XprType::Flags
-    };
-    
+
+    static constexpr int
+      CoeffReadCost = evaluator<ArgType>::CoeffReadCost + functor_traits<ViewOp>::Cost,
+      Flags = XprType::Flags;
+
     explicit unary_evaluator(const XprType& op) : m_functor(op.functor()), m_argImpl(op.nestedExpression())
     {
       EIGEN_INTERNAL_CHECK_COST_VALUE(functor_traits<ViewOp>::Cost);
