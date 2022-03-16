@@ -588,8 +588,7 @@ struct dense_assignment_loop<Kernel, SliceVectorizedTraversal, InnerUnrolling>
     static constexpr int
            innerSize = DstXprType::InnerSizeAtCompileTime,
            packetSize =unpacket_traits<PacketType>::size,
-           vectorizableSize = (innerSize / packetSize) * packetSize,
-           size = DstXprType::SizeAtCompileTime;
+           vectorizableSize = (innerSize / packetSize) * packetSize;
 
     for(Index outer = 0; outer < kernel.outerSize(); ++outer)
     {

@@ -145,7 +145,6 @@ struct redux_vec_unroller
   static EIGEN_STRONG_INLINE PacketType run(const Evaluator &eval, const Func& func)
   {
     static constexpr int
-      PacketSize = unpacket_traits<PacketType>::size,
       HalfLength = Length/2;
 
     return func.packetOp(

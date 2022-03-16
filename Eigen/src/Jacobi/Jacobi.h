@@ -345,8 +345,7 @@ struct apply_rotation_in_the_plane_selector<Scalar,OtherScalar,SizeAtCompileTime
   static inline void run(Scalar *x, Index incrx, Scalar *y, Index incry, Index size, OtherScalar c, OtherScalar s)
   {
     static constexpr int
-      PacketSize = packet_traits<Scalar>::size,
-      OtherPacketSize = packet_traits<OtherScalar>::size;
+      PacketSize = packet_traits<Scalar>::size;
     typedef typename packet_traits<Scalar>::type Packet;
     typedef typename packet_traits<OtherScalar>::type OtherPacket;
 
