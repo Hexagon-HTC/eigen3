@@ -25,9 +25,8 @@ struct traits<CwiseUnaryOp<UnaryOp, XprType> >
                    >::type Scalar;
   typedef typename XprType::Nested XprTypeNested;
   typedef std::remove_reference_t<XprTypeNested> XprTypeNested_;
-  enum {
-    Flags = XprTypeNested_::Flags & RowMajorBit
-  };
+  static constexpr int
+    Flags = XprTypeNested_::Flags & RowMajorBit;
 };
 }
 

@@ -22,9 +22,8 @@ struct traits<SparseView<MatrixType> > : traits<MatrixType>
 {
   typedef typename MatrixType::StorageIndex StorageIndex;
   typedef Sparse StorageKind;
-  enum {
-    Flags = int(traits<MatrixType>::Flags) & (RowMajorBit)
-  };
+  static constexpr int
+    Flags = (traits<MatrixType>::Flags & RowMajorBit) == RowMajorBit;
 };
 
 } // end namespace internal
@@ -123,12 +122,11 @@ struct unary_evaluator<SparseView<ArgType>, IteratorBased>
           }
         }
     };
-    
-    enum {
+
+    static constexpr int
       CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
-      Flags = XprType::Flags
-    };
-    
+      Flags = XprType::Flags;
+
     explicit unary_evaluator(const XprType& xpr) : m_argImpl(xpr.nestedExpression()), m_view(xpr) {}
 
   protected:
@@ -143,7 +141,7 @@ struct unary_evaluator<SparseView<ArgType>, IndexBased>
   public:
     typedef SparseView<ArgType> XprType;
   protected:
-    enum { IsRowMajor = (XprType::Flags&RowMajorBit)==RowMajorBit };
+    static constexpr bool IsRowMajor = (XprType::Flags&RowMajorBit)==RowMajorBit;
     typedef typename XprType::Scalar Scalar;
     typedef typename XprType::StorageIndex StorageIndex;
   public:
@@ -192,12 +190,11 @@ struct unary_evaluator<SparseView<ArgType>, IndexBased>
           }
         }
     };
-    
-    enum {
+
+    static constexpr int
       CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
-      Flags = XprType::Flags
-    };
-    
+      Flags = XprType::Flags;
+
     explicit unary_evaluator(const XprType& xpr) : m_argImpl(xpr.nestedExpression()), m_view(xpr) {}
 
   protected:

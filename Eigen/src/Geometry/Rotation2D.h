@@ -48,7 +48,7 @@ public:
 
   using Base::operator*;
 
-  enum { Dim = 2 };
+  static constexpr int Dim = 2;
   /** the scalar type of the coefficients */
   typedef Scalar_ Scalar;
   typedef Matrix<Scalar,2,1> Vector2;

@@ -23,10 +23,9 @@ template<typename MatrixType_> struct traits<PartialPivLU<MatrixType_> >
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
   typedef traits<MatrixType_> BaseTraits;
-  enum {
+  static constexpr int
     Flags = BaseTraits::Flags & RowMajorBit,
-    CoeffReadCost = Dynamic
-  };
+    CoeffReadCost = Dynamic;
 };
 
 template<typename T,typename Derived>
@@ -85,10 +84,9 @@ template<typename MatrixType_> class PartialPivLU
     friend class SolverBase<PartialPivLU>;
 
     EIGEN_GENERIC_PUBLIC_INTERFACE(PartialPivLU)
-    enum {
+    static constexpr int
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
     typedef PermutationMatrix<RowsAtCompileTime, MaxRowsAtCompileTime> PermutationType;
     typedef Transpositions<RowsAtCompileTime, MaxRowsAtCompileTime> TranspositionType;
     typedef typename MatrixType::PlainObject PlainObject;

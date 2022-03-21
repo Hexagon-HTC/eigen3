@@ -24,9 +24,8 @@ struct traits<Inverse<XprType> >
 {
   typedef typename XprType::PlainObject PlainObject;
   typedef traits<PlainObject> BaseTraits;
-  enum {
-    Flags = BaseTraits::Flags & RowMajorBit
-  };
+  static constexpr int
+    Flags = BaseTraits::Flags & RowMajorBit;
 };
 
 } // end namespace internal
@@ -99,7 +98,7 @@ struct unary_evaluator<Inverse<ArgType> >
   typedef typename InverseType::PlainObject PlainObject;
   typedef evaluator<PlainObject> Base;
 
-  enum { Flags = Base::Flags | EvalBeforeNestingBit };
+  static constexpr int Flags = Base::Flags | EvalBeforeNestingBit;
 
   unary_evaluator(const InverseType& inv_xpr)
     : m_result(inv_xpr.rows(), inv_xpr.cols())

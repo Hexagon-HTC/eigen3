@@ -36,13 +36,13 @@ private:
 
 public:
   static MatrixType ms_from;
-  enum { value = sizeof(test<MatrixType>(ms_from, 0))==sizeof(yes) };
+  static constexpr bool value = sizeof(test<MatrixType>(ms_from, 0))==sizeof(yes);
 };
 
 template<typename MatrixType>
 struct is_ref_compatible
 {
-  enum { value = is_ref_compatible_impl<remove_all_t<MatrixType>>::value };
+  static constexpr bool value = is_ref_compatible_impl<remove_all_t<MatrixType>>::value;
 };
 
 template<typename MatrixType, bool MatrixFree = !internal::is_ref_compatible<MatrixType>::value>
@@ -58,9 +58,8 @@ public:
     typedef typename ActualMatrixType::template ConstSelfAdjointViewReturnType<UpLo>::Type Type;
   };
 
-  enum {
-    MatrixFree = false
-  };
+  static constexpr bool
+    MatrixFree = false;
 
   generic_matrix_wrapper()
     : m_dummy(0,0), m_matrix(m_dummy)
@@ -108,9 +107,8 @@ public:
     typedef ActualMatrixType Type;
   };
 
-  enum {
-    MatrixFree = true
-  };
+  static constexpr bool
+    MatrixFree = true;
 
   generic_matrix_wrapper()
     : mp_matrix(0)
@@ -155,10 +153,9 @@ public:
   typedef typename MatrixType::StorageIndex StorageIndex;
   typedef typename MatrixType::RealScalar RealScalar;
 
-  enum {
+  static constexpr int
     ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-    MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-  };
+    MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
 public:
 

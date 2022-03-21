@@ -411,15 +411,14 @@ template<typename Derived> class MatrixBase
     inline Matrix<Scalar,3,1> eulerAngles(Index a0, Index a1, Index a2) const;
 
     // put this as separate enum value to work around possible GCC 4.3 bug (?)
-    enum { HomogeneousReturnTypeDirection = ColsAtCompileTime==1&&RowsAtCompileTime==1 ? ((internal::traits<Derived>::Flags&RowMajorBit)==RowMajorBit ? Horizontal : Vertical)
-                                          : ColsAtCompileTime==1 ? Vertical : Horizontal };
+    static constexpr int HomogeneousReturnTypeDirection = ColsAtCompileTime==1&&RowsAtCompileTime==1 ? ((internal::traits<Derived>::Flags&RowMajorBit)==RowMajorBit ? Horizontal : Vertical)
+                                          : ColsAtCompileTime==1 ? Vertical : Horizontal;
     typedef Homogeneous<Derived, HomogeneousReturnTypeDirection> HomogeneousReturnType;
     EIGEN_DEVICE_FUNC
     inline HomogeneousReturnType homogeneous() const;
 
-    enum {
-      SizeMinusOne = SizeAtCompileTime==Dynamic ? Dynamic : SizeAtCompileTime-1
-    };
+    static constexpr int
+      SizeMinusOne = SizeAtCompileTime==Dynamic ? Dynamic : SizeAtCompileTime-1;
     typedef Block<const Derived,
                   internal::traits<Derived>::ColsAtCompileTime==1 ? SizeMinusOne : 1,
                   internal::traits<Derived>::ColsAtCompileTime==1 ? 1 : SizeMinusOne> ConstStartMinusOne;

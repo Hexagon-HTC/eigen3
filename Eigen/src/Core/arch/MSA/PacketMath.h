@@ -76,54 +76,56 @@ template <>
 struct packet_traits<float> : default_packet_traits {
   typedef Packet4f type;
   typedef Packet4f half;  // Packet2f intrinsics not implemented yet
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 4,
-    HasHalfPacket = 0,  // Packet2f intrinsics not implemented yet
+  static constexpr int
+    size = 4;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,  // Packet2f intrinsics not implemented yet
     // FIXME check the Has*
-    HasDiv = 1,
-    HasSin = EIGEN_FAST_MATH,
-    HasCos = EIGEN_FAST_MATH,
-    HasTanh = EIGEN_FAST_MATH,
-    HasErf = EIGEN_FAST_MATH,
-    HasLog = 1,
-    HasExp = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasRound = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasBlend = 1
-  };
+    HasDiv = true,
+    HasSin = bool(EIGEN_FAST_MATH),
+    HasCos = bool(EIGEN_FAST_MATH),
+    HasTanh = bool(EIGEN_FAST_MATH),
+    HasErf = bool(EIGEN_FAST_MATH),
+    HasLog = true,
+    HasExp = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasRound = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasBlend = true;
 };
 
 template <>
 struct packet_traits<int32_t> : default_packet_traits {
   typedef Packet4i type;
   typedef Packet4i half;  // Packet2i intrinsics not implemented yet
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 4,
-    HasHalfPacket = 0,  // Packet2i intrinsics not implemented yet
+  static constexpr int
+    size = 4;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,  // Packet2i intrinsics not implemented yet
     // FIXME check the Has*
-    HasDiv = 1,
-    HasBlend = 1
-  };
+    HasDiv = true,
+    HasBlend = true;
 };
 
 template <>
 struct unpacket_traits<Packet4f> {
   typedef float type;
-  enum { size = 4, alignment = Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false };
+  static constexpr int size = 4, alignment = Aligned16;
+  static constexpr bool vectorizable = true, masked_load_available = false, masked_store_available = false;
   typedef Packet4f half;
 };
 
 template <>
 struct unpacket_traits<Packet4i> {
   typedef int32_t type;
-  enum { size = 4, alignment = Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false };
+  static constexpr int size = 4, alignment = Aligned16;
+  static constexpr bool vectorizable = true, masked_load_available = false, masked_store_available = false;
   typedef Packet4i half;
 };
 
@@ -846,27 +848,28 @@ template <>
 struct packet_traits<double> : default_packet_traits {
   typedef Packet2d type;
   typedef Packet2d half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 2,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 2;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
     // FIXME check the Has*
-    HasDiv = 1,
-    HasExp = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasRound = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasBlend = 1
-  };
+    HasDiv = true,
+    HasExp = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasRound = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasBlend = true;
 };
 
 template <>
 struct unpacket_traits<Packet2d> {
   typedef double type;
-  enum { size = 2, alignment = Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false };
+  static constexpr int size = 2, alignment = Aligned16;
+  static constexpr bool vectorizable = true, masked_load_available = false, masked_store_available = false;
   typedef Packet2d half;
 };
 

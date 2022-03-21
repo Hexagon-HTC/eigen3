@@ -76,10 +76,9 @@ class KLU : public SparseSolverBase<KLU<MatrixType_> >
     typedef SparseMatrix<Scalar> LUMatrixType;
     typedef SparseMatrix<Scalar,ColMajor,int> KLUMatrixType;
     typedef Ref<const KLUMatrixType, StandardCompressedFormat> KLUMatrixRef;
-    enum {
+    static constexpr int
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
   public:
 

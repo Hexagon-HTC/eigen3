@@ -23,12 +23,11 @@ struct traits<CwiseBinaryOp<BinaryOp, Lhs, Rhs> >
   // the potential to cause problems with MSVC
   typedef remove_all_t<Lhs> Ancestor;
   typedef typename traits<Ancestor>::XprKind XprKind;
-  enum {
+  static constexpr int
     RowsAtCompileTime = traits<Ancestor>::RowsAtCompileTime,
     ColsAtCompileTime = traits<Ancestor>::ColsAtCompileTime,
     MaxRowsAtCompileTime = traits<Ancestor>::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = traits<Ancestor>::MaxColsAtCompileTime
-  };
+    MaxColsAtCompileTime = traits<Ancestor>::MaxColsAtCompileTime;
 
   // even though we require Lhs and Rhs to have the same scalar type (see CwiseBinaryOp constructor),
   // we still want to handle the case when the result type is different.
@@ -47,9 +46,8 @@ struct traits<CwiseBinaryOp<BinaryOp, Lhs, Rhs> >
   typedef typename Rhs::Nested RhsNested;
   typedef std::remove_reference_t<LhsNested> LhsNested_;
   typedef std::remove_reference_t<RhsNested> RhsNested_;
-  enum {
-    Flags = cwise_promote_storage_order<typename traits<Lhs>::StorageKind,typename traits<Rhs>::StorageKind,LhsNested_::Flags & RowMajorBit,RhsNested_::Flags & RowMajorBit>::value
-  };
+  static constexpr int
+    Flags = cwise_promote_storage_order<typename traits<Lhs>::StorageKind,typename traits<Rhs>::StorageKind,LhsNested_::Flags & RowMajorBit,RhsNested_::Flags & RowMajorBit>::value;
 };
 } // end namespace internal
 

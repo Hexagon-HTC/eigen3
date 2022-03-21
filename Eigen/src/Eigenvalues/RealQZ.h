@@ -60,13 +60,12 @@ namespace Eigen {
   {
     public:
       typedef MatrixType_ MatrixType;
-      enum {
+      static constexpr int
         RowsAtCompileTime = MatrixType::RowsAtCompileTime,
         ColsAtCompileTime = MatrixType::ColsAtCompileTime,
         Options = MatrixType::Options,
         MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-        MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-      };
+        MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
       typedef typename MatrixType::Scalar Scalar;
       typedef std::complex<typename NumTraits<Scalar>::Real> ComplexScalar;
       typedef Eigen::Index Index; ///< \deprecated since Eigen 3.3

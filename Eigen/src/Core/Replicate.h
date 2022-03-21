@@ -24,7 +24,7 @@ struct traits<Replicate<MatrixType,RowFactor,ColFactor> >
   typedef typename traits<MatrixType>::XprKind XprKind;
   typedef typename ref_selector<MatrixType>::type MatrixTypeNested;
   typedef std::remove_reference_t<MatrixTypeNested> MatrixTypeNested_;
-  enum {
+  static constexpr int
     RowsAtCompileTime = RowFactor==Dynamic || int(MatrixType::RowsAtCompileTime)==Dynamic
                       ? Dynamic
                       : RowFactor * MatrixType::RowsAtCompileTime,
@@ -33,14 +33,15 @@ struct traits<Replicate<MatrixType,RowFactor,ColFactor> >
                       : ColFactor * MatrixType::ColsAtCompileTime,
    //FIXME we don't propagate the max sizes !!!
     MaxRowsAtCompileTime = RowsAtCompileTime,
-    MaxColsAtCompileTime = ColsAtCompileTime,
+    MaxColsAtCompileTime = ColsAtCompileTime;
+  static constexpr bool
     IsRowMajor = MaxRowsAtCompileTime==1 && MaxColsAtCompileTime!=1 ? 1
                : MaxColsAtCompileTime==1 && MaxRowsAtCompileTime!=1 ? 0
-               : (MatrixType::Flags & RowMajorBit) ? 1 : 0,
+               : (MatrixType::Flags & RowMajorBit) ? 1 : 0;
 
     // FIXME enable DirectAccess with negative strides?
-    Flags = IsRowMajor ? RowMajorBit : 0
-  };
+  static constexpr int
+    Flags = IsRowMajor ? RowMajorBit : 0;
 };
 }
 

@@ -22,7 +22,7 @@ template<typename MatrixType_> struct traits<ColPivHouseholderQR<MatrixType_> >
   typedef MatrixXpr XprKind;
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 } // end namespace internal
@@ -60,10 +60,9 @@ template<typename MatrixType_> class ColPivHouseholderQR
     friend class SolverBase<ColPivHouseholderQR>;
 
     EIGEN_GENERIC_PUBLIC_INTERFACE(ColPivHouseholderQR)
-    enum {
+    static constexpr int
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
     typedef typename internal::plain_diag_type<MatrixType>::type HCoeffsType;
     typedef PermutationMatrix<ColsAtCompileTime, MaxColsAtCompileTime> PermutationType;
     typedef typename internal::plain_row_type<MatrixType, Index>::type IntRowVectorType;

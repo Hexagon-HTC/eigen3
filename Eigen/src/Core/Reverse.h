@@ -27,13 +27,12 @@ struct traits<Reverse<MatrixType, Direction> >
   typedef typename traits<MatrixType>::XprKind XprKind;
   typedef typename ref_selector<MatrixType>::type MatrixTypeNested;
   typedef std::remove_reference_t<MatrixTypeNested> MatrixTypeNested_;
-  enum {
+  static constexpr int
     RowsAtCompileTime = MatrixType::RowsAtCompileTime,
     ColsAtCompileTime = MatrixType::ColsAtCompileTime,
     MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime,
-    Flags = MatrixTypeNested_::Flags & (RowMajorBit | LvalueBit)
-  };
+    Flags = MatrixTypeNested_::Flags & (RowMajorBit | LvalueBit);
 };
 
 template<typename PacketType, bool ReversePacket> struct reverse_packet_cond
@@ -73,17 +72,19 @@ template<typename MatrixType, int Direction> class Reverse
     using Base::IsRowMajor;
 
   protected:
-    enum {
-      PacketSize = internal::packet_traits<Scalar>::size,
+    static constexpr int
+      PacketSize = internal::packet_traits<Scalar>::size;
+    static constexpr bool
       IsColMajor = !IsRowMajor,
       ReverseRow = (Direction == Vertical)   || (Direction == BothDirections),
-      ReverseCol = (Direction == Horizontal) || (Direction == BothDirections),
+      ReverseCol = (Direction == Horizontal) || (Direction == BothDirections);
+    static constexpr int
       OffsetRow  = ReverseRow && IsColMajor ? PacketSize : 1,
-      OffsetCol  = ReverseCol && IsRowMajor ? PacketSize : 1,
+      OffsetCol  = ReverseCol && IsRowMajor ? PacketSize : 1;
+    static constexpr bool
       ReversePacket = (Direction == BothDirections)
                     || ((Direction == Vertical)   && IsColMajor)
-                    || ((Direction == Horizontal) && IsRowMajor)
-    };
+                    || ((Direction == Horizontal) && IsRowMajor);
     typedef internal::reverse_packet_cond<PacketScalar,ReversePacket> reverse_packet;
   public:
 

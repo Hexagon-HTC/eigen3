@@ -174,38 +174,38 @@ struct packet_traits<float> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 4,
-    HasHalfPacket = 1,
+    HasHalfPacket = true,
 
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = true,
+    HasAbs       = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasAbsDiff   = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false,
 
-    HasDiv   = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasRint = 1,
+    HasDiv   = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasRint = true,
 
     HasSin  = EIGEN_FAST_MATH,
     HasCos  = EIGEN_FAST_MATH,
-    HasLog  = 1,
-    HasExp  = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
+    HasLog  = true,
+    HasExp  = true,
+    HasSqrt = true,
+    HasRsqrt = true,
     HasTanh = EIGEN_FAST_MATH,
     HasErf  = EIGEN_FAST_MATH,
-    HasBessel = 0,  // Issues with accuracy.
-    HasNdtri = 0
+    HasBessel = false,  // Issues with accuracy.
+    HasNdtri = false
   };
 };
 
@@ -219,23 +219,23 @@ struct packet_traits<int8_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 16,
-    HasHalfPacket = 1,
+    HasHalfPacket = true,
 
-    HasCmp       = 1,
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasAbsDiff   = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0
+    HasCmp       = true,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = true,
+    HasAbs       = true,
+    HasAbsDiff   = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false
   };
 };
 
@@ -249,25 +249,25 @@ struct packet_traits<uint8_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 16,
-    HasHalfPacket = 1,
+    HasHalfPacket = true,
 
-    HasCmp       = 1,
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 0,
-    HasAbs       = 1,
-    HasAbsDiff   = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0,
+    HasCmp       = true,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = false,
+    HasAbs       = true,
+    HasAbsDiff   = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false,
 
-    HasSqrt = 1
+    HasSqrt = true
   };
 };
 
@@ -281,22 +281,22 @@ struct packet_traits<int16_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 8,
-    HasHalfPacket = 1,
+    HasHalfPacket = true,
 
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasAbsDiff   = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = true,
+    HasAbs       = true,
+    HasAbsDiff   = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false
   };
 };
 
@@ -310,23 +310,23 @@ struct packet_traits<uint16_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 8,
-    HasHalfPacket = 1,
+    HasHalfPacket = true,
 
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 0,
-    HasAbs       = 0,
-    HasAbsDiff   = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0,
-    HasSqrt = 1
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = false,
+    HasAbs       = false,
+    HasAbsDiff   = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false,
+    HasSqrt = true
   };
 };
 
@@ -340,22 +340,22 @@ struct packet_traits<int32_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 4,
-    HasHalfPacket = 1,
+    HasHalfPacket = true,
 
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = true,
+    HasAbs       = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasAbsDiff   = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false
   };
 };
 
@@ -369,24 +369,24 @@ struct packet_traits<uint32_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 4,
-    HasHalfPacket = 1,
+    HasHalfPacket = true,
 
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 0,
-    HasAbs       = 0,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = false,
+    HasAbs       = false,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasAbsDiff   = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false,
 
-    HasSqrt = 1
+    HasSqrt = true
   };
 };
 
@@ -400,23 +400,23 @@ struct packet_traits<int64_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 2,
-    HasHalfPacket = 0,
+    HasHalfPacket = false,
 
-    HasCmp       = 1,
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0
+    HasCmp       = true,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = true,
+    HasAbs       = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasAbsDiff   = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false
   };
 };
 
@@ -430,23 +430,23 @@ struct packet_traits<uint64_t> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 2,
-    HasHalfPacket = 0,
+    HasHalfPacket = false,
 
-    HasCmp       = 1,
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 0,
-    HasAbs       = 0,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0
+    HasCmp       = true,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = false,
+    HasAbs       = false,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasAbsDiff   = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false
   };
 };
 
@@ -3368,7 +3368,7 @@ template<> EIGEN_STRONG_INLINE Packet2f psqrt(const Packet2f& a) {
 // TODO: Guard if we have native bfloat16 support
 typedef eigen_packet_wrapper<uint16x4_t, 19> Packet4bf;
 
-template<> struct is_arithmetic<Packet4bf> { enum { value = true }; };
+template<> struct is_arithmetic<Packet4bf> { static constexpr bool value = true; };
 
 template<> struct packet_traits<bfloat16> : default_packet_traits
 {
@@ -3379,37 +3379,37 @@ template<> struct packet_traits<bfloat16> : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 4,
-    HasHalfPacket = 0,
+    HasHalfPacket = false,
 
-    HasCmp       = 1,
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0,
-    HasDiv       = 1,
-    HasFloor     = 1,
-    HasCeil      = 1,
-    HasRint      = 1,
+    HasCmp       = true,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = true,
+    HasAbs       = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasAbsDiff   = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false,
+    HasDiv       = true,
+    HasFloor     = true,
+    HasCeil      = true,
+    HasRint      = true,
 
     HasSin  = EIGEN_FAST_MATH,
     HasCos  = EIGEN_FAST_MATH,
-    HasLog  = 1,
-    HasExp  = 1,
-    HasSqrt = 0,
+    HasLog  = true,
+    HasExp  = true,
+    HasSqrt = false,
     HasTanh = EIGEN_FAST_MATH,
     HasErf  = EIGEN_FAST_MATH,
-    HasBessel = 0,  // Issues with accuracy.
-    HasNdtri = 0
+    HasBessel = false,  // Issues with accuracy.
+    HasNdtri = false
   };
 };
 
@@ -3736,37 +3736,37 @@ template<> struct packet_traits<double>  : default_packet_traits
     Vectorizable = 1,
     AlignedOnScalar = 1,
     size = 2,
-    HasHalfPacket = 0,
+    HasHalfPacket = false,
 
-    HasCmp       = 1,
-    HasAdd       = 1,
-    HasSub       = 1,
-    HasShift     = 1,
-    HasMul       = 1,
-    HasNegate    = 1,
-    HasAbs       = 1,
-    HasArg       = 0,
-    HasAbs2      = 1,
-    HasAbsDiff   = 1,
-    HasMin       = 1,
-    HasMax       = 1,
-    HasConj      = 1,
-    HasSetLinear = 0,
-    HasBlend     = 0,
+    HasCmp       = true,
+    HasAdd       = true,
+    HasSub       = true,
+    HasShift     = true,
+    HasMul       = true,
+    HasNegate    = true,
+    HasAbs       = true,
+    HasArg       = false,
+    HasAbs2      = true,
+    HasAbsDiff   = true,
+    HasMin       = true,
+    HasMax       = true,
+    HasConj      = true,
+    HasSetLinear = false,
+    HasBlend     = false,
 
-    HasDiv   = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasRint = 1,
+    HasDiv   = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasRint = true,
 
-    HasSin  = 0,
-    HasCos  = 0,
-    HasLog  = 1,
-    HasExp  = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasTanh = 0,
-    HasErf  = 0
+    HasSin  = false,
+    HasCos  = false,
+    HasLog  = true,
+    HasExp  = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasTanh = false,
+    HasErf  = false
   };
 };
 
@@ -3967,71 +3967,71 @@ template <>
 struct packet_traits<Eigen::half> : default_packet_traits {
   typedef Packet8hf type;
   typedef Packet4hf half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 8,
-    HasHalfPacket = 1,
+  static constexpr int
+    size = 8;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = true,
 
-    HasCmp = 1,
-    HasCast = 1,
-    HasAdd = 1,
-    HasSub = 1,
-    HasShift = 1,
-    HasMul = 1,
-    HasNegate = 1,
-    HasAbs = 1,
-    HasArg = 0,
-    HasAbs2 = 1,
-    HasAbsDiff = 0,
-    HasMin = 1,
-    HasMax = 1,
-    HasConj = 1,
-    HasSetLinear = 0,
-    HasBlend = 0,
-    HasInsert = 1,
-    HasReduxp = 1,
-    HasDiv = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasRint = 1,
-    HasSin = 0,
-    HasCos = 0,
-    HasLog = 0,
-    HasExp = 0,
+    HasCmp = true,
+    HasCast = true,
+    HasAdd = true,
+    HasSub = true,
+    HasShift = true,
+    HasMul = true,
+    HasNegate = true,
+    HasAbs = true,
+    HasArg = false,
+    HasAbs2 = true,
+    HasAbsDiff = false,
+    HasMin = true,
+    HasMax = true,
+    HasConj = true,
+    HasSetLinear = false,
+    HasBlend = false,
+    HasInsert = true,
+    HasReduxp = true,
+    HasDiv = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasRint = true,
+    HasSin = false,
+    HasCos = false,
+    HasLog = false,
+    HasExp = false,
     HasTanh = packet_traits<float>::HasTanh,  // tanh<half> calls tanh<float>
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasErf = EIGEN_FAST_MATH,
-    HasBessel = 0,  // Issues with accuracy.
-    HasNdtri = 0
-  };
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasErf = bool(EIGEN_FAST_MATH),
+    HasBessel = false,  // Issues with accuracy.
+    HasNdtri = false;
 };
 
 template <>
 struct unpacket_traits<Packet4hf> {
   typedef Eigen::half type;
   typedef Packet4hf half;
-  enum {
+  static constexpr int
     size = 4,
-    alignment = Aligned16,
+    alignment = Aligned16;
+  static constexpr bool
     vectorizable = true,
     masked_load_available = false,
-    masked_store_available = false
-  };
+    masked_store_available = false;
 };
 
 template <>
 struct unpacket_traits<Packet8hf> {
   typedef Eigen::half type;
   typedef Packet4hf half;
-  enum {
+  static constexpr int
     size = 8,
-    alignment = Aligned16,
+    alignment = Aligned16;
+  static constexpr bool
     vectorizable = true,
     masked_load_available = false,
-    masked_store_available = false
-  };
+    masked_store_available = false;
 };
 
 template<>

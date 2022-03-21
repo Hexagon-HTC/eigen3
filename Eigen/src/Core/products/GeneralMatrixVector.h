@@ -49,14 +49,14 @@ class gemv_traits
 #undef PACKET_DECL_COND_POSTFIX
 
 public:
-  enum {
-        Vectorizable = unpacket_traits<LhsPacket_>::vectorizable &&
-        unpacket_traits<RhsPacket_>::vectorizable &&
-        int(unpacket_traits<LhsPacket_>::size)==int(unpacket_traits<RhsPacket_>::size),
+  static constexpr bool
+        Vectorizable = unpacket_traits<LhsPacket_>::vectorizable
+          && unpacket_traits<RhsPacket_>::vectorizable
+          && unpacket_traits<LhsPacket_>::size==unpacket_traits<RhsPacket_>::size;
+  static constexpr int
         LhsPacketSize = Vectorizable ? unpacket_traits<LhsPacket_>::size : 1,
         RhsPacketSize = Vectorizable ? unpacket_traits<RhsPacket_>::size : 1,
-        ResPacketSize = Vectorizable ? unpacket_traits<ResPacket_>::size : 1
-  };
+        ResPacketSize = Vectorizable ? unpacket_traits<ResPacket_>::size : 1;
 
   typedef std::conditional_t<Vectorizable,LhsPacket_,LhsScalar> LhsPacket;
   typedef std::conditional_t<Vectorizable,RhsPacket_,RhsScalar> RhsPacket;
@@ -128,14 +128,15 @@ EIGEN_DEVICE_FUNC EIGEN_DONT_INLINE void general_matrix_vector_product<Index,Lhs
 
   const Index lhsStride = lhs.stride();
   // TODO: for padded aligned inputs, we could enable aligned reads
-  enum { LhsAlignment = Unaligned,
+  static constexpr int
+         LhsAlignment = Unaligned,
          ResPacketSize = Traits::ResPacketSize,
          ResPacketSizeHalf = HalfTraits::ResPacketSize,
          ResPacketSizeQuarter = QuarterTraits::ResPacketSize,
-         LhsPacketSize = Traits::LhsPacketSize,
-         HasHalf = (int)ResPacketSizeHalf < (int)ResPacketSize,
-         HasQuarter = (int)ResPacketSizeQuarter < (int)ResPacketSizeHalf
-  };
+         LhsPacketSize = Traits::LhsPacketSize;
+  static constexpr bool
+         HasHalf = ResPacketSizeHalf < ResPacketSize,
+         HasQuarter = ResPacketSizeQuarter < ResPacketSizeHalf;
 
   const Index n8 = rows-8*ResPacketSize+1;
   const Index n4 = rows-4*ResPacketSize+1;
@@ -350,16 +351,17 @@ EIGEN_DEVICE_FUNC EIGEN_DONT_INLINE void general_matrix_vector_product<Index,Lhs
   const Index n2 = rows-1;
 
   // TODO: for padded aligned inputs, we could enable aligned reads
-  enum { LhsAlignment = Unaligned,
+  static constexpr int
+         LhsAlignment = Unaligned,
          ResPacketSize = Traits::ResPacketSize,
          ResPacketSizeHalf = HalfTraits::ResPacketSize,
          ResPacketSizeQuarter = QuarterTraits::ResPacketSize,
          LhsPacketSize = Traits::LhsPacketSize,
          LhsPacketSizeHalf = HalfTraits::LhsPacketSize,
-         LhsPacketSizeQuarter = QuarterTraits::LhsPacketSize,
-         HasHalf = (int)ResPacketSizeHalf < (int)ResPacketSize,
-         HasQuarter = (int)ResPacketSizeQuarter < (int)ResPacketSizeHalf
-  };
+         LhsPacketSizeQuarter = QuarterTraits::LhsPacketSize;
+  static constexpr bool
+         HasHalf = ResPacketSizeHalf < ResPacketSize,
+         HasQuarter = ResPacketSizeQuarter < ResPacketSizeHalf;
 
   Index i=0;
   for(; i<n8; i+=8)

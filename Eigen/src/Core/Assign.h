@@ -21,9 +21,8 @@ template<typename OtherDerived>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Derived& DenseBase<Derived>
   ::lazyAssign(const DenseBase<OtherDerived>& other)
 {
-  enum{
-    SameType = internal::is_same<typename Derived::Scalar,typename OtherDerived::Scalar>::value
-  };
+  static constexpr bool
+    SameType = internal::is_same<typename Derived::Scalar,typename OtherDerived::Scalar>::value;
 
   EIGEN_STATIC_ASSERT_LVALUE(Derived)
   EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Derived,OtherDerived)

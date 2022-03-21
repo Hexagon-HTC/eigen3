@@ -841,12 +841,12 @@ enum {
 
 template<unsigned int n, int lower, int upper> struct meta_floor_log2_selector
 {
-  enum { middle = (lower + upper) / 2,
+  static constexpr int
+         middle = (lower + upper) / 2,
          value = (upper <= lower + 1) ? int(meta_floor_log2_terminate)
                : (n < (1 << middle)) ? int(meta_floor_log2_move_down)
                : (n==0) ? int(meta_floor_log2_bogus)
-               : int(meta_floor_log2_move_up)
-  };
+               : int(meta_floor_log2_move_up);
 };
 
 template<unsigned int n,
@@ -858,19 +858,19 @@ struct meta_floor_log2 {};
 template<unsigned int n, int lower, int upper>
 struct meta_floor_log2<n, lower, upper, meta_floor_log2_move_down>
 {
-  enum { value = meta_floor_log2<n, lower, meta_floor_log2_selector<n, lower, upper>::middle>::value };
+  static constexpr int value = meta_floor_log2<n, lower, meta_floor_log2_selector<n, lower, upper>::middle>::value;
 };
 
 template<unsigned int n, int lower, int upper>
 struct meta_floor_log2<n, lower, upper, meta_floor_log2_move_up>
 {
-  enum { value = meta_floor_log2<n, meta_floor_log2_selector<n, lower, upper>::middle, upper>::value };
+  static constexpr int value = meta_floor_log2<n, meta_floor_log2_selector<n, lower, upper>::middle, upper>::value;
 };
 
 template<unsigned int n, int lower, int upper>
 struct meta_floor_log2<n, lower, upper, meta_floor_log2_terminate>
 {
-  enum { value = (n >= ((unsigned int)(1) << (lower+1))) ? lower+1 : lower };
+  static constexpr int value = (n >= ((unsigned int)(1) << (lower+1))) ? lower+1 : lower;
 };
 
 template<unsigned int n, int lower, int upper>
@@ -914,11 +914,10 @@ struct random_default_impl<Scalar, false, true>
 #ifdef EIGEN_MAKING_DOCS
     return run(Scalar(NumTraits<Scalar>::IsSigned ? -10 : 0), Scalar(10));
 #else
-    enum { rand_bits = meta_floor_log2<(unsigned int)(RAND_MAX)+1>::value,
+    static constexpr int rand_bits = meta_floor_log2<(unsigned int)(RAND_MAX)+1>::value,
            scalar_bits = sizeof(Scalar) * CHAR_BIT,
-           shift = plain_enum_max(0, int(rand_bits) - int(scalar_bits)),
-           offset = NumTraits<Scalar>::IsSigned ? (1 << (plain_enum_min(rand_bits, scalar_bits)-1)) : 0
-    };
+           shift = (std::max)(0, rand_bits - scalar_bits),
+           offset = NumTraits<Scalar>::IsSigned ? (1 << ((std::min)(rand_bits, scalar_bits)-1)) : 0;
     return Scalar((std::rand() >> shift) - offset);
 #endif
   }

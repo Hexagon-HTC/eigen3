@@ -19,11 +19,11 @@ namespace internal {
 template<typename Derived, int UnrollCount, int InnerSize>
 struct all_unroller
 {
-  enum {
-    IsRowMajor = (int(Derived::Flags) & int(RowMajor)),
+  static constexpr bool
+    IsRowMajor = bool(Derived::Flags & RowMajorBit);
+  static constexpr int
     i = (UnrollCount-1) / InnerSize,
-    j = (UnrollCount-1) % InnerSize
-  };
+    j = (UnrollCount-1) % InnerSize;
 
   EIGEN_DEVICE_FUNC static inline bool run(const Derived &mat)
   {
@@ -46,11 +46,11 @@ struct all_unroller<Derived, Dynamic, InnerSize>
 template<typename Derived, int UnrollCount, int InnerSize>
 struct any_unroller
 {
-  enum {
-    IsRowMajor = (int(Derived::Flags) & int(RowMajor)),
+  static constexpr bool
+    IsRowMajor = bool(Derived::Flags & RowMajorBit);
+  static constexpr int
     i = (UnrollCount-1) / InnerSize,
-    j = (UnrollCount-1) % InnerSize
-  };
+    j = (UnrollCount-1) % InnerSize;
 
   EIGEN_DEVICE_FUNC static inline bool run(const Derived &mat)
   {
@@ -83,13 +83,12 @@ template<typename Derived>
 EIGEN_DEVICE_FUNC inline bool DenseBase<Derived>::all() const
 {
   typedef internal::evaluator<Derived> Evaluator;
-  enum {
+  static constexpr bool
     unroll = SizeAtCompileTime != Dynamic
-          && SizeAtCompileTime * (int(Evaluator::CoeffReadCost) + int(NumTraits<Scalar>::AddCost)) <= EIGEN_UNROLLING_LIMIT,
-  };
+          && SizeAtCompileTime * (Evaluator::CoeffReadCost + NumTraits<Scalar>::AddCost) <= EIGEN_UNROLLING_LIMIT;
   Evaluator evaluator(derived());
   if(unroll)
-    return internal::all_unroller<Evaluator, unroll ? int(SizeAtCompileTime) : Dynamic, InnerSizeAtCompileTime>::run(evaluator);
+    return internal::all_unroller<Evaluator, unroll ? SizeAtCompileTime : Dynamic, InnerSizeAtCompileTime>::run(evaluator);
   else
   {
     for(Index i = 0; i < derived().outerSize(); ++i)
@@ -107,10 +106,9 @@ template<typename Derived>
 EIGEN_DEVICE_FUNC inline bool DenseBase<Derived>::any() const
 {
   typedef internal::evaluator<Derived> Evaluator;
-  enum {
+  static constexpr bool
     unroll = SizeAtCompileTime != Dynamic
-          && SizeAtCompileTime * (int(Evaluator::CoeffReadCost) + int(NumTraits<Scalar>::AddCost)) <= EIGEN_UNROLLING_LIMIT,
-  };
+          && SizeAtCompileTime * (Evaluator::CoeffReadCost + NumTraits<Scalar>::AddCost) <= EIGEN_UNROLLING_LIMIT;
   Evaluator evaluator(derived());
   if(unroll)
     return internal::any_unroller<Evaluator, unroll ? int(SizeAtCompileTime) : Dynamic, InnerSizeAtCompileTime>::run(evaluator);

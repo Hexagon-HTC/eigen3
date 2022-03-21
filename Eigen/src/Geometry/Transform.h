@@ -21,13 +21,12 @@ namespace internal {
 template<typename Transform>
 struct transform_traits
 {
-  enum
-  {
+  static constexpr int
     Dim = Transform::Dim,
     HDim = Transform::HDim,
-    Mode = Transform::Mode,
-    IsProjective = (int(Mode)==int(Projective))
-  };
+    Mode = Transform::Mode;
+  static constexpr bool
+    IsProjective = Mode==Projective;
 };
 
 template< typename TransformType,
@@ -71,14 +70,13 @@ struct traits<Transform<Scalar_,Dim_,Mode_,Options_> >
   typedef Scalar_ Scalar;
   typedef Eigen::Index StorageIndex;
   typedef Dense StorageKind;
-  enum {
+  static constexpr int
     Dim1 = Dim_==Dynamic ? Dim_ : Dim_ + 1,
     RowsAtCompileTime = Mode_==Projective ? Dim1 : Dim_,
     ColsAtCompileTime = Dim1,
     MaxRowsAtCompileTime = RowsAtCompileTime,
     MaxColsAtCompileTime = ColsAtCompileTime,
-    Flags = 0
-  };
+    Flags = 0;
 };
 
 template<int Mode> struct transform_make_affine;
@@ -207,13 +205,12 @@ class Transform
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF_VECTORIZABLE_FIXED_SIZE(Scalar_,Dim_==Dynamic ? Dynamic : (Dim_+1)*(Dim_+1))
-  enum {
+  static constexpr int
     Mode = Mode_,
     Options = Options_,
     Dim = Dim_,     ///< space dimension in which the transformation holds
     HDim = Dim_+1,  ///< size of a respective homogeneous vector
-    Rows = int(Mode)==(AffineCompact) ? Dim : HDim
-  };
+    Rows = Mode==(AffineCompact) ? Dim : HDim;
   /** the scalar type of the coefficients */
   typedef Scalar_ Scalar;
   typedef Eigen::Index StorageIndex;
@@ -225,15 +222,15 @@ public:
   /** type of the matrix used to represent the linear part of the transformation */
   typedef Matrix<Scalar,Dim,Dim,Options> LinearMatrixType;
   /** type of read/write reference to the linear part of the transformation */
-  typedef Block<MatrixType,Dim,Dim,int(Mode)==(AffineCompact) && (int(Options)&RowMajor)==0> LinearPart;
+  typedef Block<MatrixType,Dim,Dim,Mode==(AffineCompact) && (Options&RowMajor)==0> LinearPart;
   /** type of read reference to the linear part of the transformation */
-  typedef const Block<ConstMatrixType,Dim,Dim,int(Mode)==(AffineCompact) && (int(Options)&RowMajor)==0> ConstLinearPart;
+  typedef const Block<ConstMatrixType,Dim,Dim,Mode==(AffineCompact) && (Options&RowMajor)==0> ConstLinearPart;
   /** type of read/write reference to the affine part of the transformation */
-  typedef std::conditional_t<int(Mode)==int(AffineCompact),
+  typedef std::conditional_t<Mode==AffineCompact,
                               MatrixType&,
                               Block<MatrixType,Dim,HDim> > AffinePart;
   /** type of read reference to the affine part of the transformation */
-  typedef std::conditional_t<int(Mode)==int(AffineCompact),
+  typedef std::conditional_t<Mode==AffineCompact,
                               const MatrixType&,
                               const Block<const MatrixType,Dim,HDim> > ConstAffinePart;
   /** type of a vector */
@@ -246,7 +243,7 @@ public:
   typedef Translation<Scalar,Dim> TranslationType;
 
   // this intermediate enum is needed to avoid an ICE with gcc 3.4 and 4.0
-  enum { TransformTimeDiagonalMode = ((Mode==int(Isometry))?Affine:int(Mode)) };
+  static constexpr int TransformTimeDiagonalMode = ((Mode==int(Isometry))?Affine:Mode);
   /** The return type of the product between a diagonal matrix and a transform */
   typedef Transform<Scalar,Dim,TransformTimeDiagonalMode> TransformTimeDiagonalReturnType;
 
@@ -327,9 +324,9 @@ public:
     EIGEN_STATIC_ASSERT(internal::check_implication(OtherMode==int(Affine)||OtherMode==int(AffineCompact), Mode!=int(Isometry)),
                         YOU_PERFORMED_AN_INVALID_TRANSFORMATION_CONVERSION)
 
-    enum { ModeIsAffineCompact = Mode == int(AffineCompact),
-           OtherModeIsAffineCompact = OtherMode == int(AffineCompact)
-    };
+    static constexpr bool
+      ModeIsAffineCompact = Mode == int(AffineCompact),
+      OtherModeIsAffineCompact = OtherMode == int(AffineCompact);
 
     if(EIGEN_CONST_CONDITIONAL(ModeIsAffineCompact == OtherModeIsAffineCompact))
     {
@@ -1325,14 +1322,12 @@ struct transform_construct_from_matrix<Other, AffineCompact,Options,Dim,HDim, HD
 template<int LhsMode,int RhsMode>
 struct transform_product_result
 {
-  enum
-  {
+  static constexpr int
     Mode =
-      (LhsMode == (int)Projective    || RhsMode == (int)Projective    ) ? Projective :
-      (LhsMode == (int)Affine        || RhsMode == (int)Affine        ) ? Affine :
-      (LhsMode == (int)AffineCompact || RhsMode == (int)AffineCompact ) ? AffineCompact :
-      (LhsMode == (int)Isometry      || RhsMode == (int)Isometry      ) ? Isometry : Projective
-  };
+      (LhsMode == Projective    || RhsMode == Projective    ) ? Projective :
+      (LhsMode == Affine        || RhsMode == Affine        ) ? Affine :
+      (LhsMode == AffineCompact || RhsMode == AffineCompact ) ? AffineCompact :
+      (LhsMode == Isometry      || RhsMode == Isometry      ) ? Isometry : Projective;
 };
 
 template< typename TransformType, typename MatrixType, int RhsCols>
@@ -1349,12 +1344,11 @@ struct transform_right_product_impl< TransformType, MatrixType, 0, RhsCols>
 template< typename TransformType, typename MatrixType, int RhsCols>
 struct transform_right_product_impl< TransformType, MatrixType, 1, RhsCols>
 {
-  enum {
+  static constexpr int
     Dim = TransformType::Dim,
     HDim = TransformType::HDim,
     OtherRows = MatrixType::RowsAtCompileTime,
-    OtherCols = MatrixType::ColsAtCompileTime
-  };
+    OtherCols = MatrixType::ColsAtCompileTime;
 
   typedef typename MatrixType::PlainObject ResultType;
 
@@ -1375,12 +1369,11 @@ struct transform_right_product_impl< TransformType, MatrixType, 1, RhsCols>
 template< typename TransformType, typename MatrixType, int RhsCols>
 struct transform_right_product_impl< TransformType, MatrixType, 2, RhsCols>
 {
-  enum {
+  static constexpr int
     Dim = TransformType::Dim,
     HDim = TransformType::HDim,
     OtherRows = MatrixType::RowsAtCompileTime,
-    OtherCols = MatrixType::ColsAtCompileTime
-  };
+    OtherCols = MatrixType::ColsAtCompileTime;
 
   typedef typename MatrixType::PlainObject ResultType;
 
@@ -1400,12 +1393,11 @@ template< typename TransformType, typename MatrixType >
 struct transform_right_product_impl< TransformType, MatrixType, 2, 1> // rhs is a vector of size Dim
 {
   typedef typename TransformType::MatrixType TransformMatrix;
-  enum {
+  static constexpr int
     Dim = TransformType::Dim,
     HDim = TransformType::HDim,
     OtherRows = MatrixType::RowsAtCompileTime,
-    WorkingRows = plain_enum_min(TransformMatrix::RowsAtCompileTime, HDim)
-  };
+    WorkingRows = (std::min)(TransformMatrix::RowsAtCompileTime, HDim);
 
   typedef typename MatrixType::PlainObject ResultType;
 
@@ -1508,7 +1500,7 @@ struct transform_left_product_impl<Other,Mode,Options,Dim,HDim, Dim,Dim>
 template<typename Scalar, int Dim, int LhsMode, int LhsOptions, int RhsMode, int RhsOptions>
 struct transform_transform_product_impl<Transform<Scalar,Dim,LhsMode,LhsOptions>,Transform<Scalar,Dim,RhsMode,RhsOptions>,false >
 {
-  enum { ResultMode = transform_product_result<LhsMode,RhsMode>::Mode };
+  static constexpr int ResultMode = transform_product_result<LhsMode,RhsMode>::Mode;
   typedef Transform<Scalar,Dim,LhsMode,LhsOptions> Lhs;
   typedef Transform<Scalar,Dim,RhsMode,RhsOptions> Rhs;
   typedef Transform<Scalar,Dim,ResultMode,LhsOptions> ResultType;

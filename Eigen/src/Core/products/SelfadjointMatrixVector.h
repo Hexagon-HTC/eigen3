@@ -175,7 +175,7 @@ struct selfadjoint_product_impl<Lhs,LhsMode,false,Rhs,0,true>
   typedef typename RhsBlasTraits::DirectLinearAccessType ActualRhsType;
   typedef internal::remove_all_t<ActualRhsType> ActualRhsTypeCleaned;
 
-  enum { LhsUpLo = LhsMode&(Upper|Lower) };
+  static constexpr int LhsUpLo = LhsMode&(Upper|Lower);
 
   template<typename Dest>
   static EIGEN_DEVICE_FUNC
@@ -245,7 +245,7 @@ template<typename Lhs, typename Rhs, int RhsMode>
 struct selfadjoint_product_impl<Lhs,0,true,Rhs,RhsMode,false>
 {
   typedef typename Product<Lhs,Rhs>::Scalar Scalar;
-  enum { RhsUpLo = RhsMode&(Upper|Lower)  };
+  static constexpr int RhsUpLo = RhsMode&(Upper|Lower);
 
   template<typename Dest>
   static void run(Dest& dest, const Lhs &a_lhs, const Rhs &a_rhs, const Scalar& alpha)

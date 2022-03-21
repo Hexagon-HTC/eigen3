@@ -19,38 +19,38 @@ namespace internal {
 #ifndef EIGEN_VECTORIZE_AVX
 template <>
 struct type_casting_traits<float, int> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template <>
 struct type_casting_traits<int, float> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template <>
 struct type_casting_traits<double, float> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 2,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template <>
 struct type_casting_traits<float, double> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 2
-  };
+    TgtCoeffRatio = 2;
 };
 #endif
 
@@ -93,11 +93,11 @@ template<> EIGEN_STRONG_INLINE Packet4i preinterpret<Packet4i,Packet2d>(const Pa
 
 template <>
 struct type_casting_traits<Eigen::half, float> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template<> EIGEN_STRONG_INLINE Packet4f pcast<Packet4h, Packet4f>(const Packet4h& a) {
@@ -115,11 +115,11 @@ template<> EIGEN_STRONG_INLINE Packet4f pcast<Packet4h, Packet4f>(const Packet4h
 
 template <>
 struct type_casting_traits<float, Eigen::half> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template<> EIGEN_STRONG_INLINE Packet4h pcast<Packet4f, Packet4h>(const Packet4f& a) {

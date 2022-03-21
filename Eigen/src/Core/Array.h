@@ -52,7 +52,7 @@ class Array
     typedef PlainObjectBase<Array> Base;
     EIGEN_DENSE_PUBLIC_INTERFACE(Array)
 
-    enum { Options = Options_ };
+    static constexpr int Options = Options_;
     typedef typename Base::PlainObject PlainObject;
 
   protected:

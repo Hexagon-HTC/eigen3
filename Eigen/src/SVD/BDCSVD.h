@@ -108,7 +108,7 @@ public:
   typedef typename Base::RealScalar RealScalar;
   typedef typename NumTraits<RealScalar>::Literal Literal;
   typedef typename Base::Index Index;
-  enum {
+  static constexpr int
     Options = Options_,
     RowsAtCompileTime = Base::RowsAtCompileTime,
     ColsAtCompileTime = Base::ColsAtCompileTime,
@@ -116,8 +116,7 @@ public:
     MaxRowsAtCompileTime = Base::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = Base::MaxColsAtCompileTime,
     MaxDiagSizeAtCompileTime = Base::MaxDiagSizeAtCompileTime,
-    MatrixOptions = Base::MatrixOptions
-  };
+    MatrixOptions = Base::MatrixOptions;
 
   typedef typename Base::MatrixUType MatrixUType;
   typedef typename Base::MatrixVType MatrixVType;

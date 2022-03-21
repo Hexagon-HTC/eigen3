@@ -22,32 +22,33 @@ struct traits<Ref<PlainObjectType_, Options_, StrideType_> >
 {
   typedef PlainObjectType_ PlainObjectType;
   typedef StrideType_ StrideType;
-  enum {
+  static constexpr int
     Options = Options_,
     Flags = traits<Map<PlainObjectType_, Options_, StrideType_> >::Flags | NestByRefBit,
-    Alignment = traits<Map<PlainObjectType_, Options_, StrideType_> >::Alignment
-  };
+    Alignment = traits<Map<PlainObjectType_, Options_, StrideType_> >::Alignment;
 
   template<typename Derived> struct match {
-    enum {
+    static constexpr bool
       IsVectorAtCompileTime = PlainObjectType::IsVectorAtCompileTime || Derived::IsVectorAtCompileTime,
       HasDirectAccess = internal::has_direct_access<Derived>::ret,
       StorageOrderMatch = IsVectorAtCompileTime || ((PlainObjectType::Flags&RowMajorBit)==(Derived::Flags&RowMajorBit)),
-      InnerStrideMatch = int(StrideType::InnerStrideAtCompileTime)==int(Dynamic)
-                      || int(StrideType::InnerStrideAtCompileTime)==int(Derived::InnerStrideAtCompileTime)
-                      || (int(StrideType::InnerStrideAtCompileTime)==0 && int(Derived::InnerStrideAtCompileTime)==1),
+      InnerStrideMatch = StrideType::InnerStrideAtCompileTime==Dynamic
+                      || StrideType::InnerStrideAtCompileTime==Derived::InnerStrideAtCompileTime
+                      || (StrideType::InnerStrideAtCompileTime==0 && Derived::InnerStrideAtCompileTime==1),
       OuterStrideMatch = IsVectorAtCompileTime
-                      || int(StrideType::OuterStrideAtCompileTime)==int(Dynamic) || int(StrideType::OuterStrideAtCompileTime)==int(Derived::OuterStrideAtCompileTime),
+                      || StrideType::OuterStrideAtCompileTime==Dynamic
+                      || StrideType::OuterStrideAtCompileTime==Derived::OuterStrideAtCompileTime;
       // NOTE, this indirection of evaluator<Derived>::Alignment is needed
       // to workaround a very strange bug in MSVC related to the instantiation
       // of has_*ary_operator in evaluator<CwiseNullaryOp>.
       // This line is surprisingly very sensitive. For instance, simply adding parenthesis
       // as "DerivedAlignment = (int(evaluator<Derived>::Alignment))," will make MSVC fail...
-      DerivedAlignment = int(evaluator<Derived>::Alignment),
-      AlignmentMatch = (int(traits<PlainObjectType>::Alignment)==int(Unaligned)) || (DerivedAlignment >= int(Alignment)), // FIXME the first condition is not very clear, it should be replaced by the required alignment
+    static constexpr int
+      DerivedAlignment = evaluator<Derived>::Alignment;
+    static constexpr bool
+      AlignmentMatch = (traits<PlainObjectType>::Alignment==Unaligned) || (DerivedAlignment >= Alignment), // FIXME the first condition is not very clear, it should be replaced by the required alignment
       ScalarTypeMatch = internal::is_same<typename PlainObjectType::Scalar, typename Derived::Scalar>::value,
-      MatchAtCompileTime = HasDirectAccess && StorageOrderMatch && InnerStrideMatch && OuterStrideMatch && AlignmentMatch && ScalarTypeMatch
-    };
+      MatchAtCompileTime = HasDirectAccess && StorageOrderMatch && InnerStrideMatch && OuterStrideMatch && AlignmentMatch && ScalarTypeMatch;
     typedef std::conditional_t<MatchAtCompileTime,internal::true_type,internal::false_type> type;
   };
 

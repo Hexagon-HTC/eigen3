@@ -29,52 +29,52 @@ namespace Eigen {
 
 namespace internal {
 
-template <int has_blend, int lengths>
+template <bool has_blend, int lengths>
 struct sycl_packet_traits : default_packet_traits {
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = lengths,
-    HasHalfPacket = 0,
-    HasDiv = 1,
-    HasLog = 1,
-    HasExp = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasSin = 1,
-    HasCos = 1,
-    HasTan = 1,
-    HasASin = 1,
-    HasACos = 1,
-    HasATan = 1,
-    HasSinh = 1,
-    HasCosh = 1,
-    HasTanh = 1,
-    HasLGamma = 0,
-    HasDiGamma = 0,
-    HasZeta = 0,
-    HasPolygamma = 0,
-    HasErf = 0,
-    HasErfc = 0,
-    HasNdtri = 0,
-    HasIGamma = 0,
-    HasIGammac = 0,
-    HasBetaInc = 0,
+  static constexpr int
+    size = lengths;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
+    HasDiv = true,
+    HasLog = true,
+    HasExp = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasSin = true,
+    HasCos = true,
+    HasTan = true,
+    HasASin = true,
+    HasACos = true,
+    HasATan = true,
+    HasSinh = true,
+    HasCosh = true,
+    HasTanh = true,
+    HasLGamma = false,
+    HasDiGamma = false,
+    HasZeta = false,
+    HasPolygamma = false,
+    HasErf = false,
+    HasErfc = false,
+    HasNdtri = false,
+    HasIGamma = false,
+    HasIGammac = false,
+    HasBetaInc = false,
     HasBlend = has_blend,
     // This flag is used to indicate whether packet comparison is supported.
     // pcmp_eq, pcmp_lt and pcmp_le should be defined for it to be true.
-    HasCmp = 1,
-    HasMax = 1,
-    HasMin = 1,
-    HasMul = 1,
-    HasAdd = 1,
-    HasFloor = 1,
-    HasRound = 1,
-    HasRint = 1,
-    HasLog1p = 1,
-    HasExpm1 = 1,
-    HasCeil = 1,
-  };
+    HasCmp = true,
+    HasMax = true,
+    HasMin = true,
+    HasMul = true,
+    HasAdd = true,
+    HasFloor = true,
+    HasRound = true,
+    HasRint = true,
+    HasLog1p = true,
+    HasExpm1 = true,
+    HasCeil = true;
 };
 
 #ifdef SYCL_DEVICE_ONLY
@@ -86,10 +86,10 @@ struct sycl_packet_traits : default_packet_traits {
     typedef packet_type half;                                              \
   };
 
-SYCL_PACKET_TRAITS(cl::sycl::cl_float4, 1, float, 4)
-SYCL_PACKET_TRAITS(cl::sycl::cl_float4, 1, const float, 4)
-SYCL_PACKET_TRAITS(cl::sycl::cl_double2, 0, double, 2)
-SYCL_PACKET_TRAITS(cl::sycl::cl_double2, 0, const double, 2)
+SYCL_PACKET_TRAITS(cl::sycl::cl_float4, true, float, 4)
+SYCL_PACKET_TRAITS(cl::sycl::cl_float4, true, const float, 4)
+SYCL_PACKET_TRAITS(cl::sycl::cl_double2, false, double, 2)
+SYCL_PACKET_TRAITS(cl::sycl::cl_double2, false, const double, 2)
 #undef SYCL_PACKET_TRAITS
 
 // Make sure this is only available when targeting a GPU: we don't want to
@@ -98,7 +98,7 @@ SYCL_PACKET_TRAITS(cl::sycl::cl_double2, 0, const double, 2)
 #define SYCL_ARITHMETIC(packet_type)  \
   template <>                         \
   struct is_arithmetic<packet_type> { \
-    enum { value = true };            \
+    static constexpr value = true;    \
   };
 SYCL_ARITHMETIC(cl::sycl::cl_float4)
 SYCL_ARITHMETIC(cl::sycl::cl_double2)
@@ -108,7 +108,8 @@ SYCL_ARITHMETIC(cl::sycl::cl_double2)
   template <>                                                            \
   struct unpacket_traits<packet_type> {                                  \
     typedef unpacket_type type;                                          \
-    enum { size = lengths, vectorizable = true, alignment = Aligned16 }; \
+    static constexpr int size = lengths;                                 \
+    static constexpr bool vectorizable = true, alignment = Aligned16;    \
     typedef packet_type half;                                            \
   };
 SYCL_UNPACKET_TRAITS(cl::sycl::cl_float4, float, 4)

@@ -841,19 +841,18 @@ struct random_default_impl<half, false, false>
   }
 };
 
-template<> struct is_arithmetic<half> { enum { value = true }; };
+template<> struct is_arithmetic<half> { static constexpr bool value = true; };
 
 } // end namespace internal
 
 template<> struct NumTraits<Eigen::half>
     : GenericNumTraits<Eigen::half>
 {
-  enum {
+  static constexpr bool
     IsSigned = true,
     IsInteger = false,
     IsComplex = false,
-    RequireInitialization = false
-  };
+    RequireInitialization = false;
 
   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR static EIGEN_STRONG_INLINE Eigen::half epsilon() {
     return half_impl::raw_uint16_to_half(0x0800);

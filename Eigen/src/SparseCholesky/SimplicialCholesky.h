@@ -62,7 +62,7 @@ class SimplicialCholeskyBase : public SparseSolverBase<Derived>
   public:
     typedef typename internal::traits<Derived>::MatrixType MatrixType;
     typedef typename internal::traits<Derived>::OrderingType OrderingType;
-    enum { UpLo = internal::traits<Derived>::UpLo };
+    static constexpr int UpLo = internal::traits<Derived>::UpLo;
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::RealScalar RealScalar;
     typedef typename MatrixType::StorageIndex StorageIndex;
@@ -71,10 +71,9 @@ class SimplicialCholeskyBase : public SparseSolverBase<Derived>
     typedef Matrix<Scalar,Dynamic,1> VectorType;
     typedef Matrix<StorageIndex,Dynamic,1> VectorI;
 
-    enum {
+    static constexpr int
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
   public:
     
@@ -283,7 +282,7 @@ template<typename MatrixType_, int UpLo_, typename Ordering_> struct traits<Simp
 {
   typedef MatrixType_ MatrixType;
   typedef Ordering_ OrderingType;
-  enum { UpLo = UpLo_ };
+  static constexpr int UpLo = UpLo_;
   typedef typename MatrixType::Scalar                         Scalar;
   typedef typename MatrixType::StorageIndex                   StorageIndex;
   typedef SparseMatrix<Scalar, ColMajor, StorageIndex>        CholMatrixType;
@@ -297,7 +296,7 @@ template<typename MatrixType_,int UpLo_, typename Ordering_> struct traits<Simpl
 {
   typedef MatrixType_ MatrixType;
   typedef Ordering_ OrderingType;
-  enum { UpLo = UpLo_ };
+  static constexpr int UpLo = UpLo_;
   typedef typename MatrixType::Scalar                             Scalar;
   typedef typename MatrixType::StorageIndex                       StorageIndex;
   typedef SparseMatrix<Scalar, ColMajor, StorageIndex>            CholMatrixType;
@@ -311,7 +310,7 @@ template<typename MatrixType_, int UpLo_, typename Ordering_> struct traits<Simp
 {
   typedef MatrixType_ MatrixType;
   typedef Ordering_ OrderingType;
-  enum { UpLo = UpLo_ };
+  static constexpr int UpLo = UpLo_;
 };
 
 }
@@ -341,7 +340,7 @@ template<typename MatrixType_, int UpLo_, typename Ordering_>
 {
 public:
     typedef MatrixType_ MatrixType;
-    enum { UpLo = UpLo_ };
+    static constexpr int UpLo = UpLo_;
     typedef SimplicialCholeskyBase<SimplicialLLT> Base;
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::RealScalar RealScalar;
@@ -432,7 +431,7 @@ template<typename MatrixType_, int UpLo_, typename Ordering_>
 {
 public:
     typedef MatrixType_ MatrixType;
-    enum { UpLo = UpLo_ };
+    static constexpr int UpLo = UpLo_;
     typedef SimplicialCholeskyBase<SimplicialLDLT> Base;
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::RealScalar RealScalar;
@@ -514,7 +513,7 @@ template<typename MatrixType_, int UpLo_, typename Ordering_>
 {
 public:
     typedef MatrixType_ MatrixType;
-    enum { UpLo = UpLo_ };
+    static constexpr int UpLo = UpLo_;
     typedef SimplicialCholeskyBase<SimplicialCholesky> Base;
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::RealScalar RealScalar;

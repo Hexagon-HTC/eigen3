@@ -21,7 +21,7 @@ struct traits<CompleteOrthogonalDecomposition<MatrixType_> >
   typedef MatrixXpr XprKind;
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 }  // end namespace internal
@@ -60,10 +60,9 @@ template <typename MatrixType_> class CompleteOrthogonalDecomposition
   friend struct internal::solve_assertion;
 
   EIGEN_GENERIC_PUBLIC_INTERFACE(CompleteOrthogonalDecomposition)
-  enum {
+  static constexpr int
     MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-  };
+    MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
   typedef typename internal::plain_diag_type<MatrixType>::type HCoeffsType;
   typedef PermutationMatrix<ColsAtCompileTime, MaxColsAtCompileTime>
       PermutationType;
@@ -594,7 +593,7 @@ template<typename MatrixType>
 struct traits<Inverse<CompleteOrthogonalDecomposition<MatrixType> > >
   : traits<typename Transpose<typename MatrixType::PlainObject>::PlainObject>
 {
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 template<typename DstXprType, typename MatrixType>

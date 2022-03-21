@@ -22,10 +22,9 @@ struct visitor_impl;
 template<typename Visitor, typename Derived, int UnrollCount>
 struct visitor_impl<Visitor, Derived, UnrollCount, false>
 {
-  enum {
+  static constexpr int
     col = (UnrollCount-1) / Derived::RowsAtCompileTime,
-    row = (UnrollCount-1) % Derived::RowsAtCompileTime
-  };
+    row = (UnrollCount-1) % Derived::RowsAtCompileTime;
 
   EIGEN_DEVICE_FUNC
   static inline void run(const Derived &mat, Visitor& visitor)
@@ -110,13 +109,12 @@ class visitor_evaluator
 public:
   typedef internal::evaluator<XprType> Evaluator;
 
-  enum {
-    PacketAccess = Evaluator::Flags & PacketAccessBit,
-    IsRowMajor = XprType::IsRowMajor,
+  static constexpr bool
+    PacketAccess = (Evaluator::Flags & PacketAccessBit) == PacketAccessBit,
+    IsRowMajor = XprType::IsRowMajor;
+  static constexpr int
     RowsAtCompileTime = XprType::RowsAtCompileTime,
-    CoeffReadCost = Evaluator::CoeffReadCost
-  };
-
+    CoeffReadCost = Evaluator::CoeffReadCost;
 
   EIGEN_DEVICE_FUNC
   explicit visitor_evaluator(const XprType &xpr) : m_evaluator(xpr), m_xpr(xpr) { }
@@ -171,10 +169,9 @@ void DenseBase<Derived>::visit(Visitor& visitor) const
   typedef typename internal::visitor_evaluator<Derived> ThisEvaluator;
   ThisEvaluator thisEval(derived());
 
-  enum {
+  static constexpr bool
     unroll =  SizeAtCompileTime != Dynamic
-           && SizeAtCompileTime * int(ThisEvaluator::CoeffReadCost) + (SizeAtCompileTime-1) * int(internal::functor_traits<Visitor>::Cost) <= EIGEN_UNROLLING_LIMIT
-  };
+           && SizeAtCompileTime * ThisEvaluator::CoeffReadCost + (SizeAtCompileTime-1) * internal::functor_traits<Visitor>::Cost <= EIGEN_UNROLLING_LIMIT;
   return internal::visitor_impl<Visitor, ThisEvaluator, unroll ? int(SizeAtCompileTime) : Dynamic>::run(thisEval, visitor);
 }
 
@@ -323,10 +320,10 @@ struct minmax_coeff_visitor<Derived, is_min, PropagateNaN> : coeff_visitor<Deriv
 
 template<typename Scalar, bool is_min, int NaNPropagation>
 struct functor_traits<minmax_coeff_visitor<Scalar, is_min, NaNPropagation> > {
-  enum {
-    Cost = NumTraits<Scalar>::AddCost,
-    PacketAccess = true
-  };
+  static constexpr int
+    Cost = NumTraits<Scalar>::AddCost;
+  static constexpr bool
+    PacketAccess = true;
 };
 
 } // end namespace internal

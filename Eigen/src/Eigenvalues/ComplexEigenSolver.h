@@ -51,13 +51,12 @@ template<typename MatrixType_> class ComplexEigenSolver
     /** \brief Synonym for the template parameter \p MatrixType_. */
     typedef MatrixType_ MatrixType;
 
-    enum {
+    static constexpr int
       RowsAtCompileTime = MatrixType::RowsAtCompileTime,
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
       Options = MatrixType::Options,
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
 
     /** \brief Scalar type for matrices of type #MatrixType. */
     typedef typename MatrixType::Scalar Scalar;

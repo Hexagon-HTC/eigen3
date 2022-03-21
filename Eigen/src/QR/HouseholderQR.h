@@ -23,7 +23,7 @@ template<typename MatrixType_> struct traits<HouseholderQR<MatrixType_> >
   typedef MatrixXpr XprKind;
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 } // end namespace internal
@@ -65,10 +65,9 @@ template<typename MatrixType_> class HouseholderQR
     friend class SolverBase<HouseholderQR>;
 
     EIGEN_GENERIC_PUBLIC_INTERFACE(HouseholderQR)
-    enum {
+    static constexpr int
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
     typedef Matrix<Scalar, RowsAtCompileTime, RowsAtCompileTime, (MatrixType::Flags&RowMajorBit) ? RowMajor : ColMajor, MaxRowsAtCompileTime, MaxRowsAtCompileTime> MatrixQType;
     typedef typename internal::plain_diag_type<MatrixType>::type HCoeffsType;
     typedef typename internal::plain_row_type<MatrixType>::type RowVectorType;

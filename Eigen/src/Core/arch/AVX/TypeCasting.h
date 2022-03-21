@@ -20,20 +20,20 @@ namespace internal {
 // from int to float
 template <>
 struct type_casting_traits<float, int> {
-  enum {
-    VectorizedCast = 0,
+  static constexpr bool
+    VectorizedCast = false;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template <>
 struct type_casting_traits<int, float> {
-  enum {
-    VectorizedCast = 0,
+  static constexpr bool
+    VectorizedCast = false;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 
@@ -41,39 +41,39 @@ struct type_casting_traits<int, float> {
 
 template <>
 struct type_casting_traits<Eigen::half, float> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 
 template <>
 struct type_casting_traits<float, Eigen::half> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template <>
 struct type_casting_traits<bfloat16, float> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 template <>
 struct type_casting_traits<float, bfloat16> {
-  enum {
-    VectorizedCast = 1,
+  static constexpr bool
+    VectorizedCast = true;
+  static constexpr int
     SrcCoeffRatio = 1,
-    TgtCoeffRatio = 1
-  };
+    TgtCoeffRatio = 1;
 };
 
 #endif  // EIGEN_VECTORIZE_AVX512

@@ -156,91 +156,91 @@ template<> struct packet_traits<int>    : default_packet_traits
 {
   typedef Packet4i type;
   typedef Packet4i half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 4,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 4;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasAdd  = 1,
-    HasSub  = 1,
-    HasMul  = 1,
-    HasDiv  = 1,
-    HasBlend = 1
-  };
+    HasAdd  = true,
+    HasSub  = true,
+    HasMul  = true,
+    HasDiv  = true,
+    HasBlend = true;
 };
 
 template <>
 struct packet_traits<float> : default_packet_traits {
   typedef Packet4f type;
   typedef Packet4f half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 4,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 4;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasAdd = 1,
-    HasSub = 1,
-    HasMul = 1,
-    HasDiv = 1,
-    HasMin = 1,
-    HasMax = 1,
-    HasAbs = 1,
-    HasSin = 0,
-    HasCos = 0,
-    HasLog = 0,
-    HasExp = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasTanh = 1,
-    HasErf = 1,
-    HasRound = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasNegate = 1,
-    HasBlend = 1
-  };
+    HasAdd = true,
+    HasSub = true,
+    HasMul = true,
+    HasDiv = true,
+    HasMin = true,
+    HasMax = true,
+    HasAbs = true,
+    HasSin = false,
+    HasCos = false,
+    HasLog = false,
+    HasExp = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasTanh = true,
+    HasErf = true,
+    HasRound = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasNegate = true,
+    HasBlend = true;
 };
 
 template<> struct packet_traits<double> : default_packet_traits
 {
   typedef Packet2d type;
   typedef Packet2d half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size=2,
-    HasHalfPacket = 1,
+  static constexpr int
+    size = 2;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = true,
 
-    HasAdd  = 1,
-    HasSub  = 1,
-    HasMul  = 1,
-    HasDiv  = 1,
-    HasMin  = 1,
-    HasMax  = 1,
-    HasAbs  = 1,
-    HasSin  = 0,
-    HasCos  = 0,
-    HasLog  = 0,
-    HasExp  = 1,
-    HasSqrt = 1,
-    HasRsqrt = 1,
-    HasRound = 1,
-    HasFloor = 1,
-    HasCeil = 1,
-    HasNegate = 1,
-    HasBlend = 1
-  };
+    HasAdd  = true,
+    HasSub  = true,
+    HasMul  = true,
+    HasDiv  = true,
+    HasMin  = true,
+    HasMax  = true,
+    HasAbs  = true,
+    HasSin  = false,
+    HasCos  = false,
+    HasLog  = false,
+    HasExp  = true,
+    HasSqrt = true,
+    HasRsqrt = true,
+    HasRound = true,
+    HasFloor = true,
+    HasCeil = true,
+    HasNegate = true,
+    HasBlend = true;
 };
 
-template<> struct unpacket_traits<Packet4i> { typedef int    type; enum {size=4, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet4i half; };
-template<> struct unpacket_traits<Packet4f> { typedef float  type; enum {size=4, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet4f half; };
-template<> struct unpacket_traits<Packet2d> { typedef double type; enum {size=2, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet2d half; };
+template<> struct unpacket_traits<Packet4i> { typedef int    type; static constexpr int size=4, alignment=Aligned16; static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false; typedef Packet4i half; };
+template<> struct unpacket_traits<Packet4f> { typedef float  type; static constexpr int size=4, alignment=Aligned16; static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false; typedef Packet4f half; };
+template<> struct unpacket_traits<Packet2d> { typedef double type; static constexpr int size=2, alignment=Aligned16; static constexpr bool vectorizable=true, masked_load_available=false, masked_store_available=false; typedef Packet2d half; };
 
 /* Forward declaration */
 EIGEN_DEVICE_FUNC inline void ptranspose(PacketBlock<Packet4f,4>& kernel);
- 
+
 inline std::ostream & operator <<(std::ostream & s, const Packet4i & v)
 {
   Packet vt;

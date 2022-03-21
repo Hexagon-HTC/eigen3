@@ -40,13 +40,12 @@ struct traits<Select<ConditionMatrixType, ThenMatrixType, ElseMatrixType> >
   typedef typename ConditionMatrixType::Nested ConditionMatrixNested;
   typedef typename ThenMatrixType::Nested ThenMatrixNested;
   typedef typename ElseMatrixType::Nested ElseMatrixNested;
-  enum {
+  static constexpr int
     RowsAtCompileTime = ConditionMatrixType::RowsAtCompileTime,
     ColsAtCompileTime = ConditionMatrixType::ColsAtCompileTime,
     MaxRowsAtCompileTime = ConditionMatrixType::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = ConditionMatrixType::MaxColsAtCompileTime,
-    Flags = (unsigned int)ThenMatrixType::Flags & ElseMatrixType::Flags & RowMajorBit
-  };
+    Flags = ThenMatrixType::Flags & ElseMatrixType::Flags & RowMajorBit;
 };
 }
 

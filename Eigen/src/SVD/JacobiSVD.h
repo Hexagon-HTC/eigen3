@@ -34,16 +34,16 @@ enum { PreconditionIfMoreColsThanRows, PreconditionIfMoreRowsThanCols };
 template<typename MatrixType, int QRPreconditioner, int Case>
 struct qr_preconditioner_should_do_anything
 {
-  enum { a = MatrixType::RowsAtCompileTime != Dynamic &&
+  static constexpr bool
+         a = MatrixType::RowsAtCompileTime != Dynamic &&
              MatrixType::ColsAtCompileTime != Dynamic &&
              MatrixType::ColsAtCompileTime <= MatrixType::RowsAtCompileTime,
          b = MatrixType::RowsAtCompileTime != Dynamic &&
              MatrixType::ColsAtCompileTime != Dynamic &&
              MatrixType::RowsAtCompileTime <= MatrixType::ColsAtCompileTime,
          ret = !( (QRPreconditioner == NoQRPreconditioner) ||
-                  (Case == PreconditionIfMoreColsThanRows && bool(a)) ||
-                  (Case == PreconditionIfMoreRowsThanCols && bool(b)) )
-  };
+                  (Case == PreconditionIfMoreColsThanRows && a) ||
+                  (Case == PreconditionIfMoreRowsThanCols && b) );
 };
 
 template <typename MatrixType, int Options, int QRPreconditioner, int Case,
@@ -66,7 +66,7 @@ class qr_preconditioner_impl<MatrixType, Options, FullPivHouseholderQRPreconditi
   typedef typename MatrixType::Scalar Scalar;
   typedef JacobiSVD<MatrixType, Options> SVDType;
 
-  enum { WorkspaceSize = MatrixType::RowsAtCompileTime, MaxWorkspaceSize = MatrixType::MaxRowsAtCompileTime };
+  static constexpr int WorkspaceSize = MatrixType::RowsAtCompileTime, MaxWorkspaceSize = MatrixType::MaxRowsAtCompileTime;
 
   typedef Matrix<Scalar, 1, WorkspaceSize, RowMajor, 1, MaxWorkspaceSize> WorkspaceType;
 
@@ -104,13 +104,12 @@ class qr_preconditioner_impl<MatrixType, Options, FullPivHouseholderQRPreconditi
   typedef typename MatrixType::Scalar Scalar;
   typedef JacobiSVD<MatrixType, Options> SVDType;
 
-  enum {
+  static constexpr int
     RowsAtCompileTime = MatrixType::RowsAtCompileTime,
     ColsAtCompileTime = MatrixType::ColsAtCompileTime,
     MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime,
-    MatrixOptions = MatrixType::Options
-  };
+    MatrixOptions = MatrixType::Options;
 
   typedef typename internal::make_proper_matrix_type<Scalar, ColsAtCompileTime, RowsAtCompileTime, MatrixOptions,
                                                      MaxColsAtCompileTime, MaxRowsAtCompileTime>::type
@@ -155,10 +154,9 @@ class qr_preconditioner_impl<MatrixType, Options, ColPivHouseholderQRPreconditio
   typedef typename MatrixType::Scalar Scalar;
   typedef JacobiSVD<MatrixType, Options> SVDType;
 
-  enum {
+  static constexpr int
     WorkspaceSize = internal::traits<SVDType>::MatrixUColsAtCompileTime,
-    MaxWorkspaceSize = internal::traits<SVDType>::MatrixUMaxColsAtCompileTime
-  };
+    MaxWorkspaceSize = internal::traits<SVDType>::MatrixUMaxColsAtCompileTime;
 
   typedef Matrix<Scalar, 1, WorkspaceSize, RowMajor, 1, MaxWorkspaceSize> WorkspaceType;
 
@@ -202,15 +200,14 @@ class qr_preconditioner_impl<MatrixType, Options, ColPivHouseholderQRPreconditio
   typedef typename MatrixType::Scalar Scalar;
   typedef JacobiSVD<MatrixType, Options> SVDType;
 
-  enum {
+  static constexpr int
     RowsAtCompileTime = MatrixType::RowsAtCompileTime,
     ColsAtCompileTime = MatrixType::ColsAtCompileTime,
     MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime,
     MatrixOptions = MatrixType::Options,
     WorkspaceSize = internal::traits<SVDType>::MatrixVColsAtCompileTime,
-    MaxWorkspaceSize = internal::traits<SVDType>::MatrixVMaxColsAtCompileTime
-  };
+    MaxWorkspaceSize = internal::traits<SVDType>::MatrixVMaxColsAtCompileTime;
 
   typedef Matrix<Scalar, WorkspaceSize, 1, ColMajor, MaxWorkspaceSize, 1> WorkspaceType;
 
@@ -263,10 +260,9 @@ class qr_preconditioner_impl<MatrixType, Options, HouseholderQRPreconditioner, P
   typedef typename MatrixType::Scalar Scalar;
   typedef JacobiSVD<MatrixType, Options> SVDType;
 
-  enum {
+  static constexpr int
     WorkspaceSize = internal::traits<SVDType>::MatrixUColsAtCompileTime,
-    MaxWorkspaceSize = internal::traits<SVDType>::MatrixUMaxColsAtCompileTime
-  };
+    MaxWorkspaceSize = internal::traits<SVDType>::MatrixUMaxColsAtCompileTime;
 
   typedef Matrix<Scalar, 1, WorkspaceSize, RowMajor, 1, MaxWorkspaceSize> WorkspaceType;
 
@@ -309,15 +305,14 @@ class qr_preconditioner_impl<MatrixType, Options, HouseholderQRPreconditioner, P
   typedef typename MatrixType::Scalar Scalar;
   typedef JacobiSVD<MatrixType, Options> SVDType;
 
-  enum {
+  static constexpr int
     RowsAtCompileTime = MatrixType::RowsAtCompileTime,
     ColsAtCompileTime = MatrixType::ColsAtCompileTime,
     MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime,
     MatrixOptions = MatrixType::Options,
     WorkspaceSize = internal::traits<SVDType>::MatrixVColsAtCompileTime,
-    MaxWorkspaceSize = internal::traits<SVDType>::MatrixVMaxColsAtCompileTime
-  };
+    MaxWorkspaceSize = internal::traits<SVDType>::MatrixVMaxColsAtCompileTime;
 
   typedef Matrix<Scalar, WorkspaceSize, 1, ColMajor, MaxWorkspaceSize, 1> WorkspaceType;
 
@@ -519,7 +514,7 @@ class JacobiSVD : public SVDBase<JacobiSVD<MatrixType_, Options_> > {
   typedef typename Base::Scalar Scalar;
   typedef typename Base::RealScalar RealScalar;
   typedef typename Base::Index Index;
-  enum {
+  static constexpr int
     Options = Options_,
     QRPreconditioner = internal::get_qr_preconditioner(Options),
     RowsAtCompileTime = Base::RowsAtCompileTime,
@@ -528,8 +523,7 @@ class JacobiSVD : public SVDBase<JacobiSVD<MatrixType_, Options_> > {
     MaxRowsAtCompileTime = Base::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = Base::MaxColsAtCompileTime,
     MaxDiagSizeAtCompileTime = Base::MaxDiagSizeAtCompileTime,
-    MatrixOptions = Base::MatrixOptions
-  };
+    MatrixOptions = Base::MatrixOptions;
 
   typedef typename Base::MatrixUType MatrixUType;
   typedef typename Base::MatrixVType MatrixVType;

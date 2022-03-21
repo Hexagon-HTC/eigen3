@@ -18,9 +18,8 @@ namespace internal {
 template<typename NullaryOp, typename PlainObjectType>
 struct traits<CwiseNullaryOp<NullaryOp, PlainObjectType> > : traits<PlainObjectType>
 {
-  enum {
-    Flags = traits<PlainObjectType>::Flags & RowMajorBit
-  };
+  static constexpr int
+    Flags = traits<PlainObjectType>::Flags & RowMajorBit;
 };
 
 } // namespace internal

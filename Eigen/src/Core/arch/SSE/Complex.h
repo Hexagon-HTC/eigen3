@@ -31,25 +31,25 @@ template<> struct packet_traits<std::complex<float> >  : default_packet_traits
 {
   typedef Packet2cf type;
   typedef Packet2cf half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 1,
-    size = 2,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 2;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = true,
+    HasHalfPacket = false,
 
-    HasAdd    = 1,
-    HasSub    = 1,
-    HasMul    = 1,
-    HasDiv    = 1,
-    HasNegate = 1,
-    HasSqrt   = 1,
-    HasAbs    = 0,
-    HasAbs2   = 0,
-    HasMin    = 0,
-    HasMax    = 0,
-    HasSetLinear = 0,
-    HasBlend  = 1
-  };
+    HasAdd    = true,
+    HasSub    = true,
+    HasMul    = true,
+    HasDiv    = true,
+    HasNegate = true,
+    HasSqrt   = true,
+    HasAbs    = false,
+    HasAbs2   = false,
+    HasMin    = false,
+    HasMax    = false,
+    HasSetLinear = false,
+    HasBlend  = true;
 };
 #endif
 
@@ -57,13 +57,13 @@ template<> struct unpacket_traits<Packet2cf> {
   typedef std::complex<float> type;
   typedef Packet2cf half;
   typedef Packet4f as_real;
-  enum {
+  static constexpr int
     size=2,
-    alignment=Aligned16,
+    alignment=Aligned16;
+  static constexpr bool
     vectorizable=true,
     masked_load_available=false,
-    masked_store_available=false
-  };
+    masked_store_available=false;
 };
 
 template<> EIGEN_STRONG_INLINE Packet2cf padd<Packet2cf>(const Packet2cf& a, const Packet2cf& b) { return Packet2cf(_mm_add_ps(a.v,b.v)); }
@@ -181,24 +181,24 @@ template<> struct packet_traits<std::complex<double> >  : default_packet_traits
 {
   typedef Packet1cd type;
   typedef Packet1cd half;
-  enum {
-    Vectorizable = 1,
-    AlignedOnScalar = 0,
-    size = 1,
-    HasHalfPacket = 0,
+  static constexpr int
+    size = 1;
+  static constexpr bool
+    Vectorizable = true,
+    AlignedOnScalar = false,
+    HasHalfPacket = false,
 
-    HasAdd    = 1,
-    HasSub    = 1,
-    HasMul    = 1,
-    HasDiv    = 1,
-    HasNegate = 1,
-    HasSqrt   = 1,
-    HasAbs    = 0,
-    HasAbs2   = 0,
-    HasMin    = 0,
-    HasMax    = 0,
-    HasSetLinear = 0
-  };
+    HasAdd    = true,
+    HasSub    = true,
+    HasMul    = true,
+    HasDiv    = true,
+    HasNegate = true,
+    HasSqrt   = true,
+    HasAbs    = false,
+    HasAbs2   = false,
+    HasMin    = false,
+    HasMax    = false,
+    HasSetLinear = false;
 };
 #endif
 
@@ -206,13 +206,13 @@ template<> struct unpacket_traits<Packet1cd> {
   typedef std::complex<double> type;
   typedef Packet1cd half;
   typedef Packet2d as_real;
-  enum {
+  static constexpr int
     size=1,
-    alignment=Aligned16,
+    alignment=Aligned16;
+  static constexpr bool
     vectorizable=true,
     masked_load_available=false,
-    masked_store_available=false
-  };
+    masked_store_available=false;
 };
 
 template<> EIGEN_STRONG_INLINE Packet1cd padd<Packet1cd>(const Packet1cd& a, const Packet1cd& b) { return Packet1cd(_mm_add_pd(a.v,b.v)); }

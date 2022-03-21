@@ -13,7 +13,7 @@
 
 #include "./InternalHeaderCheck.h"
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 
@@ -23,7 +23,7 @@ template<typename MatrixType_> struct traits<FullPivHouseholderQR<MatrixType_> >
   typedef MatrixXpr XprKind;
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 template<typename MatrixType> struct FullPivHouseholderQRMatrixQReturnType;
@@ -69,10 +69,9 @@ template<typename MatrixType_> class FullPivHouseholderQR
     friend class SolverBase<FullPivHouseholderQR>;
 
     EIGEN_GENERIC_PUBLIC_INTERFACE(FullPivHouseholderQR)
-    enum {
+    static constexpr int
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime
-    };
+      MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime;
     typedef internal::FullPivHouseholderQRMatrixQReturnType<MatrixType> MatrixQReturnType;
     typedef typename internal::plain_diag_type<MatrixType>::type HCoeffsType;
     typedef Matrix<StorageIndex, 1,

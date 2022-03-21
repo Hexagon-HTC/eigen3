@@ -53,7 +53,7 @@ struct panel_dfs_traits
     return false;
   }
   void mem_expand(IndexVector& /*glu.lsub*/, Index /*nextl*/, Index /*chmark*/) {}
-  enum { ExpandMem = false };
+  static constexpr bool ExpandMem = false;
   Index m_jcol;
   StorageIndex* m_marker;
 };

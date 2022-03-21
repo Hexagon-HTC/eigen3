@@ -35,16 +35,15 @@ struct traits<SparseVector<Scalar_, Options_, StorageIndex_> >
   typedef StorageIndex_ StorageIndex;
   typedef Sparse StorageKind;
   typedef MatrixXpr XprKind;
-  enum {
-    IsColVector = (Options_ & RowMajorBit) ? 0 : 1,
-
+  static constexpr bool
+    IsColVector = !(Options_ & RowMajorBit);
+  static constexpr int
     RowsAtCompileTime = IsColVector ? Dynamic : 1,
     ColsAtCompileTime = IsColVector ? 1 : Dynamic,
     MaxRowsAtCompileTime = RowsAtCompileTime,
     MaxColsAtCompileTime = ColsAtCompileTime,
     Flags = Options_ | NestByRefBit | LvalueBit | (IsColVector ? 0 : RowMajorBit) | CompressedAccessBit,
-    SupportedAccessPatterns = InnerRandomAccessPattern
-  };
+    SupportedAccessPatterns = InnerRandomAccessPattern;
 };
 
 // Sparse-Vector-Assignment kinds:
@@ -74,12 +73,11 @@ class SparseVector
     EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR(SparseVector, -=)
     
     typedef internal::CompressedStorage<Scalar,StorageIndex> Storage;
-    enum { IsColVector = internal::traits<SparseVector>::IsColVector };
-    
-    enum {
-      Options = Options_
-    };
-    
+    static constexpr bool IsColVector = internal::traits<SparseVector>::IsColVector;
+
+    static constexpr int
+      Options = Options_;
+
     EIGEN_STRONG_INLINE Index rows() const { return IsColVector ? m_size : 1; }
     EIGEN_STRONG_INLINE Index cols() const { return IsColVector ? 1 : m_size; }
     EIGEN_STRONG_INLINE Index innerSize() const { return m_size; }
@@ -435,10 +433,9 @@ struct evaluator<SparseVector<Scalar_,Options_,Index_> >
   typedef typename SparseVectorType::InnerIterator InnerIterator;
   typedef typename SparseVectorType::ReverseInnerIterator ReverseInnerIterator;
   
-  enum {
+  static constexpr int
     CoeffReadCost = NumTraits<Scalar_>::ReadCost,
-    Flags = SparseVectorType::Flags
-  };
+    Flags = SparseVectorType::Flags;
 
   evaluator() : Base() {}
   

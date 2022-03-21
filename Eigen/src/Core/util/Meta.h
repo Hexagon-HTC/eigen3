@@ -78,8 +78,8 @@ typedef std::size_t UIntPtr;
 #endif
 #undef EIGEN_ICC_NEEDS_CSTDINT
 
-struct true_type {  enum { value = 1 }; };
-struct false_type { enum { value = 0 }; };
+struct true_type {  static constexpr bool value = true; };
+struct false_type { static constexpr bool value = false; };
 
 template<bool Condition>
 struct bool_constant;
@@ -100,35 +100,35 @@ template<typename T> struct remove_all<T*>        { typedef typename remove_all<
 template<typename T>
 using remove_all_t = typename remove_all<T>::type;
 
-template<typename T> struct is_arithmetic      { enum { value = false }; };
-template<> struct is_arithmetic<float>         { enum { value = true }; };
-template<> struct is_arithmetic<double>        { enum { value = true }; };
-template<> struct is_arithmetic<long double>   { enum { value = true }; };
-template<> struct is_arithmetic<bool>          { enum { value = true }; };
-template<> struct is_arithmetic<char>          { enum { value = true }; };
-template<> struct is_arithmetic<signed char>   { enum { value = true }; };
-template<> struct is_arithmetic<unsigned char> { enum { value = true }; };
-template<> struct is_arithmetic<signed short>  { enum { value = true }; };
-template<> struct is_arithmetic<unsigned short>{ enum { value = true }; };
-template<> struct is_arithmetic<signed int>    { enum { value = true }; };
-template<> struct is_arithmetic<unsigned int>  { enum { value = true }; };
-template<> struct is_arithmetic<signed long>   { enum { value = true }; };
-template<> struct is_arithmetic<unsigned long> { enum { value = true }; };
+template<typename T> struct is_arithmetic      { static constexpr bool value = false; };
+template<> struct is_arithmetic<float>         { static constexpr bool value = true; };
+template<> struct is_arithmetic<double>        { static constexpr bool value = true; };
+template<> struct is_arithmetic<long double>   { static constexpr bool value = true; };
+template<> struct is_arithmetic<bool>          { static constexpr bool value = true; };
+template<> struct is_arithmetic<char>          { static constexpr bool value = true; };
+template<> struct is_arithmetic<signed char>   { static constexpr bool value = true; };
+template<> struct is_arithmetic<unsigned char> { static constexpr bool value = true; };
+template<> struct is_arithmetic<signed short>  { static constexpr bool value = true; };
+template<> struct is_arithmetic<unsigned short>{ static constexpr bool value = true; };
+template<> struct is_arithmetic<signed int>    { static constexpr bool value = true; };
+template<> struct is_arithmetic<unsigned int>  { static constexpr bool value = true; };
+template<> struct is_arithmetic<signed long>   { static constexpr bool value = true; };
+template<> struct is_arithmetic<unsigned long> { static constexpr bool value = true; };
 
-template<typename T, typename U> struct is_same { enum { value = 0 }; };
-template<typename T> struct is_same<T,T> { enum { value = 1 }; };
+template<typename T, typename U> struct is_same { static constexpr bool value = false; };
+template<typename T> struct is_same<T,T> { static constexpr bool value = true; };
 
 template< class T >
 struct is_void : is_same<void, std::remove_const_t<T>> {};
 
-template<> struct is_arithmetic<signed long long>   { enum { value = true }; };
-template<> struct is_arithmetic<unsigned long long> { enum { value = true }; };
+template<> struct is_arithmetic<signed long long>   { static constexpr bool value = true; };
+template<> struct is_arithmetic<unsigned long long> { static constexpr bool value = true; };
 using std::is_integral;
 
 using std::make_unsigned;
 
-template <typename T> struct is_const { enum { value = 0 }; };
-template <typename T> struct is_const<T const> { enum { value = 1 }; };
+template <typename T> struct is_const { static constexpr bool value = false; };
+template <typename T> struct is_const<T const> { static constexpr bool value = true; };
 
 template<typename T> struct add_const_on_value_type            { typedef const T type;  };
 template<typename T> struct add_const_on_value_type<T&>        { typedef T const& type; };
@@ -168,25 +168,25 @@ protected:
   * The second template parameter eases SFINAE-based specializations.
   */
 template<typename T, typename EnableIf = void> struct array_size {
-  enum { value = Dynamic };
+  static constexpr int value = Dynamic;
 };
 
 template<typename T> struct array_size<T, std::enable_if_t<((T::SizeAtCompileTime&0)==0)>> {
-  enum { value = T::SizeAtCompileTime };
+  static constexpr int value = T::SizeAtCompileTime;
 };
 
 template<typename T, int N> struct array_size<const T (&)[N]> {
-  enum { value = N };
+  static constexpr int value = N;
 };
 template<typename T, int N> struct array_size<T (&)[N]> {
-  enum { value = N };
+  static constexpr int value = N;
 };
 
 template<typename T, std::size_t N> struct array_size<const std::array<T,N> > {
-  enum { value = N };
+  static constexpr int value = N;
 };
 template<typename T, std::size_t N> struct array_size<std::array<T,N> > {
-  enum { value = N };
+  static constexpr int value = N;
 };
 
 
@@ -274,7 +274,7 @@ struct has_ReturnType
   template <typename C> static meta_yes testFunctor(C const *, typename C::ReturnType const * = 0);
   template <typename C> static meta_no  testFunctor(...);
 
-  enum { value = sizeof(testFunctor<T>(static_cast<T*>(0))) == sizeof(meta_yes) };
+  static constexpr bool value = sizeof(testFunctor<T>(static_cast<T*>(0))) == sizeof(meta_yes);
 };
 
 template<typename T> const T* return_ptr();
@@ -285,7 +285,7 @@ struct has_nullary_operator
   template <typename C> static meta_yes testFunctor(C const *,std::enable_if_t<(sizeof(return_ptr<C>()->operator()())>0)> * = 0);
   static meta_no testFunctor(...);
 
-  enum { value = sizeof(testFunctor(static_cast<T*>(0))) == sizeof(meta_yes) };
+  static constexpr bool value = sizeof(testFunctor(static_cast<T*>(0))) == sizeof(meta_yes);
 };
 
 template <typename T, typename IndexType=Index>
@@ -294,7 +294,7 @@ struct has_unary_operator
   template <typename C> static meta_yes testFunctor(C const *,std::enable_if_t<(sizeof(return_ptr<C>()->operator()(IndexType(0)))>0)> * = 0);
   static meta_no testFunctor(...);
 
-  enum { value = sizeof(testFunctor(static_cast<T*>(0))) == sizeof(meta_yes) };
+  static constexpr bool value = sizeof(testFunctor(static_cast<T*>(0))) == sizeof(meta_yes);
 };
 
 template <typename T, typename IndexType=Index>
@@ -303,7 +303,7 @@ struct has_binary_operator
   template <typename C> static meta_yes testFunctor(C const *,std::enable_if_t<(sizeof(return_ptr<C>()->operator()(IndexType(0),IndexType(0)))>0)> * = 0);
   static meta_no testFunctor(...);
 
-  enum { value = sizeof(testFunctor(static_cast<T*>(0))) == sizeof(meta_yes) };
+  static constexpr bool value = sizeof(testFunctor(static_cast<T*>(0))) == sizeof(meta_yes);
 };
 
 /** \internal In short, it computes int(sqrt(\a Y)) with \a Y an integer.
@@ -315,18 +315,19 @@ template<int Y,
          bool Done = ((SupX - InfX) <= 1 || ((SupX * SupX <= Y) && ((SupX + 1) * (SupX + 1) > Y)))>
 class meta_sqrt
 {
-    enum {
-      MidX = (InfX+SupX)/2,
-      TakeInf = MidX*MidX > Y ? 1 : 0,
-      NewInf = int(TakeInf) ? InfX : int(MidX),
-      NewSup = int(TakeInf) ? int(MidX) : SupX
-    };
+    static constexpr int
+      MidX = (InfX+SupX)/2;
+    static constexpr bool
+      TakeInf = MidX*MidX > Y ? 1 : 0;
+    static constexpr int
+      NewInf = TakeInf ? InfX : MidX,
+      NewSup = TakeInf ? MidX : SupX;
   public:
-    enum { ret = meta_sqrt<Y,NewInf,NewSup>::ret };
+    static constexpr int ret = meta_sqrt<Y,NewInf,NewSup>::ret;
 };
 
 template<int Y, int InfX, int SupX>
-class meta_sqrt<Y, InfX, SupX, true> { public:  enum { ret = (SupX*SupX <= Y) ? SupX : InfX }; };
+class meta_sqrt<Y, InfX, SupX, true> { public: static constexpr int ret = (SupX*SupX <= Y) ? SupX : InfX; };
 
 
 /** \internal Computes the least common multiple of two positive integer A and B
@@ -335,24 +336,24 @@ class meta_sqrt<Y, InfX, SupX, true> { public:  enum { ret = (SupX*SupX <= Y) ? 
 template<int A, int B, int K=1, bool Done = ((A*K)%B)==0, bool Big=(A>=B)>
 struct meta_least_common_multiple
 {
-  enum { ret = meta_least_common_multiple<A,B,K+1>::ret };
+  static constexpr int ret = meta_least_common_multiple<A,B,K+1>::ret;
 };
 template<int A, int B, int K, bool Done>
 struct meta_least_common_multiple<A,B,K,Done,false>
 {
-  enum { ret = meta_least_common_multiple<B,A,K>::ret };
+  static constexpr int ret = meta_least_common_multiple<B,A,K>::ret;
 };
 template<int A, int B, int K>
 struct meta_least_common_multiple<A,B,K,true,true>
 {
-  enum { ret = A*K };
+  static constexpr int ret = A*K;
 };
 
 
 /** \internal determines whether the product of two numeric types is allowed and what the return type is */
 template<typename T, typename U> struct scalar_product_traits
 {
-  enum { Defined = 0 };
+  static constexpr int Defined = 0;
 };
 
 // FIXME quick workaround around current limitation of result_of

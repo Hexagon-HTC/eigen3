@@ -728,19 +728,18 @@ struct random_default_impl<bfloat16, false, false>
   }
 };
 
-template<> struct is_arithmetic<bfloat16> { enum { value = true }; };
+template<> struct is_arithmetic<bfloat16> { static constexpr bool value = true; };
 
 } // namespace internal
 
 template<> struct NumTraits<Eigen::bfloat16>
     : GenericNumTraits<Eigen::bfloat16>
 {
-  enum {
+  static constexpr bool
     IsSigned = true,
     IsInteger = false,
     IsComplex = false,
-    RequireInitialization = false
-  };
+    RequireInitialization = false;
 
   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR static EIGEN_STRONG_INLINE Eigen::bfloat16 epsilon() {
     return bfloat16_impl::raw_uint16_to_bfloat16(0x3c00);

@@ -22,9 +22,9 @@ class BlockImpl<XprType,BlockRows,BlockCols,true,Sparse>
     typedef internal::remove_all_t<typename XprType::Nested> MatrixTypeNested_;
     typedef Block<XprType, BlockRows, BlockCols, true> BlockType;
 public:
-    enum { IsRowMajor = internal::traits<BlockType>::IsRowMajor };
+    static constexpr bool IsRowMajor = internal::traits<BlockType>::IsRowMajor;
 protected:
-    enum { OuterSize = IsRowMajor ? BlockRows : BlockCols };
+    static constexpr int OuterSize = IsRowMajor ? BlockRows : BlockCols;
     typedef SparseMatrixBase<BlockType> Base;
     using Base::convert_index;
 public:
@@ -103,11 +103,11 @@ class sparse_matrix_block_impl
     typedef SparseCompressedBase<Block<SparseMatrixType,BlockRows,BlockCols,true> > Base;
     using Base::convert_index;
 public:
-    enum { IsRowMajor = internal::traits<BlockType>::IsRowMajor };
+    static constexpr bool IsRowMajor = internal::traits<BlockType>::IsRowMajor;
     EIGEN_SPARSE_PUBLIC_INTERFACE(BlockType)
 protected:
     typedef typename Base::IndexVector IndexVector;
-    enum { OuterSize = IsRowMajor ? BlockRows : BlockCols };
+    static constexpr int OuterSize = IsRowMajor ? BlockRows : BlockCols;
 public:
 
     inline sparse_matrix_block_impl(SparseMatrixType& xpr, Index i)
@@ -339,7 +339,7 @@ class BlockImpl<XprType,BlockRows,BlockCols,InnerPanel,Sparse>
     typedef SparseMatrixBase<BlockType> Base;
     using Base::convert_index;
 public:
-    enum { IsRowMajor = internal::traits<BlockType>::IsRowMajor };
+    static constexpr bool IsRowMajor = internal::traits<BlockType>::IsRowMajor;
     EIGEN_SPARSE_PUBLIC_INTERFACE(BlockType)
 
     typedef internal::remove_all_t<typename XprType::Nested> MatrixTypeNested_;
@@ -429,12 +429,12 @@ struct unary_evaluator<Block<ArgType,BlockRows,BlockCols,InnerPanel>, IteratorBa
     typedef typename XprType::StorageIndex StorageIndex;
     typedef typename XprType::Scalar Scalar;
 
-    enum {
+    static constexpr bool
       IsRowMajor = XprType::IsRowMajor,
-      OuterVector = (BlockCols == 1 && ArgType::IsRowMajor) || (BlockRows == 1 && !ArgType::IsRowMajor),
+      OuterVector = (BlockCols == 1 && ArgType::IsRowMajor) || (BlockRows == 1 && !ArgType::IsRowMajor);
+    static constexpr int
       CoeffReadCost = evaluator<ArgType>::CoeffReadCost,
-      Flags = XprType::Flags
-    };
+      Flags = XprType::Flags;
 
     typedef std::conditional_t<OuterVector,OuterVectorInnerIterator,InnerVectorInnerIterator> InnerIterator;
 
@@ -467,7 +467,7 @@ class unary_evaluator<Block<ArgType,BlockRows,BlockCols,InnerPanel>, IteratorBas
   // NOTE MSVC fails to compile if we don't explicitly "import" IsRowMajor from unary_evaluator
   //      because the base class EvalIterator has a private IsRowMajor enum too. (bug #1786)
   // NOTE We cannot call it IsRowMajor because it would shadow unary_evaluator::IsRowMajor
-  enum { XprIsRowMajor = unary_evaluator::IsRowMajor };
+  static constexpr bool XprIsRowMajor = unary_evaluator::IsRowMajor;
   const XprType& m_block;
   Index m_end;
 public:
@@ -493,7 +493,7 @@ template<typename ArgType, int BlockRows, int BlockCols, bool InnerPanel>
 class unary_evaluator<Block<ArgType,BlockRows,BlockCols,InnerPanel>, IteratorBased>::OuterVectorInnerIterator
 {
   // NOTE see above
-  enum { XprIsRowMajor = unary_evaluator::IsRowMajor };
+  static constexpr bool XprIsRowMajor = unary_evaluator::IsRowMajor;
   const unary_evaluator& m_eval;
   Index m_outerPos;
   const Index m_innerIndex;

@@ -19,11 +19,10 @@ template<typename Index, int Mode, typename LhsScalar, bool ConjLhs, typename Rh
 struct packed_triangular_matrix_vector_product<Index,Mode,LhsScalar,ConjLhs,RhsScalar,ConjRhs,ColMajor>
 {
   typedef typename ScalarBinaryOpTraits<LhsScalar, RhsScalar>::ReturnType ResScalar;
-  enum {
+  static constexpr bool
     IsLower     = (Mode & Lower)   ==Lower,
     HasUnitDiag = (Mode & UnitDiag)==UnitDiag,
-    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag
-  };
+    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag;
   static void run(Index size, const LhsScalar* lhs, const RhsScalar* rhs, ResScalar* res, ResScalar alpha)
   {
     internal::conj_if<ConjRhs> cj;
@@ -49,11 +48,10 @@ template<typename Index, int Mode, typename LhsScalar, bool ConjLhs, typename Rh
 struct packed_triangular_matrix_vector_product<Index,Mode,LhsScalar,ConjLhs,RhsScalar,ConjRhs,RowMajor>
 {
   typedef typename ScalarBinaryOpTraits<LhsScalar, RhsScalar>::ReturnType ResScalar;
-  enum {
+  static constexpr bool
     IsLower     = (Mode & Lower)   ==Lower,
     HasUnitDiag = (Mode & UnitDiag)==UnitDiag,
-    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag
-  };
+    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag;
   static void run(Index size, const LhsScalar* lhs, const RhsScalar* rhs, ResScalar* res, ResScalar alpha)
   {
     internal::conj_if<ConjRhs> cj;

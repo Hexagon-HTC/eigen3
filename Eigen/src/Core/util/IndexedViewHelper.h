@@ -61,7 +61,7 @@ Index eval_expr_given_size(const symbolic::BaseExpr<Derived> &x, Index size)
 
 // Extract increment/step at compile time
 template<typename T, typename EnableIf = void> struct get_compile_time_incr {
-  enum { value = UndefinedIncr };
+  static constexpr int value = UndefinedIncr;
 };
 
 // Analogue of std::get<0>(x), but tailored for our needs.
@@ -83,9 +83,8 @@ const T& makeIndexedViewCompatible(const T& x, Index /*size*/, Q) { return x; }
 //--------------------------------------------------------------------------------
 
 struct SingleRange {
-  enum {
-    SizeAtCompileTime = 1
-  };
+  static constexpr int
+    SizeAtCompileTime = 1;
   SingleRange(Index val) : m_value(val) {}
   Index operator[](Index) const { return m_value; }
   static EIGEN_CONSTEXPR Index size() EIGEN_NOEXCEPT { return 1; }
@@ -94,7 +93,7 @@ struct SingleRange {
 };
 
 template<> struct get_compile_time_incr<SingleRange> {
-  enum { value = 1 }; // 1 or 0 ??
+  static constexpr int value = 1; // 1 or 0 ??
 };
 
 // Turn a single index into something that looks like an array (i.e., that exposes a .size(), and operator[](int) methods)
@@ -127,7 +126,7 @@ struct all_t { all_t() {} };
 // Convert a symbolic 'all' into a usable range type
 template<int XprSize>
 struct AllRange {
-  enum { SizeAtCompileTime = XprSize };
+  static constexpr int SizeAtCompileTime = XprSize;
   AllRange(Index size = XprSize) : m_size(size) {}
   EIGEN_CONSTEXPR Index operator[](Index i) const EIGEN_NOEXCEPT { return i; }
   EIGEN_CONSTEXPR Index size() const EIGEN_NOEXCEPT { return m_size.value(); }
@@ -146,7 +145,7 @@ inline AllRange<get_fixed_value<XprSizeType>::value> makeIndexedViewCompatible(a
 }
 
 template<int Size> struct get_compile_time_incr<AllRange<Size> > {
-  enum { value = 1 };
+  static constexpr int value = 1;
 };
 
 } // end namespace internal

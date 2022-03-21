@@ -58,7 +58,7 @@ template<typename Derived> struct traits<SVDBase<Derived> >
   typedef MatrixXpr XprKind;
   typedef SolverStorage StorageKind;
   typedef int StorageIndex;
-  enum { Flags = 0 };
+  static constexpr int Flags = 0;
 };
 
 template <typename MatrixType, int Options_>
@@ -68,7 +68,7 @@ struct svd_traits : traits<MatrixType> {
   static constexpr bool ShouldComputeThinU = internal::should_svd_compute_thin_u(Options);
   static constexpr bool ShouldComputeFullV = internal::should_svd_compute_full_v(Options);
   static constexpr bool ShouldComputeThinV = internal::should_svd_compute_thin_v(Options);
-  enum {
+  static constexpr int
     DiagSizeAtCompileTime =
         internal::min_size_prefer_dynamic(MatrixType::RowsAtCompileTime, MatrixType::ColsAtCompileTime),
     MaxDiagSizeAtCompileTime =
@@ -80,8 +80,7 @@ struct svd_traits : traits<MatrixType> {
     MatrixUMaxColsAtCompileTime = ShouldComputeThinU ? MaxDiagSizeAtCompileTime
                                                      : MatrixType::MaxRowsAtCompileTime,
     MatrixVMaxColsAtCompileTime = ShouldComputeThinV ? MaxDiagSizeAtCompileTime
-                                                     : MatrixType::MaxColsAtCompileTime
-  };
+                                                     : MatrixType::MaxColsAtCompileTime;
 };
 }
 
@@ -134,7 +133,7 @@ public:
   static constexpr bool ShouldComputeFullV = internal::traits<Derived>::ShouldComputeFullV;
   static constexpr bool ShouldComputeThinV = internal::traits<Derived>::ShouldComputeThinV;
 
-  enum {
+  static constexpr int
     RowsAtCompileTime = MatrixType::RowsAtCompileTime,
     ColsAtCompileTime = MatrixType::ColsAtCompileTime,
     DiagSizeAtCompileTime = internal::min_size_prefer_dynamic(RowsAtCompileTime, ColsAtCompileTime),
@@ -145,8 +144,7 @@ public:
     MatrixUColsAtCompileTime = internal::traits<Derived>::MatrixUColsAtCompileTime,
     MatrixVColsAtCompileTime = internal::traits<Derived>::MatrixVColsAtCompileTime,
     MatrixUMaxColsAtCompileTime = internal::traits<Derived>::MatrixUMaxColsAtCompileTime,
-    MatrixVMaxColsAtCompileTime = internal::traits<Derived>::MatrixVMaxColsAtCompileTime
-  };
+    MatrixVMaxColsAtCompileTime = internal::traits<Derived>::MatrixVMaxColsAtCompileTime;
 
   EIGEN_STATIC_ASSERT(!(ShouldComputeFullU && ShouldComputeThinU), "SVDBase: Cannot request both full and thin U")
   EIGEN_STATIC_ASSERT(!(ShouldComputeFullV && ShouldComputeThinV), "SVDBase: Cannot request both full and thin V")

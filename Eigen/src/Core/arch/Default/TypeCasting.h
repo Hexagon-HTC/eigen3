@@ -33,7 +33,7 @@ struct scalar_cast_op<float, Eigen::half> {
 
 template<>
 struct functor_traits<scalar_cast_op<float, Eigen::half> >
-{ enum { Cost = NumTraits<float>::AddCost, PacketAccess = false }; };
+{ static constexpr int Cost = NumTraits<float>::AddCost; static constexpr bool PacketAccess = false; };
 
 
 template<>
@@ -52,7 +52,7 @@ struct scalar_cast_op<int, Eigen::half> {
 
 template<>
 struct functor_traits<scalar_cast_op<int, Eigen::half> >
-{ enum { Cost = NumTraits<float>::AddCost, PacketAccess = false }; };
+{ static constexpr int Cost = NumTraits<float>::AddCost; static constexpr bool PacketAccess = false; };
 
 
 template<>
@@ -71,7 +71,7 @@ struct scalar_cast_op<Eigen::half, float> {
 
 template<>
 struct functor_traits<scalar_cast_op<Eigen::half, float> >
-{ enum { Cost = NumTraits<float>::AddCost, PacketAccess = false }; };
+{ static constexpr int Cost = NumTraits<float>::AddCost; static constexpr bool PacketAccess = false; };
 
 
 template<>
@@ -85,7 +85,7 @@ struct scalar_cast_op<float, Eigen::bfloat16> {
 
 template<>
 struct functor_traits<scalar_cast_op<float, Eigen::bfloat16> >
-{ enum { Cost = NumTraits<float>::AddCost, PacketAccess = false }; };
+{ static constexpr int Cost = NumTraits<float>::AddCost; static constexpr bool PacketAccess = false; };
 
 
 template<>
@@ -99,7 +99,7 @@ struct scalar_cast_op<int, Eigen::bfloat16> {
 
 template<>
 struct functor_traits<scalar_cast_op<int, Eigen::bfloat16> >
-{ enum { Cost = NumTraits<float>::AddCost, PacketAccess = false }; };
+{ static constexpr int Cost = NumTraits<float>::AddCost; static constexpr bool PacketAccess = false; };
 
 
 template<>
@@ -113,7 +113,7 @@ struct scalar_cast_op<Eigen::bfloat16, float> {
 
 template<>
 struct functor_traits<scalar_cast_op<Eigen::bfloat16, float> >
-{ enum { Cost = NumTraits<float>::AddCost, PacketAccess = false }; };
+{ static constexpr int Cost = NumTraits<float>::AddCost; static constexpr bool PacketAccess = false; };
 
 
 }

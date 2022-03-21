@@ -29,7 +29,7 @@ namespace internal {
 #ifdef SYCL_DEVICE_ONLY
 template <>
 struct type_casting_traits<float, int> {
-  enum { VectorizedCast = 1, SrcCoeffRatio = 1, TgtCoeffRatio = 1 };
+  static constexpr bool VectorizedCast = 1; static constexpr int SrcCoeffRation = 1, TgtCoeffRatio = 1;
 };
 
 template <>
@@ -41,7 +41,7 @@ pcast<cl::sycl::cl_float4, cl::sycl::cl_int4>(const cl::sycl::cl_float4& a) {
 
 template <>
 struct type_casting_traits<int, float> {
-  enum { VectorizedCast = 1, SrcCoeffRatio = 1, TgtCoeffRatio = 1 };
+  static constexpr bool VectorizedCast = 1; static constexpr int SrcCoeffRation = 1, TgtCoeffRatio = 1;
 };
 
 template <>
@@ -53,7 +53,7 @@ pcast<cl::sycl::cl_int4, cl::sycl::cl_float4>(const cl::sycl::cl_int4& a) {
 
 template <>
 struct type_casting_traits<double, float> {
-  enum { VectorizedCast = 1, SrcCoeffRatio = 2, TgtCoeffRatio = 1 };
+  static constexpr bool VectorizedCast = 1; static constexpr int SrcCoeffRation = 2, TgtCoeffRatio = 1;
 };
 
 template <>
@@ -69,7 +69,7 @@ pcast<cl::sycl::cl_double2, cl::sycl::cl_float4>(
 
 template <>
 struct type_casting_traits<float, double> {
-  enum { VectorizedCast = 1, SrcCoeffRatio = 1, TgtCoeffRatio = 2 };
+  static constexpr bool VectorizedCast = 1; static constexpr int SrcCoeffRation = 1, TgtCoeffRatio = 2;
 };
 
 template <>

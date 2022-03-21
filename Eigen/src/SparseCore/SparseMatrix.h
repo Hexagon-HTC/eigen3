@@ -52,14 +52,13 @@ struct traits<SparseMatrix<Scalar_, Options_, StorageIndex_> >
   typedef StorageIndex_ StorageIndex;
   typedef Sparse StorageKind;
   typedef MatrixXpr XprKind;
-  enum {
+  static constexpr int
     RowsAtCompileTime = Dynamic,
     ColsAtCompileTime = Dynamic,
     MaxRowsAtCompileTime = Dynamic,
     MaxColsAtCompileTime = Dynamic,
     Flags = Options_ | NestByRefBit | LvalueBit | CompressedAccessBit,
-    SupportedAccessPatterns = InnerRandomAccessPattern
-  };
+    SupportedAccessPatterns = InnerRandomAccessPattern;
 };
 
 template<typename Scalar_, int Options_, typename StorageIndex_, int DiagIndex>
@@ -74,22 +73,20 @@ struct traits<Diagonal<SparseMatrix<Scalar_, Options_, StorageIndex_>, DiagIndex
   typedef StorageIndex_ StorageIndex;
   typedef MatrixXpr XprKind;
 
-  enum {
+  static constexpr int
     RowsAtCompileTime = Dynamic,
     ColsAtCompileTime = 1,
     MaxRowsAtCompileTime = Dynamic,
     MaxColsAtCompileTime = 1,
-    Flags = LvalueBit
-  };
+    Flags = LvalueBit;
 };
 
 template<typename Scalar_, int Options_, typename StorageIndex_, int DiagIndex>
 struct traits<Diagonal<const SparseMatrix<Scalar_, Options_, StorageIndex_>, DiagIndex> >
  : public traits<Diagonal<SparseMatrix<Scalar_, Options_, StorageIndex_>, DiagIndex> >
 {
-  enum {
-    Flags = 0
-  };
+  static constexpr int
+    Flags = 0;
 };
 
 } // end namespace internal
@@ -119,9 +116,8 @@ class SparseMatrix
 
     using Base::IsRowMajor;
     typedef internal::CompressedStorage<Scalar,StorageIndex> Storage;
-    enum {
-      Options = Options_
-    };
+    static constexpr int
+      Options = Options_;
 
     typedef typename Base::IndexVector IndexVector;
     typedef typename Base::ScalarVector ScalarVector;
@@ -1024,7 +1020,7 @@ namespace internal {
 template<typename InputIterator, typename SparseMatrixType, typename DupFunctor>
 void set_from_triplets(const InputIterator& begin, const InputIterator& end, SparseMatrixType& mat, DupFunctor dup_func)
 {
-  enum { IsRowMajor = SparseMatrixType::IsRowMajor };
+  static constexpr bool IsRowMajor = SparseMatrixType::IsRowMajor;
   typedef typename SparseMatrixType::Scalar Scalar;
   typedef typename SparseMatrixType::StorageIndex StorageIndex;
   SparseMatrix<Scalar,IsRowMajor?ColMajor:RowMajor,StorageIndex> trMat(mat.rows(),mat.cols());

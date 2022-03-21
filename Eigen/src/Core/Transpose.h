@@ -21,7 +21,7 @@ struct traits<Transpose<MatrixType> > : public traits<MatrixType>
 {
   typedef typename ref_selector<MatrixType>::type MatrixTypeNested;
   typedef std::remove_reference_t<MatrixTypeNested> MatrixTypeNestedPlain;
-  enum {
+  static constexpr int
     RowsAtCompileTime = MatrixType::ColsAtCompileTime,
     ColsAtCompileTime = MatrixType::RowsAtCompileTime,
     MaxRowsAtCompileTime = MatrixType::MaxColsAtCompileTime,
@@ -31,8 +31,7 @@ struct traits<Transpose<MatrixType> > : public traits<MatrixType>
     Flags1 = Flags0 | FlagsLvalueBit,
     Flags = Flags1 ^ RowMajorBit,
     InnerStrideAtCompileTime = inner_stride_at_compile_time<MatrixType>::ret,
-    OuterStrideAtCompileTime = outer_stride_at_compile_time<MatrixType>::ret
-  };
+    OuterStrideAtCompileTime = outer_stride_at_compile_time<MatrixType>::ret;
 };
 }
 
@@ -388,15 +387,14 @@ namespace internal {
 template<bool DestIsTransposed, typename OtherDerived>
 struct check_transpose_aliasing_compile_time_selector
 {
-  enum { ret = bool(blas_traits<OtherDerived>::IsTransposed) != DestIsTransposed };
+  static constexpr bool ret = blas_traits<OtherDerived>::IsTransposed != DestIsTransposed;
 };
 
 template<bool DestIsTransposed, typename BinOp, typename DerivedA, typename DerivedB>
 struct check_transpose_aliasing_compile_time_selector<DestIsTransposed,CwiseBinaryOp<BinOp,DerivedA,DerivedB> >
 {
-  enum { ret =    bool(blas_traits<DerivedA>::IsTransposed) != DestIsTransposed
-               || bool(blas_traits<DerivedB>::IsTransposed) != DestIsTransposed
-  };
+  static constexpr bool ret =    blas_traits<DerivedA>::IsTransposed != DestIsTransposed
+                              || blas_traits<DerivedB>::IsTransposed != DestIsTransposed;
 };
 
 template<typename Scalar, bool DestIsTransposed, typename OtherDerived>

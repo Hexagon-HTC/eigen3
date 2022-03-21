@@ -171,9 +171,8 @@ public:
   typedef typename MatrixType::RealScalar RealScalar;
   typedef Preconditioner_ Preconditioner;
 
-  enum {
-    UpLo = UpLo_
-  };
+  static constexpr int
+    UpLo = UpLo_;
 
 public:
 
@@ -201,12 +200,11 @@ public:
   {
     typedef typename Base::MatrixWrapper MatrixWrapper;
     typedef typename Base::ActualMatrixType ActualMatrixType;
-    enum {
+    static constexpr bool
       TransposeInput  =   (!MatrixWrapper::MatrixFree)
                       &&  (UpLo==(Lower|Upper))
                       &&  (!MatrixType::IsRowMajor)
-                      &&  (!NumTraits<Scalar>::IsComplex)
-    };
+                      &&  (!NumTraits<Scalar>::IsComplex);
     typedef std::conditional_t<TransposeInput,Transpose<const ActualMatrixType>, ActualMatrixType const&> RowMajorWrapper;
     EIGEN_STATIC_ASSERT(internal::check_implication(MatrixWrapper::MatrixFree,UpLo==(Lower|Upper)),MATRIX_FREE_CONJUGATE_GRADIENT_IS_COMPATIBLE_WITH_UPPER_UNION_LOWER_MODE_ONLY);
     typedef std::conditional_t<UpLo==(Lower|Upper),

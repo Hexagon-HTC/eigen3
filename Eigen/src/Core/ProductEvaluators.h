@@ -101,9 +101,8 @@ struct product_evaluator<Product<Lhs, Rhs, Options>, ProductTag, LhsShape, RhsSh
   typedef Product<Lhs, Rhs, Options> XprType;
   typedef typename XprType::PlainObject PlainObject;
   typedef evaluator<PlainObject> Base;
-  enum {
-    Flags = Base::Flags | EvalBeforeNestingBit
-  };
+  static constexpr int
+    Flags = Base::Flags | EvalBeforeNestingBit;
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit product_evaluator(const XprType& xpr)
@@ -371,8 +370,8 @@ struct generic_product_impl<Lhs,Rhs,DenseShape,DenseShape,GemvProduct>
   typedef typename nested_eval<Lhs,1>::type LhsNested;
   typedef typename nested_eval<Rhs,1>::type RhsNested;
   typedef typename Product<Lhs,Rhs>::Scalar Scalar;
-  enum { Side = Lhs::IsVectorAtCompileTime ? OnTheLeft : OnTheRight };
-  typedef internal::remove_all_t<std::conditional_t<int(Side)==OnTheRight,LhsNested,RhsNested>> MatrixType;
+  static constexpr int Side = Lhs::IsVectorAtCompileTime ? OnTheLeft : OnTheRight;
+  typedef internal::remove_all_t<std::conditional_t<Side==OnTheRight,LhsNested,RhsNested>> MatrixType;
 
   template<typename Dest>
   static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void scaleAndAddTo(Dest& dst, const Lhs& lhs, const Rhs& rhs, const Scalar& alpha)
@@ -436,11 +435,10 @@ struct generic_product_impl<Lhs,Rhs,DenseShape,DenseShape,CoeffBasedProductMode>
   static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   void eval_dynamic(Dst& dst, const Lhs& lhs, const Rhs& rhs, const Func &func)
   {
-    enum {
+    static constexpr bool
       HasScalarFactor = blas_traits<Lhs>::HasScalarFactor || blas_traits<Rhs>::HasScalarFactor,
       ConjLhs = blas_traits<Lhs>::NeedToConjugate,
-      ConjRhs = blas_traits<Rhs>::NeedToConjugate
-    };
+      ConjRhs = blas_traits<Rhs>::NeedToConjugate;
     // FIXME: in c++11 this should be auto, and extractScalarFactor should also return auto
     //        this is important for real*complex_mat
     Scalar actualAlpha = combine_scalar_factors<Scalar>(lhs, rhs);
@@ -534,28 +532,28 @@ struct product_evaluator<Product<Lhs, Rhs, LazyProduct>, ProductTag, DenseShape,
   typedef evaluator<LhsNestedCleaned> LhsEtorType;
   typedef evaluator<RhsNestedCleaned> RhsEtorType;
 
-  enum {
+  static constexpr int
     RowsAtCompileTime = LhsNestedCleaned::RowsAtCompileTime,
     ColsAtCompileTime = RhsNestedCleaned::ColsAtCompileTime,
     InnerSize = min_size_prefer_fixed(LhsNestedCleaned::ColsAtCompileTime, RhsNestedCleaned::RowsAtCompileTime),
     MaxRowsAtCompileTime = LhsNestedCleaned::MaxRowsAtCompileTime,
-    MaxColsAtCompileTime = RhsNestedCleaned::MaxColsAtCompileTime
-  };
+    MaxColsAtCompileTime = RhsNestedCleaned::MaxColsAtCompileTime;
 
   typedef typename find_best_packet<Scalar,RowsAtCompileTime>::type LhsVecPacketType;
   typedef typename find_best_packet<Scalar,ColsAtCompileTime>::type RhsVecPacketType;
 
-  enum {
+  static constexpr int
 
     LhsCoeffReadCost = LhsEtorType::CoeffReadCost,
     RhsCoeffReadCost = RhsEtorType::CoeffReadCost,
     CoeffReadCost = InnerSize==0 ? NumTraits<Scalar>::ReadCost
                   : InnerSize == Dynamic ? HugeCost
-                    : InnerSize * (NumTraits<Scalar>::MulCost + int(LhsCoeffReadCost) + int(RhsCoeffReadCost))
-                    + (InnerSize - 1) * NumTraits<Scalar>::AddCost,
+                    : InnerSize * (NumTraits<Scalar>::MulCost + LhsCoeffReadCost + RhsCoeffReadCost)
+                    + (InnerSize - 1) * NumTraits<Scalar>::AddCost;
+  static constexpr bool
+    Unroll = CoeffReadCost <= EIGEN_UNROLLING_LIMIT;
 
-    Unroll = CoeffReadCost <= EIGEN_UNROLLING_LIMIT,
-
+  static constexpr int
     LhsFlags = LhsEtorType::Flags,
     RhsFlags = RhsEtorType::Flags,
 
@@ -566,42 +564,44 @@ struct product_evaluator<Product<Lhs, Rhs, LazyProduct>, ProductTag, DenseShape,
     RhsVecPacketSize = unpacket_traits<RhsVecPacketType>::size,
 
     // Here, we don't care about alignment larger than the usable packet size.
-    LhsAlignment = plain_enum_min(LhsEtorType::Alignment, LhsVecPacketSize*int(sizeof(typename LhsNestedCleaned::Scalar))),
-    RhsAlignment = plain_enum_min(RhsEtorType::Alignment, RhsVecPacketSize*int(sizeof(typename RhsNestedCleaned::Scalar))),
+    LhsAlignment = (std::min)(LhsEtorType::Alignment, LhsVecPacketSize*int(sizeof(typename LhsNestedCleaned::Scalar))),
+    RhsAlignment = (std::min)(RhsEtorType::Alignment, RhsVecPacketSize*int(sizeof(typename RhsNestedCleaned::Scalar)));
 
+  static constexpr bool
     SameType = is_same<typename LhsNestedCleaned::Scalar,typename RhsNestedCleaned::Scalar>::value,
 
     CanVectorizeRhs = bool(RhsRowMajor) && (RhsFlags & PacketAccessBit) && (ColsAtCompileTime!=1),
     CanVectorizeLhs = (!LhsRowMajor) && (LhsFlags & PacketAccessBit) && (RowsAtCompileTime!=1),
 
-    EvalToRowMajor = (MaxRowsAtCompileTime==1&&MaxColsAtCompileTime!=1) ? 1
-                    : (MaxColsAtCompileTime==1&&MaxRowsAtCompileTime!=1) ? 0
-                    : (bool(RhsRowMajor) && !CanVectorizeLhs),
+    EvalToRowMajor = (MaxRowsAtCompileTime==1&&MaxColsAtCompileTime!=1) ? true
+                    : (MaxColsAtCompileTime==1&&MaxRowsAtCompileTime!=1) ? false
+                    : (bool(RhsRowMajor) && !CanVectorizeLhs);
 
-    Flags = ((int(LhsFlags) | int(RhsFlags)) & HereditaryBits & ~RowMajorBit)
+  static constexpr int
+    Flags = ((LhsFlags | RhsFlags) & HereditaryBits & ~RowMajorBit)
           | (EvalToRowMajor ? RowMajorBit : 0)
           // TODO enable vectorization for mixed types
           | (SameType && (CanVectorizeLhs || CanVectorizeRhs) ? PacketAccessBit : 0)
           | (XprType::IsVectorAtCompileTime ? LinearAccessBit : 0),
 
-    LhsOuterStrideBytes = int(LhsNestedCleaned::OuterStrideAtCompileTime) * int(sizeof(typename LhsNestedCleaned::Scalar)),
-    RhsOuterStrideBytes = int(RhsNestedCleaned::OuterStrideAtCompileTime) * int(sizeof(typename RhsNestedCleaned::Scalar)),
+    LhsOuterStrideBytes = LhsNestedCleaned::OuterStrideAtCompileTime * int(sizeof(typename LhsNestedCleaned::Scalar)),
+    RhsOuterStrideBytes = RhsNestedCleaned::OuterStrideAtCompileTime * int(sizeof(typename RhsNestedCleaned::Scalar)),
 
-    Alignment = bool(CanVectorizeLhs) ? (LhsOuterStrideBytes<=0 || (int(LhsOuterStrideBytes) % plain_enum_max(1, LhsAlignment))!=0 ? 0 : LhsAlignment)
-              : bool(CanVectorizeRhs) ? (RhsOuterStrideBytes<=0 || (int(RhsOuterStrideBytes) % plain_enum_max(1, RhsAlignment))!=0 ? 0 : RhsAlignment)
-              : 0,
+    Alignment = CanVectorizeLhs ? (LhsOuterStrideBytes<=0 || (LhsOuterStrideBytes % (std::max)(1, LhsAlignment))!=0 ? 0 : LhsAlignment)
+              : CanVectorizeRhs ? (RhsOuterStrideBytes<=0 || (RhsOuterStrideBytes % (std::max)(1, RhsAlignment))!=0 ? 0 : RhsAlignment)
+              : 0;
 
     /* CanVectorizeInner deserves special explanation. It does not affect the product flags. It is not used outside
      * of Product. If the Product itself is not a packet-access expression, there is still a chance that the inner
      * loop of the product might be vectorized. This is the meaning of CanVectorizeInner. Since it doesn't affect
      * the Flags, it is safe to make this value depend on ActualPacketAccessBit, that doesn't affect the ABI.
      */
+  static constexpr bool
     CanVectorizeInner =    SameType
                         && LhsRowMajor
                         && (!RhsRowMajor)
-                        && (int(LhsFlags) & int(RhsFlags) & ActualPacketAccessBit)
-                        && (int(InnerSize) % packet_traits<Scalar>::size == 0)
-  };
+                        && (LhsFlags & RhsFlags & ActualPacketAccessBit)
+                        && (InnerSize % packet_traits<Scalar>::size == 0);
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const CoeffReturnType coeff(Index row, Index col) const
   {
@@ -659,9 +659,8 @@ struct product_evaluator<Product<Lhs, Rhs, DefaultProduct>, LazyCoeffBasedProduc
   typedef Product<Lhs, Rhs, DefaultProduct> XprType;
   typedef Product<Lhs, Rhs, LazyProduct> BaseProduct;
   typedef product_evaluator<BaseProduct, CoeffBasedProductMode, DenseShape, DenseShape> Base;
-  enum {
-    Flags = Base::Flags | EvalBeforeNestingBit
-  };
+  static constexpr int
+    Flags = Base::Flags | EvalBeforeNestingBit;
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   explicit product_evaluator(const XprType& xpr)
     : Base(BaseProduct(xpr.lhs(),xpr.rhs()))
@@ -832,7 +831,7 @@ struct diagonal_product_evaluator_base
 {
    typedef typename ScalarBinaryOpTraits<typename MatrixType::Scalar, typename DiagonalType::Scalar>::ReturnType Scalar;
 public:
-  enum {
+  static constexpr int
     CoeffReadCost = int(NumTraits<Scalar>::MulCost) + int(evaluator<MatrixType>::CoeffReadCost) + int(evaluator<DiagonalType>::CoeffReadCost),
 
     MatrixFlags = evaluator<MatrixType>::Flags,
@@ -840,26 +839,27 @@ public:
 
     StorageOrder_ = (Derived::MaxRowsAtCompileTime==1 && Derived::MaxColsAtCompileTime!=1) ? RowMajor
                   : (Derived::MaxColsAtCompileTime==1 && Derived::MaxRowsAtCompileTime!=1) ? ColMajor
-                  : MatrixFlags & RowMajorBit ? RowMajor : ColMajor,
+                  : MatrixFlags & RowMajorBit ? RowMajor : ColMajor;
+  static constexpr bool
     SameStorageOrder_ = StorageOrder_ == (MatrixFlags & RowMajorBit ? RowMajor : ColMajor),
 
-    ScalarAccessOnDiag_ =  !((int(StorageOrder_) == ColMajor && int(ProductOrder) == OnTheLeft)
-                           ||(int(StorageOrder_) == RowMajor && int(ProductOrder) == OnTheRight)),
+    ScalarAccessOnDiag_ =  !((StorageOrder_ == ColMajor && ProductOrder == OnTheLeft)
+                           ||(StorageOrder_ == RowMajor && ProductOrder == OnTheRight)),
     SameTypes_ = is_same<typename MatrixType::Scalar, typename DiagonalType::Scalar>::value,
     // FIXME currently we need same types, but in the future the next rule should be the one
     //Vectorizable_ = bool(int(MatrixFlags)&PacketAccessBit) && ((!_PacketOnDiag) || (SameTypes_ && bool(int(DiagFlags)&PacketAccessBit))),
-    Vectorizable_ =   bool(int(MatrixFlags)&PacketAccessBit)
+    Vectorizable_ =   bool(MatrixFlags&PacketAccessBit)
                   &&  SameTypes_
                   && (SameStorageOrder_ || (MatrixFlags&LinearAccessBit)==LinearAccessBit)
-                  && (ScalarAccessOnDiag_ || (bool(int(DiagFlags)&PacketAccessBit))),
+                  && (ScalarAccessOnDiag_ || (bool(DiagFlags&PacketAccessBit)));
+  static constexpr int
     LinearAccessMask_ = (MatrixType::RowsAtCompileTime==1 || MatrixType::ColsAtCompileTime==1) ? LinearAccessBit : 0,
     Flags = ((HereditaryBits|LinearAccessMask_) & (unsigned int)(MatrixFlags)) | (Vectorizable_ ? PacketAccessBit : 0),
-    Alignment = evaluator<MatrixType>::Alignment,
-
+    Alignment = evaluator<MatrixType>::Alignment;
+  static constexpr bool
     AsScalarProduct =     (DiagonalType::SizeAtCompileTime==1)
                       ||  (DiagonalType::SizeAtCompileTime==Dynamic && MatrixType::RowsAtCompileTime==1 && ProductOrder==OnTheLeft)
-                      ||  (DiagonalType::SizeAtCompileTime==Dynamic && MatrixType::ColsAtCompileTime==1 && ProductOrder==OnTheRight)
-  };
+                      ||  (DiagonalType::SizeAtCompileTime==Dynamic && MatrixType::ColsAtCompileTime==1 && ProductOrder==OnTheRight);
 
   EIGEN_DEVICE_FUNC diagonal_product_evaluator_base(const MatrixType &mat, const DiagonalType &diag)
     : m_diagImpl(diag), m_matImpl(mat)
@@ -887,10 +887,9 @@ protected:
   template<int LoadMode,typename PacketType>
   EIGEN_STRONG_INLINE PacketType packet_impl(Index row, Index col, Index id, internal::false_type) const
   {
-    enum {
+    static constexpr int
       InnerSize = (MatrixType::Flags & RowMajorBit) ? MatrixType::ColsAtCompileTime : MatrixType::RowsAtCompileTime,
-      DiagonalPacketLoadMode = plain_enum_min(LoadMode,((InnerSize%16) == 0) ? int(Aligned16) : int(evaluator<DiagonalType>::Alignment)) // FIXME hardcoded 16!!
-    };
+      DiagonalPacketLoadMode = (std::min)(LoadMode,((InnerSize%16) == 0) ? Aligned16 : evaluator<DiagonalType>::Alignment); // FIXME hardcoded 16!!
     return internal::pmul(m_matImpl.template packet<LoadMode,PacketType>(row, col),
                           m_diagImpl.template packet<DiagonalPacketLoadMode,PacketType>(id));
   }
@@ -915,7 +914,7 @@ struct product_evaluator<Product<Lhs, Rhs, ProductKind>, ProductTag, DiagonalSha
   typedef typename Lhs::DiagonalVectorType DiagonalType;
 
 
-  enum { StorageOrder = Base::StorageOrder_ };
+  static constexpr int StorageOrder = Base::StorageOrder_;
 
   EIGEN_DEVICE_FUNC explicit product_evaluator(const XprType& xpr)
     : Base(xpr.rhs(), xpr.lhs().diagonal())
@@ -959,7 +958,7 @@ struct product_evaluator<Product<Lhs, Rhs, ProductKind>, ProductTag, DenseShape,
   typedef Product<Lhs, Rhs, ProductKind> XprType;
   typedef typename XprType::PlainObject PlainObject;
 
-  enum { StorageOrder = Base::StorageOrder_ };
+  static constexpr int StorageOrder = Base::StorageOrder_;
 
   EIGEN_DEVICE_FUNC explicit product_evaluator(const XprType& xpr)
     : Base(xpr.lhs(), xpr.rhs().diagonal())

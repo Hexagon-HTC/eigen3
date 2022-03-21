@@ -111,10 +111,9 @@ class IncompleteLUT : public SparseSolverBase<IncompleteLUT<Scalar_, StorageInde
     typedef Matrix<StorageIndex,Dynamic,1> VectorI;
     typedef SparseMatrix<Scalar,RowMajor,StorageIndex> FactorType;
 
-    enum {
+    static constexpr int
       ColsAtCompileTime = Dynamic,
-      MaxColsAtCompileTime = Dynamic
-    };
+      MaxColsAtCompileTime = Dynamic;
 
   public:
 

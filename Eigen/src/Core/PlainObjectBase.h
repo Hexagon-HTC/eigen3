@@ -101,7 +101,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
 #endif
 {
   public:
-    enum { Options = internal::traits<Derived>::Options };
+    static constexpr int Options = internal::traits<Derived>::Options;
     typedef typename internal::dense_xpr_base<Derived>::type Base;
 
     typedef typename internal::traits<Derived>::StorageKind StorageKind;
@@ -133,7 +133,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     DenseStorage<Scalar, Base::MaxSizeAtCompileTime, Base::RowsAtCompileTime, Base::ColsAtCompileTime, Options> m_storage;
 
   public:
-    enum { NeedsToAlign = (SizeAtCompileTime != Dynamic) && (internal::traits<Derived>::Alignment>0) };
+    static constexpr bool NeedsToAlign = (SizeAtCompileTime != Dynamic) && (internal::traits<Derived>::Alignment>0);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(NeedsToAlign)
 
     EIGEN_STATIC_ASSERT(internal::check_implication(MaxRowsAtCompileTime==1 && MaxColsAtCompileTime!=1, (int(Options)&RowMajor)==RowMajor), INVALID_MATRIX_TEMPLATE_PARAMETERS)
@@ -950,8 +950,8 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
     void swap(DenseBase<OtherDerived> & other)
     {
-      enum { SwapPointers = internal::is_same<Derived, OtherDerived>::value && Base::SizeAtCompileTime==Dynamic };
-      internal::matrix_swap_impl<Derived, OtherDerived, bool(SwapPointers)>::run(this->derived(), other.derived());
+      static constexpr bool SwapPointers = internal::is_same<Derived, OtherDerived>::value && Base::SizeAtCompileTime==Dynamic;
+      internal::matrix_swap_impl<Derived, OtherDerived, SwapPointers>::run(this->derived(), other.derived());
     }
 
     /** \internal
@@ -962,7 +962,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     void swap(DenseBase<OtherDerived> const & other)
     { Base::swap(other.derived()); }
 
-    enum { IsPlainObjectBase = 1 };
+    static constexpr bool IsPlainObjectBase = true;
 #endif
   public:
     // These apparently need to be down here for nvcc+icc to prevent duplicate

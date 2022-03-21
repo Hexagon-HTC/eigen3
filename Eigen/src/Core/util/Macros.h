@@ -1110,13 +1110,14 @@ namespace Eigen {
   typedef typename Eigen::internal::ref_selector<Derived>::type Nested; \
   typedef typename Eigen::internal::traits<Derived>::StorageKind StorageKind; \
   typedef typename Eigen::internal::traits<Derived>::StorageIndex StorageIndex; \
-  enum CompileTimeTraits \
-      { RowsAtCompileTime = Eigen::internal::traits<Derived>::RowsAtCompileTime, \
+  static constexpr int \
+        RowsAtCompileTime = Eigen::internal::traits<Derived>::RowsAtCompileTime, \
         ColsAtCompileTime = Eigen::internal::traits<Derived>::ColsAtCompileTime, \
         Flags = Eigen::internal::traits<Derived>::Flags, \
         SizeAtCompileTime = Base::SizeAtCompileTime, \
-        MaxSizeAtCompileTime = Base::MaxSizeAtCompileTime, \
-        IsVectorAtCompileTime = Base::IsVectorAtCompileTime }; \
+        MaxSizeAtCompileTime = Base::MaxSizeAtCompileTime; \
+  static constexpr bool \
+        IsVectorAtCompileTime = Base::IsVectorAtCompileTime; \
   using Base::derived; \
   using Base::const_cast_derived;
 

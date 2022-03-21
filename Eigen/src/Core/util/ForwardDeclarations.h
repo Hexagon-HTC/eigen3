@@ -26,16 +26,17 @@ template<typename T> struct traits<const T> : traits<T> {};
 
 template<typename Derived> struct has_direct_access
 {
-  enum { ret = (traits<Derived>::Flags & DirectAccessBit) ? 1 : 0 };
+  static constexpr bool ret = (traits<Derived>::Flags & DirectAccessBit) == DirectAccessBit;
 };
 
 template<typename Derived> struct accessors_level
 {
-  enum { has_direct_access = (traits<Derived>::Flags & DirectAccessBit) ? 1 : 0,
-         has_write_access = (traits<Derived>::Flags & LvalueBit) ? 1 : 0,
+  static constexpr bool
+         has_direct_access = (traits<Derived>::Flags & DirectAccessBit) == DirectAccessBit,
+         has_write_access = (traits<Derived>::Flags & LvalueBit) == LvalueBit;
+  static constexpr int
          value = has_direct_access ? (has_write_access ? DirectWriteAccessors : DirectAccessors)
-                                   : (has_write_access ? WriteAccessors       : ReadOnlyAccessors)
-  };
+                                   : (has_write_access ? WriteAccessors       : ReadOnlyAccessors);
 };
 
 template<typename T> struct evaluator_traits;

@@ -30,7 +30,7 @@ struct redux_traits
 {
 public:
     typedef typename find_best_packet<typename Evaluator::Scalar,Evaluator::SizeAtCompileTime>::type PacketType;
-  enum {
+  static constexpr int
     PacketSize = unpacket_traits<PacketType>::size,
     InnerMaxSize = int(Evaluator::IsRowMajor)
                  ? Evaluator::MaxColsAtCompileTime
@@ -38,37 +38,32 @@ public:
     OuterMaxSize = int(Evaluator::IsRowMajor)
                  ? Evaluator::MaxRowsAtCompileTime
                  : Evaluator::MaxColsAtCompileTime,
-    SliceVectorizedWork = int(InnerMaxSize)==Dynamic ? Dynamic
-                        : int(OuterMaxSize)==Dynamic ? (int(InnerMaxSize)>=int(PacketSize) ? Dynamic : 0)
-                        : (int(InnerMaxSize)/int(PacketSize)) * int(OuterMaxSize)
-  };
+    SliceVectorizedWork = InnerMaxSize==Dynamic ? Dynamic
+                        : OuterMaxSize==Dynamic ? (InnerMaxSize>=PacketSize ? Dynamic : 0)
+                        : (InnerMaxSize/PacketSize) * OuterMaxSize;
 
-  enum {
-    MightVectorize = (int(Evaluator::Flags)&ActualPacketAccessBit)
+  static constexpr bool
+    MightVectorize = (Evaluator::Flags&ActualPacketAccessBit)
                   && (functor_traits<Func>::PacketAccess),
-    MayLinearVectorize = bool(MightVectorize) && (int(Evaluator::Flags)&LinearAccessBit),
-    MaySliceVectorize  = bool(MightVectorize) && (int(SliceVectorizedWork)==Dynamic || int(SliceVectorizedWork)>=3)
-  };
+    MayLinearVectorize = MightVectorize && (Evaluator::Flags&LinearAccessBit),
+    MaySliceVectorize  = MightVectorize && (SliceVectorizedWork==Dynamic || SliceVectorizedWork>=3);
 
 public:
-  enum {
-    Traversal = int(MayLinearVectorize) ? int(LinearVectorizedTraversal)
-              : int(MaySliceVectorize)  ? int(SliceVectorizedTraversal)
-                                        : int(DefaultTraversal)
-  };
+  static constexpr TraversalType
+    Traversal = MayLinearVectorize ? LinearVectorizedTraversal
+              : MaySliceVectorize  ? SliceVectorizedTraversal
+                                        : DefaultTraversal;
 
 public:
-  enum {
+  static constexpr int
     Cost = Evaluator::SizeAtCompileTime == Dynamic ? HugeCost
-         : int(Evaluator::SizeAtCompileTime) * int(Evaluator::CoeffReadCost) + (Evaluator::SizeAtCompileTime-1) * functor_traits<Func>::Cost,
-    UnrollingLimit = EIGEN_UNROLLING_LIMIT * (int(Traversal) == int(DefaultTraversal) ? 1 : int(PacketSize))
-  };
+         : Evaluator::SizeAtCompileTime * Evaluator::CoeffReadCost + (Evaluator::SizeAtCompileTime-1) * functor_traits<Func>::Cost,
+    UnrollingLimit = EIGEN_UNROLLING_LIMIT * (Traversal == DefaultTraversal ? 1 : PacketSize);
 
 public:
-  enum {
-    Unrolling = Cost <= UnrollingLimit ? CompleteUnrolling : NoUnrolling
-  };
-  
+  static constexpr UnrollingType
+    Unrolling = Cost <= UnrollingLimit ? CompleteUnrolling : NoUnrolling;
+
 #ifdef EIGEN_DEBUG_ASSIGN
   static void debug()
   {
@@ -100,9 +95,8 @@ public:
 template<typename Func, typename Evaluator, int Start, int Length>
 struct redux_novec_unroller
 {
-  enum {
-    HalfLength = Length/2
-  };
+  static constexpr int
+    HalfLength = Length/2;
 
   typedef typename Evaluator::Scalar Scalar;
 
@@ -117,10 +111,9 @@ struct redux_novec_unroller
 template<typename Func, typename Evaluator, int Start>
 struct redux_novec_unroller<Func, Evaluator, Start, 1>
 {
-  enum {
+  static constexpr int
     outer = Start / Evaluator::InnerSizeAtCompileTime,
-    inner = Start % Evaluator::InnerSizeAtCompileTime
-  };
+    inner = Start % Evaluator::InnerSizeAtCompileTime;
 
   typedef typename Evaluator::Scalar Scalar;
 
@@ -151,10 +144,8 @@ struct redux_vec_unroller
   EIGEN_DEVICE_FUNC
   static EIGEN_STRONG_INLINE PacketType run(const Evaluator &eval, const Func& func)
   {
-    enum {
-      PacketSize = unpacket_traits<PacketType>::size,
-      HalfLength = Length/2
-    };
+    static constexpr int
+      HalfLength = Length/2;
 
     return func.packetOp(
             redux_vec_unroller<Func, Evaluator, Start, HalfLength>::template run<PacketType>(eval,func),
@@ -169,13 +160,12 @@ struct redux_vec_unroller<Func, Evaluator, Start, 1>
   EIGEN_DEVICE_FUNC
   static EIGEN_STRONG_INLINE PacketType run(const Evaluator &eval, const Func&)
   {
-    enum {
+    static constexpr int
       PacketSize = unpacket_traits<PacketType>::size,
       index = Start * PacketSize,
       outer = index / int(Evaluator::InnerSizeAtCompileTime),
       inner = index % int(Evaluator::InnerSizeAtCompileTime),
-      alignment = Evaluator::Alignment
-    };
+      alignment = Evaluator::Alignment;
     return eval.template packetByOuterInner<alignment,PacketType>(outer, inner);
   }
 };
@@ -238,10 +228,9 @@ struct redux_impl<Func, Evaluator, LinearVectorizedTraversal, NoUnrolling>
     
     const Index packetSize = redux_traits<Func, Evaluator>::PacketSize;
     const int packetAlignment = unpacket_traits<PacketScalar>::alignment;
-    enum {
-      alignment0 = (bool(Evaluator::Flags & DirectAccessBit) && bool(packet_traits<Scalar>::AlignedOnScalar)) ? int(packetAlignment) : int(Unaligned),
-      alignment = plain_enum_max(alignment0, Evaluator::Alignment)
-    };
+    static constexpr int
+      alignment0 = ((Evaluator::Flags & DirectAccessBit) && packet_traits<Scalar>::AlignedOnScalar) ? packetAlignment : Unaligned,
+      alignment = (std::max)(alignment0, Evaluator::Alignment);
     const Index alignedStart = internal::first_default_aligned(xpr);
     const Index alignedSize2 = ((size-alignedStart)/(2*packetSize))*(2*packetSize);
     const Index alignedSize = ((size-alignedStart)/(packetSize))*(packetSize);
@@ -297,9 +286,8 @@ struct redux_impl<Func, Evaluator, SliceVectorizedTraversal, Unrolling>
     eigen_assert(xpr.rows()>0 && xpr.cols()>0 && "you are using an empty matrix");
     const Index innerSize = xpr.innerSize();
     const Index outerSize = xpr.outerSize();
-    enum {
-      packetSize = redux_traits<Func, Evaluator>::PacketSize
-    };
+    static constexpr int
+      packetSize = redux_traits<Func, Evaluator>::PacketSize;
     const Index packetedInnerSize = ((innerSize)/packetSize)*packetSize;
     Scalar res;
     if(packetedInnerSize)
@@ -330,11 +318,10 @@ struct redux_impl<Func, Evaluator, LinearVectorizedTraversal, CompleteUnrolling>
   typedef typename Evaluator::Scalar Scalar;
 
   typedef typename redux_traits<Func, Evaluator>::PacketType PacketType;
-  enum {
+  static constexpr int
     PacketSize = redux_traits<Func, Evaluator>::PacketSize,
     Size = Evaluator::SizeAtCompileTime,
-    VectorizedSize = (int(Size) / int(PacketSize)) * int(PacketSize)
-  };
+    VectorizedSize = (Size / PacketSize) * PacketSize;
 
   template<typename XprType>
   EIGEN_DEVICE_FUNC static EIGEN_STRONG_INLINE
@@ -368,15 +355,16 @@ public:
   typedef typename XprType::CoeffReturnType CoeffReturnType;
   typedef typename XprType::PacketScalar PacketScalar;
   
-  enum {
+  static constexpr int
     MaxRowsAtCompileTime = XprType::MaxRowsAtCompileTime,
     MaxColsAtCompileTime = XprType::MaxColsAtCompileTime,
     // TODO we should not remove DirectAccessBit and rather find an elegant way to query the alignment offset at runtime from the evaluator
-    Flags = Base::Flags & ~DirectAccessBit,
-    IsRowMajor = XprType::IsRowMajor,
+    Flags = Base::Flags & ~DirectAccessBit;
+  static constexpr bool
+    IsRowMajor = XprType::IsRowMajor;
+  static constexpr int
     SizeAtCompileTime = XprType::SizeAtCompileTime,
-    InnerSizeAtCompileTime = XprType::InnerSizeAtCompileTime
-  };
+    InnerSizeAtCompileTime = XprType::InnerSizeAtCompileTime;
   
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   CoeffReturnType coeffByOuterInner(Index outer, Index inner) const

@@ -29,15 +29,14 @@ template<typename Lhs, typename Rhs, int Side>
 class trsolve_traits
 {
   private:
-    enum {
-      RhsIsVectorAtCompileTime = (Side==OnTheLeft ? Rhs::ColsAtCompileTime : Rhs::RowsAtCompileTime)==1
-    };
+    static constexpr bool
+      RhsIsVectorAtCompileTime = (Side==OnTheLeft ? Rhs::ColsAtCompileTime : Rhs::RowsAtCompileTime)==1;
   public:
-    enum {
+    static constexpr UnrollingType
       Unrolling   = (RhsIsVectorAtCompileTime && Rhs::SizeAtCompileTime != Dynamic && Rhs::SizeAtCompileTime <= 8)
-                  ? CompleteUnrolling : NoUnrolling,
-      RhsVectors  = RhsIsVectorAtCompileTime ? 1 : Dynamic
-    };
+                  ? CompleteUnrolling : NoUnrolling;
+    static constexpr int
+      RhsVectors  = RhsIsVectorAtCompileTime ? 1 : Dynamic;
 };
 
 template<typename Lhs, typename Rhs,
@@ -115,11 +114,11 @@ struct triangular_solver_unroller;
 
 template<typename Lhs, typename Rhs, int Mode, int LoopIndex, int Size>
 struct triangular_solver_unroller<Lhs,Rhs,Mode,LoopIndex,Size,false> {
-  enum {
-    IsLower = ((Mode&Lower)==Lower),
+  static constexpr bool
+    IsLower = ((Mode&Lower)==Lower);
+  static constexpr int
     DiagIndex  = IsLower ? LoopIndex : Size - LoopIndex - 1,
-    StartIndex = IsLower ? 0         : DiagIndex+1
-  };
+    StartIndex = IsLower ? 0         : DiagIndex+1;
   static EIGEN_DEVICE_FUNC void run(const Lhs& lhs, Rhs& rhs)
   {
     if (LoopIndex>0)
@@ -175,7 +174,9 @@ EIGEN_DEVICE_FUNC void TriangularViewImpl<MatrixType,Mode,Dense>::solveInPlace(c
   if (derived().cols() == 0)
     return;
 
-  enum { copy = (internal::traits<OtherDerived>::Flags & RowMajorBit)  && OtherDerived::IsVectorAtCompileTime && OtherDerived::SizeAtCompileTime!=1};
+  static constexpr bool copy = (internal::traits<OtherDerived>::Flags & RowMajorBit)
+    && OtherDerived::IsVectorAtCompileTime
+    && OtherDerived::SizeAtCompileTime != 1;
   typedef std::conditional_t<copy,
     typename internal::plain_matrix_type_column_major<OtherDerived>::type, OtherDerived&> OtherCopy;
   OtherCopy otherCopy(other);

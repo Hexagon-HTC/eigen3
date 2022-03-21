@@ -118,11 +118,11 @@ class PardisoImpl : public SparseSolverBase<Derived>
     typedef Matrix<StorageIndex, 1, MatrixType::ColsAtCompileTime> IntRowVectorType;
     typedef Matrix<StorageIndex, MatrixType::RowsAtCompileTime, 1> IntColVectorType;
     typedef Array<StorageIndex,64,1,DontAlign> ParameterType;
-    enum {
-      ScalarIsComplex = NumTraits<Scalar>::IsComplex,
+    static constexpr bool
+      ScalarIsComplex = NumTraits<Scalar>::IsComplex;
+    static constexpr int
       ColsAtCompileTime = Dynamic,
-      MaxColsAtCompileTime = Dynamic
-    };
+      MaxColsAtCompileTime = Dynamic;
 
     PardisoImpl()
       : m_analysisIsOk(false), m_factorizationIsOk(false)
@@ -453,7 +453,7 @@ class PardisoLLT : public PardisoImpl< PardisoLLT<MatrixType,UpLo_> >
     typedef typename Base::Scalar Scalar;
     typedef typename Base::RealScalar RealScalar;
     typedef typename Base::StorageIndex StorageIndex;
-    enum { UpLo = UpLo_ };
+    static constexpr int UpLo = UpLo_;
     using Base::compute;
 
     PardisoLLT()
@@ -517,7 +517,7 @@ class PardisoLDLT : public PardisoImpl< PardisoLDLT<MatrixType,Options> >
     typedef typename Base::RealScalar RealScalar;
     typedef typename Base::StorageIndex StorageIndex;
     using Base::compute;
-    enum { UpLo = Options&(Upper|Lower) };
+    static constexpr int UpLo = Options&(Upper|Lower);
 
     PardisoLDLT()
       : Base()

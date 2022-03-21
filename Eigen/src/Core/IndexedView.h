@@ -20,45 +20,54 @@ template<typename XprType, typename RowIndices, typename ColIndices>
 struct traits<IndexedView<XprType, RowIndices, ColIndices> >
  : traits<XprType>
 {
-  enum {
+  static constexpr int
     RowsAtCompileTime = int(array_size<RowIndices>::value),
     ColsAtCompileTime = int(array_size<ColIndices>::value),
     MaxRowsAtCompileTime = RowsAtCompileTime,
-    MaxColsAtCompileTime = ColsAtCompileTime,
+    MaxColsAtCompileTime = ColsAtCompileTime;
 
-    XprTypeIsRowMajor = (int(traits<XprType>::Flags)&RowMajorBit) != 0,
-    IsRowMajor = (MaxRowsAtCompileTime==1&&MaxColsAtCompileTime!=1) ? 1
-               : (MaxColsAtCompileTime==1&&MaxRowsAtCompileTime!=1) ? 0
-               : XprTypeIsRowMajor,
+  static constexpr bool
+    XprTypeIsRowMajor = (traits<XprType>::Flags&RowMajorBit) != 0,
+    IsRowMajor = (MaxRowsAtCompileTime==1&&MaxColsAtCompileTime!=1) ? true
+               : (MaxColsAtCompileTime==1&&MaxRowsAtCompileTime!=1) ? false
+               : XprTypeIsRowMajor;
 
+  static constexpr int
     RowIncr = int(get_compile_time_incr<RowIndices>::value),
     ColIncr = int(get_compile_time_incr<ColIndices>::value),
     InnerIncr = IsRowMajor ? ColIncr : RowIncr,
-    OuterIncr = IsRowMajor ? RowIncr : ColIncr,
+    OuterIncr = IsRowMajor ? RowIncr : ColIncr;
 
-    HasSameStorageOrderAsXprType = (IsRowMajor == XprTypeIsRowMajor),
+  static constexpr bool
+    HasSameStorageOrderAsXprType = (IsRowMajor == XprTypeIsRowMajor);
+
+  static constexpr int
     XprInnerStride = HasSameStorageOrderAsXprType ? int(inner_stride_at_compile_time<XprType>::ret) : int(outer_stride_at_compile_time<XprType>::ret),
     XprOuterstride = HasSameStorageOrderAsXprType ? int(outer_stride_at_compile_time<XprType>::ret) : int(inner_stride_at_compile_time<XprType>::ret),
 
-    InnerSize = XprTypeIsRowMajor ? ColsAtCompileTime : RowsAtCompileTime,
+    InnerSize = XprTypeIsRowMajor ? ColsAtCompileTime : RowsAtCompileTime;
+
+  static constexpr bool
     IsBlockAlike = InnerIncr==1 && OuterIncr==1,
-    IsInnerPannel = HasSameStorageOrderAsXprType && is_same<AllRange<InnerSize>,std::conditional_t<XprTypeIsRowMajor,ColIndices,RowIndices>>::value,
+    IsInnerPannel = HasSameStorageOrderAsXprType && is_same<AllRange<InnerSize>,std::conditional_t<XprTypeIsRowMajor,ColIndices,RowIndices>>::value;
 
+  static constexpr int
     InnerStrideAtCompileTime = InnerIncr<0 || InnerIncr==DynamicIndex || XprInnerStride==Dynamic || InnerIncr==UndefinedIncr ? Dynamic : XprInnerStride * InnerIncr,
-    OuterStrideAtCompileTime = OuterIncr<0 || OuterIncr==DynamicIndex || XprOuterstride==Dynamic || OuterIncr==UndefinedIncr ? Dynamic : XprOuterstride * OuterIncr,
+    OuterStrideAtCompileTime = OuterIncr<0 || OuterIncr==DynamicIndex || XprOuterstride==Dynamic || OuterIncr==UndefinedIncr ? Dynamic : XprOuterstride * OuterIncr;
 
+  static constexpr bool
     ReturnAsScalar = is_same<RowIndices,SingleRange>::value && is_same<ColIndices,SingleRange>::value,
     ReturnAsBlock = (!ReturnAsScalar) && IsBlockAlike,
-    ReturnAsIndexedView = (!ReturnAsScalar) && (!ReturnAsBlock),
+    ReturnAsIndexedView = (!ReturnAsScalar) && (!ReturnAsBlock);
 
     // FIXME we deal with compile-time strides if and only if we have DirectAccessBit flag,
     // but this is too strict regarding negative strides...
+  static constexpr int
     DirectAccessMask = (int(InnerIncr)!=UndefinedIncr && int(OuterIncr)!=UndefinedIncr && InnerIncr>=0 && OuterIncr>=0) ? DirectAccessBit : 0,
     FlagsRowMajorBit = IsRowMajor ? RowMajorBit : 0,
     FlagsLvalueBit = is_lvalue<XprType>::value ? LvalueBit : 0,
     FlagsLinearAccessBit = (RowsAtCompileTime == 1 || ColsAtCompileTime == 1) ? LinearAccessBit : 0,
-    Flags = (traits<XprType>::Flags & (HereditaryBits | DirectAccessMask )) | FlagsLvalueBit | FlagsRowMajorBit | FlagsLinearAccessBit
-  };
+    Flags = (traits<XprType>::Flags & (HereditaryBits | DirectAccessMask )) | FlagsLvalueBit | FlagsRowMajorBit | FlagsLinearAccessBit;
 
   typedef Block<XprType,RowsAtCompileTime,ColsAtCompileTime,IsInnerPannel> BlockType;
 };
@@ -168,17 +177,16 @@ struct unary_evaluator<IndexedView<ArgType, RowIndices, ColIndices>, IndexBased>
 {
   typedef IndexedView<ArgType, RowIndices, ColIndices> XprType;
 
-  enum {
+  static constexpr int
     CoeffReadCost = evaluator<ArgType>::CoeffReadCost /* TODO + cost of row/col index */,
 
     FlagsLinearAccessBit = (traits<XprType>::RowsAtCompileTime == 1 || traits<XprType>::ColsAtCompileTime == 1) ? LinearAccessBit : 0,
 
-    FlagsRowMajorBit = traits<XprType>::FlagsRowMajorBit, 
+    FlagsRowMajorBit = traits<XprType>::FlagsRowMajorBit,
 
     Flags = (evaluator<ArgType>::Flags & (HereditaryBits & ~RowMajorBit /*| LinearAccessBit | DirectAccessBit*/)) | FlagsLinearAccessBit | FlagsRowMajorBit,
 
-    Alignment = 0
-  };
+    Alignment = 0;
 
   EIGEN_DEVICE_FUNC explicit unary_evaluator(const XprType& xpr) : m_argImpl(xpr.nestedExpression()), m_xpr(xpr)
   {

@@ -97,7 +97,7 @@ template<typename T,int Rows,int Flags> struct sparse_eval<T,Rows,1,Flags> {
 template<typename T,int Rows,int Cols,int Flags> struct sparse_eval {
     typedef typename traits<T>::Scalar Scalar_;
     typedef typename traits<T>::StorageIndex StorageIndex_;
-    enum { Options_ = ((Flags&RowMajorBit)==RowMajorBit) ? RowMajor : ColMajor };
+    static constexpr int Options_ = ((Flags&RowMajorBit)==RowMajorBit) ? RowMajor : ColMajor;
   public:
     typedef SparseMatrix<Scalar_, Options_, StorageIndex_> type;
 };
@@ -112,7 +112,7 @@ template<typename T> struct plain_matrix_type<T,Sparse>
 {
   typedef typename traits<T>::Scalar Scalar_;
   typedef typename traits<T>::StorageIndex StorageIndex_;
-  enum { Options_ = ((evaluator<T>::Flags&RowMajorBit)==RowMajorBit) ? RowMajor : ColMajor };
+  static constexpr int Options_ = ((evaluator<T>::Flags&RowMajorBit)==RowMajorBit) ? RowMajor : ColMajor;
   public:
     typedef SparseMatrix<Scalar_, Options_, StorageIndex_> type;
 };

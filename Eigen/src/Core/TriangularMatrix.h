@@ -30,7 +30,7 @@ template<typename Derived> class TriangularBase : public EigenBase<Derived>
 {
   public:
 
-    enum {
+    static constexpr int
       Mode = internal::traits<Derived>::Mode,
       RowsAtCompileTime = internal::traits<Derived>::RowsAtCompileTime,
       ColsAtCompileTime = internal::traits<Derived>::ColsAtCompileTime,
@@ -44,9 +44,7 @@ template<typename Derived> class TriangularBase : public EigenBase<Derived>
           * known at compile-time. \sa RowsAtCompileTime, ColsAtCompileTime */
 
       MaxSizeAtCompileTime = (internal::size_at_compile_time<internal::traits<Derived>::MaxRowsAtCompileTime,
-                                                   internal::traits<Derived>::MaxColsAtCompileTime>::ret)
-
-    };
+                                                   internal::traits<Derived>::MaxColsAtCompileTime>::ret);
     typedef typename internal::traits<Derived>::Scalar Scalar;
     typedef typename internal::traits<Derived>::StorageKind StorageKind;
     typedef typename internal::traits<Derived>::StorageIndex StorageIndex;
@@ -176,11 +174,10 @@ struct traits<TriangularView<MatrixType, Mode_> > : traits<MatrixType>
   typedef remove_all_t<MatrixTypeNested> MatrixTypeNestedCleaned;
   typedef typename MatrixType::PlainObject FullMatrixType;
   typedef MatrixType ExpressionType;
-  enum {
+  static constexpr int
     Mode = Mode_,
     FlagsLvalueBit = is_lvalue<MatrixType>::value ? LvalueBit : 0,
-    Flags = (MatrixTypeNestedCleaned::Flags & (HereditaryBits | FlagsLvalueBit) & (~(PacketAccessBit | DirectAccessBit | LinearAccessBit)))
-  };
+    Flags = (MatrixTypeNestedCleaned::Flags & (HereditaryBits | FlagsLvalueBit) & (~(PacketAccessBit | DirectAccessBit | LinearAccessBit)));
 };
 }
 
@@ -207,15 +204,15 @@ template<typename MatrixType_, unsigned int Mode_> class TriangularView
     typedef typename internal::traits<TriangularView>::StorageKind StorageKind;
     typedef typename internal::traits<TriangularView>::MatrixTypeNestedCleaned NestedExpression;
 
-    enum {
+    static constexpr int
       Mode = Mode_,
       Flags = internal::traits<TriangularView>::Flags,
       TransposeMode = (Mode & Upper ? Lower : 0)
                     | (Mode & Lower ? Upper : 0)
                     | (Mode & (UnitDiag))
-                    | (Mode & (ZeroDiag)),
-      IsVectorAtCompileTime = false
-    };
+                    | (Mode & (ZeroDiag));
+    static constexpr bool
+      IsVectorAtCompileTime = false;
 
     EIGEN_DEVICE_FUNC
     explicit inline TriangularView(MatrixType& matrix) : m_matrix(matrix)
@@ -364,10 +361,9 @@ template<typename MatrixType_, unsigned int Mode_> class TriangularViewImpl<Matr
 
     typedef typename internal::traits<TriangularViewType>::StorageKind StorageKind;
 
-    enum {
+    static constexpr int
       Mode = Mode_,
-      Flags = internal::traits<TriangularViewType>::Flags
-    };
+      Flags = internal::traits<TriangularViewType>::Flags;
 
     /** \returns the outer-stride of the underlying dense matrix
       * \sa DenseCoeffsBase::outerStride() */
@@ -819,11 +815,10 @@ void call_triangular_assignment_loop(DstXprType& dst, const SrcXprType& src, con
                                               DstEvaluatorType,SrcEvaluatorType,Functor> Kernel;
   Kernel kernel(dstEvaluator, srcEvaluator, func, dst.const_cast_derived());
 
-  enum {
+  static constexpr bool
       unroll = DstXprType::SizeAtCompileTime != Dynamic
             && SrcEvaluatorType::CoeffReadCost < HugeCost
-            && DstXprType::SizeAtCompileTime * (int(DstEvaluatorType::CoeffReadCost) + int(SrcEvaluatorType::CoeffReadCost)) / 2 <= EIGEN_UNROLLING_LIMIT
-    };
+            && DstXprType::SizeAtCompileTime * (DstEvaluatorType::CoeffReadCost + SrcEvaluatorType::CoeffReadCost) / 2 <= EIGEN_UNROLLING_LIMIT;
 
   triangular_assignment_loop<Kernel, Mode, unroll ? int(DstXprType::SizeAtCompileTime) : Dynamic, SetOpposite>::run(kernel);
 }
@@ -877,10 +872,9 @@ struct triangular_assignment_loop
   typedef typename Kernel::DstEvaluatorType DstEvaluatorType;
   typedef typename DstEvaluatorType::XprType DstXprType;
 
-  enum {
+  static constexpr int
     col = (UnrollCount-1) / DstXprType::RowsAtCompileTime,
-    row = (UnrollCount-1) % DstXprType::RowsAtCompileTime
-  };
+    row = (UnrollCount-1) % DstXprType::RowsAtCompileTime;
 
   typedef typename Kernel::Scalar Scalar;
 

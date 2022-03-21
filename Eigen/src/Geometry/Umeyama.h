@@ -33,13 +33,12 @@ namespace internal {
 template<typename MatrixType, typename OtherMatrixType>
 struct umeyama_transform_matrix_type
 {
-  enum {
+  static constexpr int
     MinRowsAtCompileTime = internal::min_size_prefer_dynamic(MatrixType::RowsAtCompileTime, OtherMatrixType::RowsAtCompileTime),
 
     // When possible we want to choose some small fixed size value since the result
     // is likely to fit on the stack. So here, min_size_prefer_dynamic is not what we want.
-    HomogeneousDimension = int(MinRowsAtCompileTime) == Dynamic ? Dynamic : int(MinRowsAtCompileTime)+1
-  };
+    HomogeneousDimension = MinRowsAtCompileTime == Dynamic ? Dynamic : MinRowsAtCompileTime+1;
 
   typedef Matrix<typename traits<MatrixType>::Scalar,
     HomogeneousDimension,
@@ -104,7 +103,7 @@ umeyama(const MatrixBase<Derived>& src, const MatrixBase<OtherDerived>& dst, boo
   EIGEN_STATIC_ASSERT((internal::is_same<Scalar, typename internal::traits<OtherDerived>::Scalar>::value),
     YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
 
-  enum { Dimension = internal::min_size_prefer_dynamic(Derived::RowsAtCompileTime, OtherDerived::RowsAtCompileTime) };
+  static constexpr int Dimension = internal::min_size_prefer_dynamic(Derived::RowsAtCompileTime, OtherDerived::RowsAtCompileTime);
 
   typedef Matrix<Scalar, Dimension, 1> VectorType;
   typedef Matrix<Scalar, Dimension, Dimension> MatrixType;

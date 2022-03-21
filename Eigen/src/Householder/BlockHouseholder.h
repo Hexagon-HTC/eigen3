@@ -87,12 +87,12 @@ void make_block_householder_triangular_factor(TriangularFactorType& triFactor, c
 template<typename MatrixType,typename VectorsType,typename CoeffsType>
 void apply_block_householder_on_the_left(MatrixType& mat, const VectorsType& vectors, const CoeffsType& hCoeffs, bool forward)
 {
-  enum { TFactorSize = MatrixType::ColsAtCompileTime };
+  static constexpr int TFactorSize = MatrixType::ColsAtCompileTime;
   Index nbVecs = vectors.cols();
   Matrix<typename MatrixType::Scalar, TFactorSize, TFactorSize, RowMajor> T(nbVecs,nbVecs);
-  
+
   if(forward) make_block_householder_triangular_factor(T, vectors, hCoeffs);
-  else        make_block_householder_triangular_factor(T, vectors, hCoeffs.conjugate());  
+  else        make_block_householder_triangular_factor(T, vectors, hCoeffs.conjugate()); 
   const TriangularView<const VectorsType, UnitLower> V(vectors);
 
   // A -= V T V^* A

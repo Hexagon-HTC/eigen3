@@ -24,7 +24,7 @@ namespace internal {
     typedef MatrixXpr XprKind;
     typedef SolverStorage StorageKind;
     typedef int StorageIndex;
-    enum { Flags = 0 };
+    static constexpr int Flags = 0;
   };
 
   template<typename MatrixType, int UpLo> struct LDLT_Traits;
@@ -67,11 +67,10 @@ template<typename MatrixType_, int UpLo_> class LDLT
     friend class SolverBase<LDLT>;
 
     EIGEN_GENERIC_PUBLIC_INTERFACE(LDLT)
-    enum {
+    static constexpr int
       MaxRowsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
       MaxColsAtCompileTime = MatrixType::MaxColsAtCompileTime,
-      UpLo = UpLo_
-    };
+      UpLo = UpLo_;
     typedef Matrix<Scalar, RowsAtCompileTime, 1, 0, MaxRowsAtCompileTime, 1> TmpMatrixType;
 
     typedef Transpositions<RowsAtCompileTime, MaxRowsAtCompileTime> TranspositionType;

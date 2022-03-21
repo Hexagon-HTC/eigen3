@@ -21,7 +21,7 @@ class BandMatrixBase : public EigenBase<Derived>
 {
   public:
 
-    enum {
+    static constexpr int
       Flags = internal::traits<Derived>::Flags,
       CoeffReadCost = internal::traits<Derived>::CoeffReadCost,
       RowsAtCompileTime = internal::traits<Derived>::RowsAtCompileTime,
@@ -30,8 +30,7 @@ class BandMatrixBase : public EigenBase<Derived>
       MaxColsAtCompileTime = internal::traits<Derived>::MaxColsAtCompileTime,
       Supers = internal::traits<Derived>::Supers,
       Subs   = internal::traits<Derived>::Subs,
-      Options = internal::traits<Derived>::Options
-    };
+      Options = internal::traits<Derived>::Options;
     typedef typename internal::traits<Derived>::Scalar Scalar;
     typedef Matrix<Scalar,RowsAtCompileTime,ColsAtCompileTime> DenseMatrixType;
     typedef typename DenseMatrixType::StorageIndex StorageIndex;
@@ -39,12 +38,11 @@ class BandMatrixBase : public EigenBase<Derived>
     typedef EigenBase<Derived> Base;
 
   protected:
-    enum {
+    static constexpr int
       DataRowsAtCompileTime = ((Supers!=Dynamic) && (Subs!=Dynamic))
                             ? 1 + Supers + Subs
                             : Dynamic,
-      SizeAtCompileTime = min_size_prefer_dynamic(RowsAtCompileTime,ColsAtCompileTime)
-    };
+      SizeAtCompileTime = min_size_prefer_dynamic(RowsAtCompileTime,ColsAtCompileTime);
 
   public:
 
@@ -91,16 +89,16 @@ class BandMatrixBase : public EigenBase<Derived>
     { return Block<const CoefficientsType,1,SizeAtCompileTime>(coeffs(),supers(),0,1,(std::min)(rows(),cols())); }
 
     template<int Index> struct DiagonalIntReturnType {
-      enum {
-        ReturnOpposite = (int(Options) & int(SelfAdjoint)) && (((Index) > 0 && Supers == 0) || ((Index) < 0 && Subs == 0)),
-        Conjugate = ReturnOpposite && NumTraits<Scalar>::IsComplex,
+      static constexpr bool
+        ReturnOpposite = (Options & SelfAdjoint) && (((Index) > 0 && Supers == 0) || ((Index) < 0 && Subs == 0)),
+        Conjugate = ReturnOpposite && NumTraits<Scalar>::IsComplex;
+      static constexpr int
         ActualIndex = ReturnOpposite ? -Index : Index,
         DiagonalSize = (RowsAtCompileTime==Dynamic || ColsAtCompileTime==Dynamic)
                      ? Dynamic
                      : (ActualIndex<0
                      ? min_size_prefer_dynamic(ColsAtCompileTime, RowsAtCompileTime + ActualIndex)
-                     : min_size_prefer_dynamic(RowsAtCompileTime, ColsAtCompileTime - ActualIndex))
-      };
+                     : min_size_prefer_dynamic(RowsAtCompileTime, ColsAtCompileTime - ActualIndex));
       typedef Block<CoefficientsType,1, DiagonalSize> BuildType;
       typedef std::conditional_t<Conjugate,
                  CwiseUnaryOp<internal::scalar_conjugate_op<Scalar>,BuildType >,
@@ -182,7 +180,7 @@ struct traits<BandMatrix<Scalar_,Rows_,Cols_,Supers_,Subs_,Options_> >
   typedef Scalar_ Scalar;
   typedef Dense StorageKind;
   typedef Eigen::Index StorageIndex;
-  enum {
+  static constexpr int
     CoeffReadCost = NumTraits<Scalar>::ReadCost,
     RowsAtCompileTime = Rows_,
     ColsAtCompileTime = Cols_,
@@ -192,8 +190,7 @@ struct traits<BandMatrix<Scalar_,Rows_,Cols_,Supers_,Subs_,Options_> >
     Supers = Supers_,
     Subs = Subs_,
     Options = Options_,
-    DataRowsAtCompileTime = ((Supers!=Dynamic) && (Subs!=Dynamic)) ? 1 + Supers + Subs : Dynamic
-  };
+    DataRowsAtCompileTime = ((Supers!=Dynamic) && (Subs!=Dynamic)) ? 1 + Supers + Subs : Dynamic;
   typedef Matrix<Scalar, DataRowsAtCompileTime, ColsAtCompileTime, int(Options) & int(RowMajor) ? RowMajor : ColMajor> CoefficientsType;
 };
 
@@ -244,7 +241,7 @@ struct traits<BandMatrixWrapper<CoefficientsType_,Rows_,Cols_,Supers_,Subs_,Opti
   typedef typename CoefficientsType_::Scalar Scalar;
   typedef typename CoefficientsType_::StorageKind StorageKind;
   typedef typename CoefficientsType_::StorageIndex StorageIndex;
-  enum {
+  static constexpr int
     CoeffReadCost = internal::traits<CoefficientsType_>::CoeffReadCost,
     RowsAtCompileTime = Rows_,
     ColsAtCompileTime = Cols_,
@@ -254,8 +251,7 @@ struct traits<BandMatrixWrapper<CoefficientsType_,Rows_,Cols_,Supers_,Subs_,Opti
     Supers = Supers_,
     Subs = Subs_,
     Options = Options_,
-    DataRowsAtCompileTime = ((Supers!=Dynamic) && (Subs!=Dynamic)) ? 1 + Supers + Subs : Dynamic
-  };
+    DataRowsAtCompileTime = ((Supers!=Dynamic) && (Subs!=Dynamic)) ? 1 + Supers + Subs : Dynamic;
   typedef CoefficientsType_ CoefficientsType;
 };
 

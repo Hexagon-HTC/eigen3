@@ -24,11 +24,10 @@ template<typename MatrixType_> class UpperBidiagonalization
   public:
 
     typedef MatrixType_ MatrixType;
-    enum {
+    static constexpr int
       RowsAtCompileTime = MatrixType::RowsAtCompileTime,
       ColsAtCompileTime = MatrixType::ColsAtCompileTime,
-      ColsAtCompileTimeMinusOne = internal::decrement_size<ColsAtCompileTime>::ret
-    };
+      ColsAtCompileTimeMinusOne = internal::decrement_size<ColsAtCompileTime>::ret;
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::RealScalar RealScalar;
     typedef Eigen::Index Index; ///< \deprecated since Eigen 3.3
