@@ -16,18 +16,6 @@ namespace Eigen {
 
 namespace internal {
 
-template<typename A, typename B>
-struct make_coherent_impl {
-  static void run(A&, B&) {}
-};
-
-// resize a to match b is a.size()==0, and conversely.
-template<typename A, typename B>
-void make_coherent(const A& a, const B&b)
-{
-  make_coherent_impl<A,B>::run(a.const_cast_derived(), b.const_cast_derived());
-}
-
 template<typename DerivativeType, bool Enable> struct auto_diff_special_op;
 
 } // end namespace internal
@@ -207,13 +195,11 @@ class AutoDiffScalar
     }
 
     template<typename OtherDerType>
-    inline AutoDiffScalar<CwiseBinaryOp<internal::scalar_sum_op<Scalar>,const DerType,const internal::remove_all_t<OtherDerType>> >
-    operator+(const AutoDiffScalar<OtherDerType>& other) const
+    inline auto operator+(const AutoDiffScalar<OtherDerType>& other) const
     {
-      internal::make_coherent(m_derivatives, other.derivatives());
-      return AutoDiffScalar<CwiseBinaryOp<internal::scalar_sum_op<Scalar>,const DerType,const internal::remove_all_t<OtherDerType>> >(
+      return MakeAutoDiffScalar(
         m_value + other.value(),
-        m_derivatives + other.derivatives());
+        internal::MakeCoherentCwiseBinaryOp<internal::scalar_sum_op<Scalar>>(m_derivatives, other.derivatives()));
     }
 
     template<typename OtherDerType>
@@ -243,13 +229,11 @@ class AutoDiffScalar
     }
 
     template<typename OtherDerType>
-    inline AutoDiffScalar<CwiseBinaryOp<internal::scalar_difference_op<Scalar>, const DerType,const internal::remove_all_t<OtherDerType>> >
-    operator-(const AutoDiffScalar<OtherDerType>& other) const
+    inline auto operator-(const AutoDiffScalar<OtherDerType>& other) const
     {
-      internal::make_coherent(m_derivatives, other.derivatives());
-      return AutoDiffScalar<CwiseBinaryOp<internal::scalar_difference_op<Scalar>, const DerType,const internal::remove_all_t<OtherDerType>> >(
+      return MakeAutoDiffScalar(
         m_value - other.value(),
-        m_derivatives - other.derivatives());
+        internal::MakeCoherentCwiseBinaryOp<internal::scalar_difference_op<Scalar>>(m_derivatives, other.derivatives()));
     }
 
     template<typename OtherDerType>
@@ -268,14 +252,12 @@ class AutoDiffScalar
         -m_derivatives);
     }
 
-    inline AutoDiffScalar<EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(DerType,Scalar,product) >
-    operator*(const Scalar& other) const
+    inline auto operator*(const Scalar& other) const
     {
       return MakeAutoDiffScalar(m_value * other, m_derivatives * other);
     }
 
-    friend inline AutoDiffScalar<EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(DerType,Scalar,product) >
-    operator*(const Scalar& other, const AutoDiffScalar& a)
+    friend inline auto operator*(const Scalar& other, const AutoDiffScalar& a)
     {
       return MakeAutoDiffScalar(a.value() * other, a.derivatives() * other);
     }
@@ -296,14 +278,12 @@ class AutoDiffScalar
 //         a.derivatives() * other);
 //     }
 
-    inline AutoDiffScalar<EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(DerType,Scalar,product) >
-    operator/(const Scalar& other) const
+    inline auto operator/(const Scalar& other) const
     {
       return MakeAutoDiffScalar(m_value / other, (m_derivatives * (Scalar(1)/other)));
     }
 
-    friend inline AutoDiffScalar<EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(DerType,Scalar,product) >
-    operator/(const Scalar& other, const AutoDiffScalar& a)
+    friend inline auto operator/(const Scalar& other, const AutoDiffScalar& a)
     {
       return MakeAutoDiffScalar(other / a.value(), a.derivatives() * (Scalar(-other) / (a.value()*a.value())));
     }
@@ -325,29 +305,20 @@ class AutoDiffScalar
 //     }
 
     template<typename OtherDerType>
-    inline AutoDiffScalar<EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(
-        CwiseBinaryOp<internal::scalar_difference_op<Scalar> EIGEN_COMMA
-          const EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(DerType,Scalar,product) EIGEN_COMMA
-          const EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(internal::remove_all_t<OtherDerType>,Scalar,product) >,Scalar,product) >
-    operator/(const AutoDiffScalar<OtherDerType>& other) const
+    inline auto operator/(const AutoDiffScalar<OtherDerType>& other) const
     {
-      internal::make_coherent(m_derivatives, other.derivatives());
       return MakeAutoDiffScalar(
         m_value / other.value(),
-          ((m_derivatives * other.value()) - (other.derivatives() * m_value))
-        * (Scalar(1)/(other.value()*other.value())));
+        internal::MakeCoherentCwiseBinaryOp<internal::scalar_difference_op<Scalar>>(
+          m_derivatives * other.value(), (other.derivatives() * m_value) ) * (Scalar(1)/(other.value()*other.value())));
     }
 
     template<typename OtherDerType>
-    inline AutoDiffScalar<CwiseBinaryOp<internal::scalar_sum_op<Scalar>,
-        const EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(DerType,Scalar,product),
-        const EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(internal::remove_all_t<OtherDerType>,Scalar,product) > >
-    operator*(const AutoDiffScalar<OtherDerType>& other) const
+    inline auto operator*(const AutoDiffScalar<OtherDerType>& other) const
     {
-      internal::make_coherent(m_derivatives, other.derivatives());
       return MakeAutoDiffScalar(
         m_value * other.value(),
-        (m_derivatives * other.value()) + (other.derivatives() * m_value));
+        internal::MakeCoherentCwiseBinaryOp<internal::scalar_sum_op<Scalar>>(m_derivatives * other.value(), other.derivatives() * m_value));
     }
 
     inline AutoDiffScalar& operator*=(const Scalar& other)
@@ -455,76 +426,6 @@ struct auto_diff_special_op<DerivativeType, false>
   void operator+() const;
 };
 
-template<typename BinOp, typename A, typename B, typename RefType>
-void make_coherent_expression(CwiseBinaryOp<BinOp,A,B> xpr, const RefType &ref)
-{
-  make_coherent(xpr.const_cast_derived().lhs(), ref);
-  make_coherent(xpr.const_cast_derived().rhs(), ref);
-}
-
-template<typename UnaryOp, typename A, typename RefType>
-void make_coherent_expression(const CwiseUnaryOp<UnaryOp,A> &xpr, const RefType &ref)
-{
-  make_coherent(xpr.nestedExpression().const_cast_derived(), ref);
-}
-
-// needed for compilation only
-template<typename UnaryOp, typename A, typename RefType>
-void make_coherent_expression(const CwiseNullaryOp<UnaryOp,A> &, const RefType &)
-{}
-
-template<typename A_Scalar, int A_Rows, int A_Cols, int A_Options, int A_MaxRows, int A_MaxCols, typename B>
-struct make_coherent_impl<Matrix<A_Scalar, A_Rows, A_Cols, A_Options, A_MaxRows, A_MaxCols>, B> {
-  typedef Matrix<A_Scalar, A_Rows, A_Cols, A_Options, A_MaxRows, A_MaxCols> A;
-  static void run(A& a, B& b) {
-    if((A_Rows==Dynamic || A_Cols==Dynamic) && (a.size()==0))
-    {
-      a.resize(b.size());
-      a.setZero();
-    }
-    else if (B::SizeAtCompileTime==Dynamic && a.size()!=0 && b.size()==0)
-    {
-      make_coherent_expression(b,a);
-    }
-  }
-};
-
-template<typename A, typename B_Scalar, int B_Rows, int B_Cols, int B_Options, int B_MaxRows, int B_MaxCols>
-struct make_coherent_impl<A, Matrix<B_Scalar, B_Rows, B_Cols, B_Options, B_MaxRows, B_MaxCols> > {
-  typedef Matrix<B_Scalar, B_Rows, B_Cols, B_Options, B_MaxRows, B_MaxCols> B;
-  static void run(A& a, B& b) {
-    if((B_Rows==Dynamic || B_Cols==Dynamic) && (b.size()==0))
-    {
-      b.resize(a.size());
-      b.setZero();
-    }
-    else if (A::SizeAtCompileTime==Dynamic && b.size()!=0 && a.size()==0)
-    {
-      make_coherent_expression(a,b);
-    }
-  }
-};
-
-template<typename A_Scalar, int A_Rows, int A_Cols, int A_Options, int A_MaxRows, int A_MaxCols,
-         typename B_Scalar, int B_Rows, int B_Cols, int B_Options, int B_MaxRows, int B_MaxCols>
-struct make_coherent_impl<Matrix<A_Scalar, A_Rows, A_Cols, A_Options, A_MaxRows, A_MaxCols>,
-                          Matrix<B_Scalar, B_Rows, B_Cols, B_Options, B_MaxRows, B_MaxCols> > {
-  typedef Matrix<A_Scalar, A_Rows, A_Cols, A_Options, A_MaxRows, A_MaxCols> A;
-  typedef Matrix<B_Scalar, B_Rows, B_Cols, B_Options, B_MaxRows, B_MaxCols> B;
-  static void run(A& a, B& b) {
-    if((A_Rows==Dynamic || A_Cols==Dynamic) && (a.size()==0))
-    {
-      a.resize(b.size());
-      a.setZero();
-    }
-    else if((B_Rows==Dynamic || B_Cols==Dynamic) && (b.size()==0))
-    {
-      b.resize(a.size());
-      b.setZero();
-    }
-  }
-};
-
 } // end namespace internal
 
 template<typename DerType, typename BinOp>
@@ -558,8 +459,7 @@ struct ScalarBinaryOpTraits<typename DerType::Scalar,AutoDiffScalar<DerType>, Bi
 
 #define EIGEN_AUTODIFF_DECLARE_GLOBAL_UNARY(FUNC,CODE) \
   template<typename DerType> \
-  inline Eigen::AutoDiffScalar< \
-  EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(Eigen::internal::remove_all_t<DerType>, typename Eigen::internal::traits<Eigen::internal::remove_all_t<DerType>>::Scalar, product) > \
+  inline auto \
   FUNC(const Eigen::AutoDiffScalar<DerType>& x) { \
     using namespace Eigen; \
     typedef typename Eigen::internal::traits<Eigen::internal::remove_all_t<DerType>>::Scalar Scalar; \
@@ -641,9 +541,7 @@ EIGEN_AUTODIFF_DECLARE_GLOBAL_UNARY(log,
   return Eigen::MakeAutoDiffScalar(log(x.value()),x.derivatives() * (Scalar(1)/x.value()));)
 
 template<typename DerType>
-inline Eigen::AutoDiffScalar<
-EIGEN_EXPR_BINARYOP_SCALAR_RETURN_TYPE(internal::remove_all_t<DerType>, typename internal::traits<internal::remove_all_t<DerType>>::Scalar,product) >
-pow(const Eigen::AutoDiffScalar<DerType> &x, const typename internal::traits<internal::remove_all_t<DerType>>::Scalar &y)
+inline auto pow(const Eigen::AutoDiffScalar<DerType> &x, const typename internal::traits<internal::remove_all_t<DerType>>::Scalar &y)
 {
   using namespace Eigen;
   using std::pow;
