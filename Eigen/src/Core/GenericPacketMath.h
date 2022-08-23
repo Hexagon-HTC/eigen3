@@ -171,6 +171,7 @@ struct eigen_packet_wrapper
   }
   using Scalar = typename unpacket_traits<T>::type;
   EIGEN_ALWAYS_INLINE Scalar& operator[](size_t n) const { return m_val[n]; }
+  EIGEN_ALWAYS_INLINE Scalar& operator[](size_t n) { return m_val[n]; }
   T m_val;
 };
 
