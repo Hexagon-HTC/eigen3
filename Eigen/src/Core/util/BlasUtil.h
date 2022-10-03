@@ -382,7 +382,7 @@ public:
       for(int l = 0; l < unpacket_traits<SubPacket>::size; l++)
       {
         Scalar_ *v = &sup->operator()(i+l, j+idx);
-        *v = block.packet[idx][l];
+        *v = *reinterpret_cast<Scalar_ *>(&block.packet[idx][l]);
       }
     }
   };
