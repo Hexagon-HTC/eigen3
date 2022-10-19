@@ -167,7 +167,7 @@ std::ostream & print_matrix(std::ostream & s, const Derived& _m, const IOFormat&
   }
   else if(fmt.precision == FullPrecision)
   {
-    if (NumTraits<Scalar>::IsInteger)
+    if constexpr (NumTraits<Scalar>::IsInteger)
     {
       explicit_precision = 0;
     }

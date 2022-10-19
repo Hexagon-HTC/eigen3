@@ -402,7 +402,7 @@ template<typename T, bool Align> EIGEN_DEVICE_FUNC inline T* conditional_aligned
     return 0; // short-cut. Also fixes Bug 884
   check_size_for_overflow<T>(size);
   T *result = reinterpret_cast<T*>(conditional_aligned_malloc<Align>(sizeof(T)*size));
-  if(NumTraits<T>::RequireInitialization)
+  if constexpr (NumTraits<T>::RequireInitialization)
   {
     EIGEN_TRY
     {
@@ -441,7 +441,7 @@ template<typename T, bool Align> inline T* conditional_aligned_realloc_new_auto(
 
 template<typename T, bool Align> EIGEN_DEVICE_FUNC inline void conditional_aligned_delete_auto(T *ptr, std::size_t size)
 {
-  if(NumTraits<T>::RequireInitialization)
+  if constexpr (NumTraits<T>::RequireInitialization)
     destruct_elements_of_array<T>(ptr, size);
   conditional_aligned_free<Align>(ptr);
 }
@@ -472,7 +472,7 @@ EIGEN_DEVICE_FUNC inline Index first_aligned(const Scalar* array, Index size)
   const Index AlignmentSize = Alignment / ScalarSize;
   const Index AlignmentMask = AlignmentSize-1;
 
-  if(AlignmentSize<=1)
+  if constexpr (AlignmentSize<=1)
   {
     // Either the requested alignment if smaller than a scalar, or it exactly match a 1 scalar
     // so that all elements of the array have the same alignment.
@@ -616,13 +616,19 @@ template<typename T> class aligned_stack_memory_handler : noncopyable
     aligned_stack_memory_handler(T* ptr, std::size_t size, bool dealloc)
       : m_ptr(ptr), m_size(size), m_deallocate(dealloc)
     {
-      if(NumTraits<T>::RequireInitialization && m_ptr)
+#pragma warning(push)
+#pragma warning(disable : 4127)
+      if (NumTraits<T>::RequireInitialization && m_ptr)
+#pragma warning(pop)
         Eigen::internal::construct_elements_of_array(m_ptr, size);
     }
     EIGEN_DEVICE_FUNC
     ~aligned_stack_memory_handler()
     {
-      if(NumTraits<T>::RequireInitialization && m_ptr)
+#pragma warning(push)
+#pragma warning(disable : 4127)
+      if (NumTraits<T>::RequireInitialization && m_ptr)
+#pragma warning(pop)
         Eigen::internal::destruct_elements_of_array<T>(m_ptr, m_size);
       if(m_deallocate)
         Eigen::internal::aligned_free(m_ptr);
@@ -667,7 +673,7 @@ struct local_nested_eval_wrapper<Xpr,NbEvaluations,true>
     : object(ptr==0 ? reinterpret_cast<Scalar*>(Eigen::internal::aligned_malloc(sizeof(Scalar)*xpr.size())) : ptr, xpr.rows(), xpr.cols()),
       m_deallocate(ptr==0)
   {
-    if(NumTraits<Scalar>::RequireInitialization && object.data())
+    if constexpr (NumTraits<Scalar>::RequireInitialization && object.data())
       Eigen::internal::construct_elements_of_array(object.data(), object.size());
     object = xpr;
   }
@@ -675,7 +681,7 @@ struct local_nested_eval_wrapper<Xpr,NbEvaluations,true>
   EIGEN_DEVICE_FUNC
   ~local_nested_eval_wrapper()
   {
-    if(NumTraits<Scalar>::RequireInitialization && object.data())
+    if constexpr (NumTraits<Scalar>::RequireInitialization && object.data())
       Eigen::internal::destruct_elements_of_array(object.data(), object.size());
     if(m_deallocate)
       Eigen::internal::aligned_free(object.data());

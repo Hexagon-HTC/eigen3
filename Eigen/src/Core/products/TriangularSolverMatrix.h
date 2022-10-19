@@ -124,7 +124,7 @@ EIGEN_DONT_INLINE void triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conju
             Scalar a = (Mode & UnitDiag) ? Scalar(1) : Scalar(1)/conj(tri(i,i));
             for (Index j=j2; j<j2+actual_cols; ++j)
             {
-              if (TriStorageOrder==RowMajor)
+              if constexpr (TriStorageOrder==RowMajor)
               {
                 Scalar b(0);
                 const Scalar* l = &tri(i,s);

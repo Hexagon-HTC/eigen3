@@ -252,7 +252,7 @@ EIGEN_DEVICE_FUNC EIGEN_DONT_INLINE void general_matrix_vector_product<Index,Lhs
       pstoreu(res+i+ResPacketSize*0, pmadd(c0,palpha,ploadu<ResPacket>(res+i+ResPacketSize*0)));
       i+=ResPacketSize;
     }
-    if(HasHalf && i<n_half)
+    if constexpr (HasHalf && i<n_half)
     {
       ResPacketHalf c0 = pset1<ResPacketHalf>(ResScalar(0));
       for(Index j=j2; j<jend; j+=1)
@@ -263,7 +263,7 @@ EIGEN_DEVICE_FUNC EIGEN_DONT_INLINE void general_matrix_vector_product<Index,Lhs
       pstoreu(res+i+ResPacketSizeHalf*0, pmadd(c0,palpha_half,ploadu<ResPacketHalf>(res+i+ResPacketSizeHalf*0)));
       i+=ResPacketSizeHalf;
     }
-    if(HasQuarter && i<n_quarter)
+    if constexpr (HasQuarter && i<n_quarter)
     {
       ResPacketQuarter c0 = pset1<ResPacketQuarter>(ResScalar(0));
       for(Index j=j2; j<jend; j+=1)
@@ -487,7 +487,7 @@ EIGEN_DEVICE_FUNC EIGEN_DONT_INLINE void general_matrix_vector_product<Index,Lhs
       c0 = pcj.pmadd(lhs.template load<LhsPacket,LhsAlignment>(i,j),b0,c0);
     }
     ResScalar cc0 = predux(c0);
-    if (HasHalf) {
+    if constexpr (HasHalf) {
       for(; j+LhsPacketSizeHalf<=cols; j+=LhsPacketSizeHalf)
         {
           RhsPacketHalf b0 = rhs.template load<RhsPacketHalf,Unaligned>(j,0);
@@ -495,7 +495,7 @@ EIGEN_DEVICE_FUNC EIGEN_DONT_INLINE void general_matrix_vector_product<Index,Lhs
         }
       cc0 += predux(c0_h);
     }
-    if (HasQuarter) {
+    if constexpr (HasQuarter) {
       for(; j+LhsPacketSizeQuarter<=cols; j+=LhsPacketSizeQuarter)
         {
           RhsPacketQuarter b0 = rhs.template load<RhsPacketQuarter,Unaligned>(j,0);

@@ -145,7 +145,7 @@ const CwiseNullaryOp<CustomNullaryOp, PlainObject>
 DenseBase<Derived>::NullaryExpr(Index size, const CustomNullaryOp& func)
 {
   EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived)
-  if(RowsAtCompileTime == 1) return CwiseNullaryOp<CustomNullaryOp, PlainObject>(1, size, func);
+  if constexpr (RowsAtCompileTime == 1) return CwiseNullaryOp<CustomNullaryOp, PlainObject>(1, size, func);
   else return CwiseNullaryOp<CustomNullaryOp, PlainObject>(size, 1, func);
 }
 

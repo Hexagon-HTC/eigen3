@@ -137,7 +137,10 @@ void parallelize_gemm(const Functor& func, Index rows, Index cols, Index depth, 
   // if multi-threading is explicitly disabled, not useful, or if we already are in a parallel session,
   // then abort multi-threading
   // FIXME omp_get_num_threads()>1 only works for openmp, what if the user does not use openmp?
-  if((!Condition) || (threads==1) || (omp_get_num_threads()>1))
+#pragma warning(push)
+#pragma warning(disable : 4127)
+  if ((!Condition) || (threads==1) || (omp_get_num_threads()>1))
+#pragma warning(pop)
     return func(0,rows, 0,cols);
 
   Eigen::initParallel();

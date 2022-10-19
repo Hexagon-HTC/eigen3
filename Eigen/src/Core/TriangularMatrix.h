@@ -784,9 +784,12 @@ public:
 
   EIGEN_DEVICE_FUNC void assignDiagonalCoeff(Index id)
   {
+#pragma warning(push)
+#pragma warning(disable : 4127)
          if(Mode==UnitDiag && SetOpposite) m_functor.assignCoeff(m_dst.coeffRef(id,id), Scalar(1));
     else if(Mode==ZeroDiag && SetOpposite) m_functor.assignCoeff(m_dst.coeffRef(id,id), Scalar(0));
     else if(Mode==0)                       Base::assignCoeff(id,id);
+#pragma warning(pop)
   }
 
   EIGEN_DEVICE_FUNC void assignOppositeCoeff(Index row, Index col)
@@ -886,9 +889,9 @@ struct triangular_assignment_loop
   {
     triangular_assignment_loop<Kernel, Mode, UnrollCount-1, SetOpposite>::run(kernel);
 
-    if(row==col)
+    if constexpr (row==col)
       kernel.assignDiagonalCoeff(row);
-    else if( ((Mode&Lower) && row>col) || ((Mode&Upper) && row<col) )
+    else if constexpr ( ((Mode&Lower) && row>col) || ((Mode&Upper) && row<col) )
       kernel.assignCoeff(row,col);
     else if(SetOpposite)
       kernel.assignOppositeCoeff(row,col);
@@ -920,22 +923,25 @@ struct triangular_assignment_loop<Kernel, Mode, Dynamic, SetOpposite>
     {
       Index maxi = numext::mini(j, kernel.rows());
       Index i = 0;
-      if (((Mode&Lower) && SetOpposite) || (Mode&Upper))
+      if constexpr (((Mode&Lower) && SetOpposite) || (Mode&Upper))
       {
         for(; i < maxi; ++i)
-          if(Mode&Upper) kernel.assignCoeff(i, j);
+          if constexpr (Mode&Upper) kernel.assignCoeff(i, j);
           else           kernel.assignOppositeCoeff(i, j);
       }
       else
+#pragma warning(push)
+#pragma warning(disable : 4305)
         i = maxi;
+#pragma warning(pop)
 
       if(i<kernel.rows()) // then i==j
         kernel.assignDiagonalCoeff(i++);
 
-      if (((Mode&Upper) && SetOpposite) || (Mode&Lower))
+      if constexpr (((Mode&Upper) && SetOpposite) || (Mode&Lower))
       {
         for(; i < kernel.rows(); ++i)
-          if(Mode&Lower) kernel.assignCoeff(i, j);
+          if constexpr (Mode&Lower) kernel.assignCoeff(i, j);
           else           kernel.assignOppositeCoeff(i, j);
       }
     }

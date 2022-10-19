@@ -215,7 +215,7 @@ struct evaluator<PartialReduxExpr<ArgType, MemberOp, Direction> >
     // See bug 1612, currently if PacketSize==1 (i.e. complex<double> with 128bits registers) then the storage-order of panel get reversed
     // and methods like packetByOuterInner do not make sense anymore in this context.
     // So let's just by pass "vectorization" in this case:
-    if(PacketSize==1)
+    if constexpr (PacketSize==1)
       return internal::pset1<PacketType>(coeff(idx));
     
     typedef typename internal::redux_evaluator<PanelType> PanelEvaluator;

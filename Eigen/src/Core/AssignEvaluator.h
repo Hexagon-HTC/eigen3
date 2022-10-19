@@ -549,7 +549,10 @@ struct dense_assignment_loop<Kernel, SliceVectorizedTraversal, NoUnrolling>
                                : int(Kernel::AssignmentTraits::DstAlignment)
     };
     const Scalar *dst_ptr = kernel.dstDataPtr();
-    if((!bool(dstIsAligned)) && (UIntPtr(dst_ptr) % sizeof(Scalar))>0)
+#pragma warning(push)
+#pragma warning(disable : 4127)
+    if ((!bool(dstIsAligned)) && (UIntPtr(dst_ptr) % sizeof(Scalar))>0)
+#pragma warning(pop)
     {
       // the pointer is not aligned-on scalar, so alignment is not possible
       return dense_assignment_loop<Kernel,DefaultTraversal,NoUnrolling>::run(kernel);

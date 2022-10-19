@@ -151,7 +151,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     EIGEN_DEVICE_FUNC
     EIGEN_STRONG_INLINE const Scalar& coeff(Index rowId, Index colId) const
     {
-      if(Flags & RowMajorBit)
+      if constexpr (Flags & RowMajorBit)
         return m_storage.data()[colId + rowId * m_storage.cols()];
       else // column-major
         return m_storage.data()[rowId + colId * m_storage.rows()];
@@ -174,7 +174,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     EIGEN_DEVICE_FUNC
     EIGEN_STRONG_INLINE Scalar& coeffRef(Index rowId, Index colId)
     {
-      if(Flags & RowMajorBit)
+      if constexpr (Flags & RowMajorBit)
         return m_storage.data()[colId + rowId * m_storage.cols()];
       else // column-major
         return m_storage.data()[rowId + colId * m_storage.rows()];
@@ -195,7 +195,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     EIGEN_DEVICE_FUNC
     EIGEN_STRONG_INLINE const Scalar& coeffRef(Index rowId, Index colId) const
     {
-      if(Flags & RowMajorBit)
+      if constexpr (Flags & RowMajorBit)
         return m_storage.data()[colId + rowId * m_storage.cols()];
       else // column-major
         return m_storage.data()[rowId + colId * m_storage.rows()];
@@ -305,7 +305,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       #ifdef EIGEN_INITIALIZE_COEFFS
         bool size_changed = size != this->size();
       #endif
-      if(RowsAtCompileTime == 1)
+      if constexpr (RowsAtCompileTime == 1)
         m_storage.resize(size, 1, size);
       else
         m_storage.resize(size, size, 1);
@@ -356,12 +356,12 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       const OtherDerived& other = _other.derived();
       internal::check_rows_cols_for_overflow<MaxSizeAtCompileTime>::run(other.rows(), other.cols());
       const Index othersize = other.rows()*other.cols();
-      if(RowsAtCompileTime == 1)
+      if constexpr (RowsAtCompileTime == 1)
       {
         eigen_assert(other.rows() == 1 || other.cols() == 1);
         resize(1, othersize);
       }
-      else if(ColsAtCompileTime == 1)
+      else if constexpr (ColsAtCompileTime == 1)
       {
         eigen_assert(other.rows() == 1 || other.cols() == 1);
         resize(othersize, 1);
@@ -471,9 +471,11 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     // Prevent user from trying to instantiate PlainObjectBase objects
     // by making all its constructor protected. See bug 1074.
   protected:
-
+#pragma warning(push)
+#pragma warning(disable : 4702)
     EIGEN_DEVICE_FUNC
     EIGEN_STRONG_INLINE PlainObjectBase() : m_storage()
+#pragma warning(pop)
     {
 //       _check_template_params();
 //       EIGEN_INITIALIZE_COEFFS_IF_THAT_OPTION_IS_ENABLED
@@ -560,7 +562,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       }
 
       // This is to allow syntax like VectorXi {{1, 2, 3, 4}}
-      if (ColsAtCompileTime == 1 && list.size() == 1) {
+      if constexpr (ColsAtCompileTime == 1 && list.size() == 1) {
         eigen_assert(list_size == static_cast<size_t>(RowsAtCompileTime) || RowsAtCompileTime == Dynamic);
         resize(list_size, ColsAtCompileTime);
         std::copy(list.begin()->begin(), list.begin()->end(), m_storage.data());
