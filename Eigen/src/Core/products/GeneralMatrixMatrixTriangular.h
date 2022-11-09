@@ -109,13 +109,13 @@ struct general_matrix_matrix_triangular_product<Index,LhsScalar,LhsStorageOrder,
         //  1 - before the diagonal => processed with gebp or skipped
         //  2 - the actual_mc x actual_mc symmetric block => processed with a special kernel
         //  3 - after the diagonal => processed with gebp or skipped
-        if (UpLo==Lower)
+        if constexpr (UpLo==Lower)
           gebp(res.getSubMapper(i2, 0), blockA, blockB, actual_mc, actual_kc,
                (std::min)(size,i2), alpha, -1, -1, 0, 0);
 
         sybb(_res+resStride*i2 + resIncr*i2, resIncr, resStride, blockA, blockB + actual_kc*i2, actual_mc, actual_kc, alpha);
 
-        if (UpLo==Upper)
+        if constexpr (UpLo==Upper)
         {
           Index j2 = i2+actual_mc;
           gebp(res.getSubMapper(i2, j2), blockA, blockB+actual_kc*j2, actual_mc,
@@ -161,7 +161,7 @@ struct tribb_kernel
       Index actualBlockSize = std::min<Index>(BlockSize,size - j);
       const RhsScalar* actual_b = blockB+j*depth;
 
-      if(UpLo==Upper)
+      if constexpr (UpLo==Upper)
         gebp_kernel1(res.getSubMapper(0, j), blockA, actual_b, j, depth, actualBlockSize, alpha,
                      -1, -1, 0, 0);
       
@@ -183,7 +183,7 @@ struct tribb_kernel
         }
       }
 
-      if(UpLo==Lower)
+      if constexpr (UpLo==Lower)
       {
         Index i = j+actualBlockSize;
         gebp_kernel1(res.getSubMapper(i, j), blockA+depth*i, actual_b, size-i, 

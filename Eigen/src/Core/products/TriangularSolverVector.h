@@ -116,7 +116,7 @@ struct triangular_solve_vector<LhsScalar, RhsScalar, Index, OnTheLeft, Mode, Con
         Index i = IsLower ? pi+k : pi-k-1;
         if(numext::not_equal_strict(rhs[i],RhsScalar(0)))
         {
-          if(!(Mode & UnitDiag))
+          if constexpr (!(Mode & UnitDiag))
             rhs[i] /= cjLhs.coeff(i,i);
 
           Index r = actualPanelWidth - k - 1; // remaining size

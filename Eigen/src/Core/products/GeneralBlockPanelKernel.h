@@ -1426,7 +1426,7 @@ void gebp_kernel<LhsScalar,RhsScalar,Index,DataMapper,mr,nr,ConjugateLhs,Conjuga
     //---------- Process 3 * LhsProgress rows at once ----------
     // This corresponds to 3*LhsProgress x nr register blocks.
     // Usually, make sense only with FMA
-    if(mr>=3*Traits::LhsProgress)
+    if constexpr (mr>=3*Traits::LhsProgress)
     {
       // Here, the general idea is to loop on each largest micro horizontal panel of the lhs (3*Traits::LhsProgress x depth)
       // and on each largest micro vertical panel of the rhs (depth * nr).
@@ -1676,7 +1676,7 @@ void gebp_kernel<LhsScalar,RhsScalar,Index,DataMapper,mr,nr,ConjugateLhs,Conjuga
     }
 
     //---------- Process 2 * LhsProgress rows at once ----------
-    if(mr>=2*Traits::LhsProgress)
+    if constexpr (mr>=2*Traits::LhsProgress)
     {
       const Index l1 = defaultL1CacheSize; // in Bytes, TODO, l1 should be passed to this function.
       // The max(1, ...) here is needed because we may be using blocking params larger than what our known l1 cache size
@@ -1884,19 +1884,19 @@ void gebp_kernel<LhsScalar,RhsScalar,Index,DataMapper,mr,nr,ConjugateLhs,Conjuga
       }
     }
     //---------- Process 1 * LhsProgress rows at once ----------
-    if(mr>=1*Traits::LhsProgress)
+    if constexpr (mr>=1*Traits::LhsProgress)
     {
       lhs_process_one_packet<nr, LhsProgress, RhsProgress, LhsScalar, RhsScalar, ResScalar, AccPacket, LhsPacket, RhsPacket, ResPacket, Traits, LinearMapper, DataMapper> p;
       p(res, blockA, blockB, alpha, peeled_mc2, peeled_mc1, strideA, strideB, offsetA, offsetB, prefetch_res_offset, peeled_kc, pk, cols, depth, packet_cols4);
     }
     //---------- Process LhsProgressHalf rows at once ----------
-    if((LhsProgressHalf < LhsProgress) && mr>=LhsProgressHalf)
+    if constexpr ((LhsProgressHalf < LhsProgress) && mr>=LhsProgressHalf)
     {
       lhs_process_fraction_of_packet<nr, LhsProgressHalf, RhsProgressHalf, LhsScalar, RhsScalar, ResScalar, AccPacketHalf, LhsPacketHalf, RhsPacketHalf, ResPacketHalf, HalfTraits, LinearMapper, DataMapper> p;
       p(res, blockA, blockB, alpha, peeled_mc1, peeled_mc_half, strideA, strideB, offsetA, offsetB, prefetch_res_offset, peeled_kc, pk, cols, depth, packet_cols4);
     }
     //---------- Process LhsProgressQuarter rows at once ----------
-    if((LhsProgressQuarter < LhsProgressHalf) && mr>=LhsProgressQuarter)
+    if constexpr ((LhsProgressQuarter < LhsProgressHalf) && mr>=LhsProgressQuarter)
     {
       lhs_process_fraction_of_packet<nr, LhsProgressQuarter, RhsProgressQuarter, LhsScalar, RhsScalar, ResScalar, AccPacketQuarter, LhsPacketQuarter, RhsPacketQuarter, ResPacketQuarter, QuarterTraits, LinearMapper, DataMapper> p;
       p(res, blockA, blockB, alpha, peeled_mc_half, peeled_mc_quarter, strideA, strideB, offsetA, offsetB, prefetch_res_offset, peeled_kc, pk, cols, depth, packet_cols4);
@@ -1919,7 +1919,7 @@ void gebp_kernel<LhsScalar,RhsScalar,Index,DataMapper,mr,nr,ConjugateLhs,Conjuga
           // nr (which is currently 4) for the return type.
           const int SResPacketHalfSize = unpacket_traits<typename unpacket_traits<SResPacket>::half>::size;
           const int SResPacketQuarterSize = unpacket_traits<typename unpacket_traits<typename unpacket_traits<SResPacket>::half>::half>::size;
-          if ((SwappedTraits::LhsProgress % 4) == 0 &&
+          if constexpr ((SwappedTraits::LhsProgress % 4) == 0 &&
               (SwappedTraits::LhsProgress<=16) &&
               (SwappedTraits::LhsProgress!=8  || SResPacketHalfSize==nr) &&
               (SwappedTraits::LhsProgress!=16 || SResPacketQuarterSize==nr))
@@ -1971,7 +1971,7 @@ void gebp_kernel<LhsScalar,RhsScalar,Index,DataMapper,mr,nr,ConjugateLhs,Conjuga
               blB += SwappedTraits::LhsProgress;
               blA += spk;
             }
-            if(SwappedTraits::LhsProgress==8)
+            if constexpr (SwappedTraits::LhsProgress==8)
             {
               // Special case where we have to first reduce the accumulation register C0
               typedef typename conditional<SwappedTraits::LhsProgress>=8,typename unpacket_traits<SResPacket>::half,SResPacket>::type SResPacketHalf;
@@ -1999,7 +1999,7 @@ void gebp_kernel<LhsScalar,RhsScalar,Index,DataMapper,mr,nr,ConjugateLhs,Conjuga
               }
               res.scatterPacket(i, j2, R);
             }
-            else if (SwappedTraits::LhsProgress==16)
+            else if constexpr (SwappedTraits::LhsProgress==16)
             {
               // Special case where we have to first reduce the
               // accumulation register C0. We specialize the block in
@@ -2124,7 +2124,7 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
   Index i=0;
 
   // Pack 3 packets
-  if(Pack1>=3*PacketSize)
+  if constexpr (Pack1>=3*PacketSize)
   {
     for(; i<peeled_mc3; i+=3*PacketSize)
     {
@@ -2144,7 +2144,7 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
     }
   }
   // Pack 2 packets
-  if(Pack1>=2*PacketSize)
+  if constexpr (Pack1>=2*PacketSize)
   {
     for(; i<peeled_mc2; i+=2*PacketSize)
     {
@@ -2162,7 +2162,7 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
     }
   }
   // Pack 1 packets
-  if(Pack1>=1*PacketSize)
+  if constexpr (Pack1>=1*PacketSize)
   {
     for(; i<peeled_mc1; i+=1*PacketSize)
     {
@@ -2179,7 +2179,7 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
     }
   }
   // Pack half packets
-  if(HasHalf && Pack1>=HalfPacketSize)
+  if constexpr (HasHalf && Pack1>=HalfPacketSize)
   {
     for(; i<peeled_mc_half; i+=HalfPacketSize)
     {
@@ -2196,7 +2196,7 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
     }
   }
   // Pack quarter packets
-  if(HasQuarter && Pack1>=QuarterPacketSize)
+  if constexpr (HasQuarter && Pack1>=QuarterPacketSize)
   {
     for(; i<peeled_mc_quarter; i+=QuarterPacketSize)
     {
@@ -2218,7 +2218,7 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
   // address both real & imaginary parts on the rhs. This portion will
   // pack those half ones until they match the number expected on the
   // last peeling loop at this point (for the rhs).
-  if(Pack2<PacketSize && Pack2>1)
+  if constexpr (Pack2<PacketSize && Pack2>1)
   {
     for(; i<peeled_mc0; i+=last_lhs_progress)
     {
@@ -2293,13 +2293,13 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
               for (int p = 0; p < psize; ++p) kernel.packet[p] = lhs.template loadPacket<Packet>(i+p+m, k);
               ptranspose(kernel);
               for (int p = 0; p < psize; ++p) pstore(blockA+count+m+(pack)*p, cj.pconj(kernel.packet[p]));
-            } else if (HasHalf && psize == HalfPacketSize) {
+            } else if constexpr (HasHalf && psize == HalfPacketSize) {
               gone_half = true;
               PacketBlock<HalfPacket> kernel_half;
               for (int p = 0; p < psize; ++p) kernel_half.packet[p] = lhs.template loadPacket<HalfPacket>(i+p+m, k);
               ptranspose(kernel_half);
               for (int p = 0; p < psize; ++p) pstore(blockA+count+m+(pack)*p, cj.pconj(kernel_half.packet[p]));
-            } else if (HasQuarter && psize == QuarterPacketSize) {
+            } else if constexpr (HasQuarter && psize == QuarterPacketSize) {
               gone_quarter = true;
               PacketBlock<QuarterPacket> kernel_quarter;
               for (int p = 0; p < psize; ++p) kernel_quarter.packet[p] = lhs.template loadPacket<QuarterPacket>(i+p+m, k);
@@ -2350,7 +2350,7 @@ EIGEN_DONT_INLINE void gemm_pack_lhs<Scalar, Index, DataMapper, Pack1, Pack2, Pa
       // address both real & imaginary parts on the rhs. This portion will
       // pack those half ones until they match the number expected on the
       // last peeling loop at this point (for the rhs).
-      if (Pack2 < PacketSize && !gone_last) {
+      if constexpr (Pack2 < PacketSize && !gone_last) {
         gone_last = true;
         psize = pack = left & ~1;
       }
@@ -2441,7 +2441,7 @@ EIGEN_DONT_INLINE void gemm_pack_rhs<Scalar, Index, DataMapper, nr, ColMajor, Co
 //     }
 //   }
 
-  if(nr>=4)
+  if constexpr (nr>=4)
   {
     for(Index j2=packet_cols8; j2<packet_cols4; j2+=4)
     {
@@ -2453,7 +2453,7 @@ EIGEN_DONT_INLINE void gemm_pack_rhs<Scalar, Index, DataMapper, nr, ColMajor, Co
       const LinearMapper dm3 = rhs.getLinearMapper(0, j2 + 3);
 
       Index k=0;
-      if((PacketSize%4)==0) // TODO enable vectorized transposition for PacketSize==2 ??
+      if constexpr ((PacketSize%4)==0) // TODO enable vectorized transposition for PacketSize==2 ??
       {
         for(; k<peeled_k; k+=PacketSize) {
           PacketBlock<Packet,(PacketSize%4)==0?4:PacketSize> kernel;
@@ -2553,7 +2553,7 @@ struct gemm_pack_rhs<Scalar, Index, DataMapper, nr, RowMajor, Conjugate, PanelMo
   //       if(PanelMode) count += 8 * (stride-offset-depth);
   //     }
   //   }
-    if(nr>=4)
+    if constexpr (nr>=4)
     {
       for(Index j2=packet_cols8; j2<packet_cols4; j2+=4)
       {
@@ -2561,15 +2561,15 @@ struct gemm_pack_rhs<Scalar, Index, DataMapper, nr, RowMajor, Conjugate, PanelMo
         if(PanelMode) count += 4 * offset;
         for(Index k=0; k<depth; k++)
         {
-          if (PacketSize==4) {
+          if constexpr (PacketSize==4) {
             Packet A = rhs.template loadPacket<Packet>(k, j2);
             pstoreu(blockB+count, cj.pconj(A));
             count += PacketSize;
-          } else if (HasHalf && HalfPacketSize==4) {
+          } else if constexpr (HasHalf && HalfPacketSize==4) {
             HalfPacket A = rhs.template loadPacket<HalfPacket>(k, j2);
             pstoreu(blockB+count, cj.pconj(A));
             count += HalfPacketSize;
-          } else if (HasQuarter && QuarterPacketSize==4) {
+          } else if constexpr (HasQuarter && QuarterPacketSize==4) {
             QuarterPacket A = rhs.template loadPacket<QuarterPacket>(k, j2);
             pstoreu(blockB+count, cj.pconj(A));
             count += QuarterPacketSize;
