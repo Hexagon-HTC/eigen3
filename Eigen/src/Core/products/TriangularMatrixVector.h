@@ -135,7 +135,7 @@ EIGEN_DONT_INLINE void triangular_matrix_vector_product<Index,Mode,LhsScalar,Con
         Index r = IsLower ? k+1 : actualPanelWidth-k;
         if ((!(HasUnitDiag||HasZeroDiag)) || (--r)>0)
           res.coeffRef(i) += alpha * (cjLhs.row(i).segment(s,r).cwiseProduct(cjRhs.segment(s,r).transpose())).sum();
-        if (HasUnitDiag)
+        if constexpr (HasUnitDiag)
           res.coeffRef(i) += alpha * cjRhs.coeff(i);
       }
       Index r = IsLower ? pi : cols - pi - actualPanelWidth;
@@ -149,7 +149,7 @@ EIGEN_DONT_INLINE void triangular_matrix_vector_product<Index,Mode,LhsScalar,Con
             &res.coeffRef(pi), resIncr, alpha);
       }
     }
-    if(IsLower && rows>diagSize)
+    if constexpr (IsLower && rows>diagSize)
     {
       general_matrix_vector_product<Index,LhsScalar,LhsMapper,RowMajor,ConjLhs,RhsScalar,RhsMapper,ConjRhs>::run(
             rows-diagSize, cols,
@@ -315,7 +315,7 @@ template<int Mode> struct trmv_selector<Mode,RowMajor>
     ei_declare_aligned_stack_constructed_variable(RhsScalar,actualRhsPtr,actualRhs.size(),
         DirectlyUseRhs ? const_cast<RhsScalar*>(actualRhs.data()) : static_rhs.data());
 
-    if(!DirectlyUseRhs)
+    if constexpr (!DirectlyUseRhs)
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       Index size = actualRhs.size();

@@ -638,7 +638,7 @@ void JacobiSVD<MatrixType, QRPreconditioner>::allocate(Eigen::Index rows, Eigen:
   eigen_assert(!(m_computeFullV && m_computeThinV) && "JacobiSVD: you can't ask for both full and thin V");
   eigen_assert(EIGEN_IMPLIES(m_computeThinU || m_computeThinV, MatrixType::ColsAtCompileTime==Dynamic) &&
               "JacobiSVD: thin U and V are only available when your matrix has a dynamic number of columns.");
-  if (QRPreconditioner == FullPivHouseholderQRPreconditioner)
+  if constexpr (QRPreconditioner == FullPivHouseholderQRPreconditioner)
   {
       eigen_assert(!(m_computeThinU || m_computeThinV) &&
               "JacobiSVD: can't compute thin U or thin V with the FullPivHouseholderQR preconditioner. "
@@ -646,11 +646,11 @@ void JacobiSVD<MatrixType, QRPreconditioner>::allocate(Eigen::Index rows, Eigen:
   }
   m_diagSize = (std::min)(m_rows, m_cols);
   m_singularValues.resize(m_diagSize);
-  if(RowsAtCompileTime==Dynamic)
+  if constexpr (RowsAtCompileTime==Dynamic)
     m_matrixU.resize(m_rows, m_computeFullU ? m_rows
                             : m_computeThinU ? m_diagSize
                             : 0);
-  if(ColsAtCompileTime==Dynamic)
+  if constexpr (ColsAtCompileTime==Dynamic)
     m_matrixV.resize(m_cols, m_computeFullV ? m_cols
                             : m_computeThinV ? m_diagSize
                             : 0);
@@ -751,7 +751,7 @@ JacobiSVD<MatrixType, QRPreconditioner>::compute(const MatrixType& matrix, unsig
     // For a complex matrix, some diagonal coefficients might note have been
     // treated by svd_precondition_2x2_block_to_be_real, and the imaginary part
     // of some diagonal entry might not be null.
-    if(NumTraits<Scalar>::IsComplex && abs(numext::imag(m_workMatrix.coeff(i,i)))>considerAsZero)
+    if constexpr (NumTraits<Scalar>::IsComplex && abs(numext::imag(m_workMatrix.coeff(i,i)))>considerAsZero)
     {
       RealScalar a = abs(m_workMatrix.coeff(i,i));
       m_singularValues.coeffRef(i) = abs(a);

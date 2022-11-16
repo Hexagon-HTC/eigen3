@@ -245,7 +245,7 @@ template<> struct gemv_dense_selector<OnTheRight,ColMajor,true>
     typedef const_blas_data_mapper<RhsScalar,Index,RowMajor> RhsMapper;
     RhsScalar compatibleAlpha = get_factor<ResScalar,RhsScalar>::run(actualAlpha);
 
-    if(!MightCannotUseDest)
+    if constexpr (!MightCannotUseDest)
     {
       // shortcut if we are sure to be able to use dest directly,
       // this ease the compiler to generate cleaner and more optimzized code for most common cases
@@ -332,7 +332,7 @@ template<> struct gemv_dense_selector<OnTheRight,RowMajor,true>
     ei_declare_aligned_stack_constructed_variable(RhsScalar,actualRhsPtr,actualRhs.size(),
         DirectlyUseRhs ? const_cast<RhsScalar*>(actualRhs.data()) : static_rhs.data());
 
-    if(!DirectlyUseRhs)
+    if constexpr (!DirectlyUseRhs)
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       Index size = actualRhs.size();
