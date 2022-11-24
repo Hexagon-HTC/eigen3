@@ -252,7 +252,7 @@ EIGEN_DEVICE_FUNC EIGEN_DONT_INLINE void general_matrix_vector_product<Index,Lhs
       pstoreu(res+i+ResPacketSize*0, pmadd(c0,palpha,ploadu<ResPacket>(res+i+ResPacketSize*0)));
       i+=ResPacketSize;
     }
-    if constexpr (HasHalf && i<n_half)
+    if (HasHalf && i<n_half)
     {
       ResPacketHalf c0 = pset1<ResPacketHalf>(ResScalar(0));
       for(Index j=j2; j<jend; j+=1)
