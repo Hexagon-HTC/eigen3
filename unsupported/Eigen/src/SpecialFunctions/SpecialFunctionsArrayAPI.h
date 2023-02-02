@@ -17,8 +17,8 @@ namespace Eigen {
   *
   * This function computes the coefficient-wise incomplete gamma function.
   *
-  * \note This function supports only float and double scalar types in c++11 mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations of igammac(T,T) for any scalar
+  * \note This function supports only float and double scalar types in c++17 mode. To support other scalar types,
+  * or float/double in non c++17 mode, the user has to provide implementations of igammac(T,T) for any scalar
   * type T to be supported.
   *
   * \sa Eigen::igammac(), Eigen::lgamma()
@@ -38,9 +38,9 @@ igamma(const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<ExponentDerive
   * This function computes the coefficient-wise derivative of the incomplete
   * gamma function with respect to the parameter a.
   *
-  * \note This function supports only float and double scalar types in c++11
+  * \note This function supports only float and double scalar types in c++17
   * mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations
+  * or float/double in non c++17 mode, the user has to provide implementations
   * of igamma_der_a(T,T) for any scalar
   * type T to be supported.
   *
@@ -59,9 +59,9 @@ igamma_der_a(const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<Exponent
   * This function computes the coefficient-wise derivative of the sample
   * of a Gamma(alpha, 1) random variable with respect to the parameter alpha.
   *
-  * \note This function supports only float and double scalar types in c++11
+  * \note This function supports only float and double scalar types in c++17
   * mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations
+  * or float/double in non c++17 mode, the user has to provide implementations
   * of gamma_sample_der_alpha(T,T) for any scalar
   * type T to be supported.
   *
@@ -79,8 +79,8 @@ gamma_sample_der_alpha(const Eigen::ArrayBase<AlphaDerived>& alpha, const Eigen:
   *
   * This function computes the coefficient-wise complementary incomplete gamma function.
   *
-  * \note This function supports only float and double scalar types in c++11 mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations of igammac(T,T) for any scalar
+  * \note This function supports only float and double scalar types in c++17 mode. To support other scalar types,
+  * or float/double in non c++17 mode, the user has to provide implementations of igammac(T,T) for any scalar
   * type T to be supported.
   *
   * \sa Eigen::igamma(), Eigen::lgamma()
@@ -99,8 +99,8 @@ igammac(const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<ExponentDeriv
   *
   * It returns the \a n -th derivative of the digamma(psi) evaluated at \c x.
   *
-  * \note This function supports only float and double scalar types in c++11 mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations of polygamma(T,T) for any scalar
+  * \note This function supports only float and double scalar types in c++17 mode. To support other scalar types,
+  * or float/double in non c++17 mode, the user has to provide implementations of polygamma(T,T) for any scalar
   * type T to be supported.
   *
   * \sa Eigen::digamma()
@@ -121,8 +121,8 @@ polygamma(const Eigen::ArrayBase<DerivedN>& n, const Eigen::ArrayBase<DerivedX>&
   *
   * This function computes the regularized incomplete beta function (integral).
   *
-  * \note This function supports only float and double scalar types in c++11 mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations of betainc(T,T,T) for any scalar
+  * \note This function supports only float and double scalar types in c++17 mode. To support other scalar types,
+  * or float/double in non c++17 mode, the user has to provide implementations of betainc(T,T,T) for any scalar
   * type T to be supported.
   *
   * \sa Eigen::betainc(), Eigen::lgamma()

@@ -22,7 +22,7 @@ namespace internal {
 /** \internal
   * \file CXX11/util/CXX11Meta.h
   * This file contains generic metaprogramming classes which are not specifically related to Eigen.
-  * This file expands upon Core/util/Meta.h and adds support for C++11 specific features.
+  * This file expands upon Core/util/Meta.h and adds support for c++17 specific features.
   */
 
 template<typename... tt>

@@ -13,7 +13,7 @@
 
 
 // The array class is only available starting with cxx11. Emulate our own here
-// if needed. Beware, msvc still doesn't advertise itself as a c++11 compiler!
+// if needed. Beware, msvc still doesn't advertise itself as a c++17 compiler!
 // Moreover, CUDA doesn't support the STL containers, so we use our own instead.
 #if (__cplusplus <= 199711L && EIGEN_COMP_MSVC < 1900) || defined(EIGEN_GPUCC) || defined(EIGEN_AVOID_STL_ARRAY)
 
@@ -224,14 +224,14 @@ template<class T, std::size_t N> struct array_size<const array<T,N>& > {
 
 #else
 
-// The compiler supports c++11, and we're not targeting cuda: use std::array as Eigen::array
+// The compiler supports c++17, and we're not targeting cuda: use std::array as Eigen::array
 #include <array>
 namespace Eigen {
 
 template <typename T, std::size_t N> using array = std::array<T, N>;
 
 namespace internal {
-/* std::get is only constexpr in C++14, not yet in C++11
+/* std::get is only constexpr in C++14, not yet in c++17
  *     - libstdc++ from version 4.7 onwards has it nevertheless,
  *                                          so use that
  *     - libstdc++ older versions: use _M_instance directly

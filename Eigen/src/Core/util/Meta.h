@@ -44,7 +44,7 @@ typedef std::int64_t  int64_t;
 }
 }
 #else
-// Without c++11, all compilers able to compile Eigen also
+// Without c++17, all compilers able to compile Eigen also
 // provide the C99 stdint.h header file.
 #include <stdint.h>
 namespace Eigen {
@@ -408,7 +408,7 @@ template<> struct numeric_limits<bool>
   static bool epsilon() { return false; }
   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
   static bool (max)() { return true; }
-  EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR 
+  EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
   static bool (min)() { return false; }
 };
 
@@ -437,7 +437,7 @@ protected:
   * It currently supports:
   *  - any types T defining T::SizeAtCompileTime
   *  - plain C arrays as T[N]
-  *  - std::array (c++11)
+  *  - std::array (c++17)
   *  - some internal types such as SingleRange and AllRange
   *
   * The second template parameter eases SFINAE-based specializations.
@@ -484,15 +484,15 @@ EIGEN_CONSTEXPR Index size(const T (&) [N]) { return N; }
 /** \internal
   * Convenient struct to get the result type of a nullary, unary, binary, or
   * ternary functor.
-  * 
-  * Pre C++11:
+  *
+  * Pre c++17:
   * Supports both a Func::result_type member and templated
   * Func::result<Func(ArgTypes...)>::type member.
-  * 
+  *
   * If none of these members is provided, then the type of the first
   * argument is returned.
-  * 
-  * Post C++11:
+  *
+  * Post c++17:
   * This uses std::result_of. However, note the `type` member removes
   * const and converts references/pointers to their corresponding value type.
   */
@@ -715,7 +715,7 @@ class meta_sqrt<Y, InfX, SupX, true> { public:  enum { ret = (SupX*SupX <= Y) ? 
 
 
 /** \internal Computes the least common multiple of two positive integer A and B
-  * at compile-time. 
+  * at compile-time.
   */
 template<int A, int B, int K=1, bool Done = ((A*K)%B)==0, bool Big=(A>=B)>
 struct meta_least_common_multiple

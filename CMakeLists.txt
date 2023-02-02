@@ -62,7 +62,7 @@ include(CMakeDependentOption)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 
-option(EIGEN_TEST_CXX17 "Enable testing with C++11 and C++11 features (e.g. Tensor module)." OFF)
+option(EIGEN_TEST_CXX17 "Enable testing with c++17 and c++17 features (e.g. Tensor module)." OFF)
 
 
 macro(ei_add_cxx_compiler_flag FLAG)
@@ -167,7 +167,7 @@ if(NOT MSVC)
   ei_add_cxx_compiler_flag("-Wshorten-64-to-32")
   ei_add_cxx_compiler_flag("-Wlogical-op")
   ei_add_cxx_compiler_flag("-Wenum-conversion")
-  ei_add_cxx_compiler_flag("-Wc++11-extensions")
+  ei_add_cxx_compiler_flag("-Wc++17-extensions")
   ei_add_cxx_compiler_flag("-Wdouble-promotion")
 #  ei_add_cxx_compiler_flag("-Wconversion")
 

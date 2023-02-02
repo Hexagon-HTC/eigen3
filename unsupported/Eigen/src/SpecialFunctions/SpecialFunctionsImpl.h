@@ -38,7 +38,7 @@ namespace internal {
 
 
 /****************************************************************************
- * Implementation of lgamma, requires C++11/C99                             *
+ * Implementation of lgamma, requires c++17/C99                             *
  ****************************************************************************/
 
 template <typename Scalar>
@@ -290,7 +290,7 @@ struct digamma_impl {
 };
 
 /****************************************************************************
- * Implementation of erf, requires C++11/C99                                *
+ * Implementation of erf, requires c++17/C99                                *
  ****************************************************************************/
 
 /** \internal \returns the error function of \a a (coeff-wise)
@@ -385,7 +385,7 @@ struct erf_impl<double> {
 #endif  // EIGEN_HAS_C99_MATH
 
 /***************************************************************************
-* Implementation of erfc, requires C++11/C99                               *
+* Implementation of erfc, requires c++17/C99                               *
 ****************************************************************************/
 
 template <typename Scalar>
@@ -672,7 +672,7 @@ struct ndtri_impl {
 
 
 /**************************************************************************************************************
- * Implementation of igammac (complemented incomplete gamma integral), based on Cephes but requires C++11/C99 *
+ * Implementation of igammac (complemented incomplete gamma integral), based on Cephes but requires c++17/C99 *
  **************************************************************************************************************/
 
 template <typename Scalar>
@@ -1044,7 +1044,7 @@ struct igammac_impl {
 #endif  // EIGEN_HAS_C99_MATH
 
 /************************************************************************************************
- * Implementation of igamma (incomplete gamma integral), based on Cephes but requires C++11/C99 *
+ * Implementation of igamma (incomplete gamma integral), based on Cephes but requires c++17/C99 *
  ************************************************************************************************/
 
 #if !EIGEN_HAS_C99_MATH
@@ -1454,7 +1454,7 @@ struct zeta_impl {
 };
 
 /****************************************************************************
- * Implementation of polygamma function, requires C++11/C99                 *
+ * Implementation of polygamma function, requires c++17/C99                 *
  ****************************************************************************/
 
 template <typename Scalar>
@@ -1503,7 +1503,7 @@ struct polygamma_impl {
 #endif  // EIGEN_HAS_C99_MATH
 
 /************************************************************************************************
- * Implementation of betainc (incomplete beta integral), based on Cephes but requires C++11/C99 *
+ * Implementation of betainc (incomplete beta integral), based on Cephes but requires c++17/C99 *
  ************************************************************************************************/
 
 template <typename Scalar>

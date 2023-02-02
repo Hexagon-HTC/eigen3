@@ -12,7 +12,7 @@
 
 // This header file container defines fo gpu* macros which will resolve to
 // their equivalent hip* or cuda* versions depending on the compiler in use
-// A separate header (included at the end of this file) will undefine all 
+// A separate header (included at the end of this file) will undefine all
 #include "TensorGpuHipCudaDefines.h"
 
 namespace Eigen {
@@ -44,15 +44,15 @@ class StreamInterface {
 
 class GpuDeviceProperties {
  public:
-  GpuDeviceProperties() : 
+  GpuDeviceProperties() :
       initialized_(false), first_(true), device_properties_(nullptr) {}
- 
+
   ~GpuDeviceProperties() {
     if (device_properties_) {
       delete[] device_properties_;
     }
   }
-  
+
   EIGEN_STRONG_INLINE const gpuDeviceProp_t& get(int device) const {
     return device_properties_[device];
   }
@@ -67,7 +67,7 @@ class GpuDeviceProperties {
       // calling this function simultaneously. This would be trivial to
       // implement if we could use std::mutex, but unfortunately mutex don't
       // compile with nvcc, so we resort to atomics and thread fences instead.
-      // Note that if the caller uses a compiler that doesn't support c++11 we
+      // Note that if the caller uses a compiler that doesn't support c++17 we
       // can't ensure that the initialization is thread safe.
       if (first_.exchange(false)) {
         // We're the first thread to reach this point.
@@ -235,7 +235,7 @@ struct GpuDevice {
   }
 
   template<typename Type>
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Type get(Type data) const { 
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Type get(Type data) const {
     return data;
   }
 
@@ -361,13 +361,13 @@ struct GpuDevice {
   gpu_assert(hipGetLastError() == hipSuccess);
 
 #else
- 
+
 #define LAUNCH_GPU_KERNEL(kernel, gridsize, blocksize, sharedmem, device, ...)             \
   (kernel) <<< (gridsize), (blocksize), (sharedmem), (device).stream() >>> (__VA_ARGS__);   \
   gpu_assert(cudaGetLastError() == cudaSuccess);
 
 #endif
- 
+
 // FIXME: Should be device and kernel specific.
 #ifdef EIGEN_GPUCC
 static EIGEN_DEVICE_FUNC inline void setGpuSharedMemConfig(gpuSharedMemConfig config) {

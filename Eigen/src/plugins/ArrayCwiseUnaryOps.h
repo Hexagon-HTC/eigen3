@@ -505,7 +505,7 @@ template<int N> struct ShiftRightXpr {
   * shifted right by \a N bit positions.
   *
   * The template parameter \a N specifies the number of bit positions to shift.
-  * 
+  *
   * \sa shiftLeft()
   */
 template<int N>
@@ -609,8 +609,8 @@ typedef CwiseUnaryOp<internal::scalar_ndtri_op<Scalar>, const Derived> NdtriRetu
   *
   * \specialfunctions_module
   *
-  * \note This function supports only float and double scalar types in c++11 mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations of lgamma(T) for any scalar
+  * \note This function supports only float and double scalar types in c++17 mode. To support other scalar types,
+  * or float/double in non c++17 mode, the user has to provide implementations of lgamma(T) for any scalar
   * type T to be supported.
   *
   * \sa <a href="group__CoeffwiseMathFunctions.html#cwisetable_lgamma">Math functions</a>, digamma()
@@ -644,8 +644,8 @@ digamma() const
   *
   * \specialfunctions_module
   *
-  * \note This function supports only float and double scalar types in c++11 mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations of erf(T) for any scalar
+  * \note This function supports only float and double scalar types in c++17 mode. To support other scalar types,
+  * or float/double in non c++17 mode, the user has to provide implementations of erf(T) for any scalar
   * type T to be supported.
   *
   * \sa <a href="group__CoeffwiseMathFunctions.html#cwisetable_erf">Math functions</a>, erfc()
@@ -662,8 +662,8 @@ erf() const
   *
   * \specialfunctions_module
   *
-  * \note This function supports only float and double scalar types in c++11 mode. To support other scalar types,
-  * or float/double in non c++11 mode, the user has to provide implementations of erfc(T) for any scalar
+  * \note This function supports only float and double scalar types in c++17 mode. To support other scalar types,
+  * or float/double in non c++17 mode, the user has to provide implementations of erfc(T) for any scalar
   * type T to be supported.
   *
   * \sa <a href="group__CoeffwiseMathFunctions.html#cwisetable_erfc">Math functions</a>, erf()
@@ -679,7 +679,7 @@ erfc() const
   * function of *this.
   *
   * \specialfunctions_module
-  * 
+  *
   * In other words, considering `x = ndtri(y)`, it returns the argument, x, for which the area under the
   * Gaussian probability density function (integrated from minus infinity to x) is equal to y.
   *

@@ -29,7 +29,7 @@ namespace Eigen {
   * code will attempt to take advantage of the indices that are known at
   * compile time to optimize the code it generates.
   *
-  * This functionality requires a c++11 compliant compiler. If your compiler
+  * This functionality requires a c++17 compliant compiler. If your compiler
   * is older you need to use arrays of indices instead.
   *
   * Several examples are provided in the cxx11_tensor_index_list.cpp file.

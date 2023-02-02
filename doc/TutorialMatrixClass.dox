@@ -23,7 +23,7 @@ Matrix<typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime>
     See \ref TopicScalarTypes "Scalar types" for a list of all supported
     scalar types and for how to extend support to new types.
 \li \c RowsAtCompileTime and \c ColsAtCompileTime are the number of rows
-    and columns of the matrix as known at compile time (see 
+    and columns of the matrix as known at compile time (see
     \ref TutorialMatrixDynamic "below" for what to do if the number is not
     known at compile time).
 
@@ -102,14 +102,14 @@ Matrix3f a(3,3);
 and is a no-operation.
 
 Matrices and vectors can also be initialized from lists of coefficients.
-Prior to C++11, this feature is limited to small fixed-size column or vectors up to size 4:
+Prior to c++17, this feature is limited to small fixed-size column or vectors up to size 4:
 \code
 Vector2d a(5.0, 6.0);
 Vector3d b(5.0, 6.0, 7.0);
 Vector4d c(5.0, 6.0, 7.0, 8.0);
 \endcode
 
-If C++11 is enabled, fixed-size column or row vectors of arbitrary size can be initialized by passing an arbitrary number of coefficients:
+If c++17 is enabled, fixed-size column or row vectors of arbitrary size can be initialized by passing an arbitrary number of coefficients:
 \code
 Vector2i a(1, 2);                      // A column vector containing the elements {1, 2}
 Matrix<int, 5, 1> b {1, 2, 3, 4, 5};   // A row-vector containing the elements {1, 2, 3, 4, 5}

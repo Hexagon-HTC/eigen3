@@ -23,7 +23,7 @@ template<int N> class VariableAndFixedInt;
   *
   * This class embeds a compile-time integer \c N.
   *
-  * It is similar to c++11 std::integral_constant<int,N> but with some additional features
+  * It is similar to c++17 std::integral_constant<int,N> but with some additional features
   * such as:
   *  - implicit conversion to int
   *  - arithmetic and some bitwise operators: -, +, *, /, %, &, |
@@ -167,7 +167,7 @@ template<typename T, int DynamicKey=Dynamic, typename EnableIf=void> struct clea
 template<typename T, int DynamicKey> struct cleanup_index_type<T,DynamicKey,typename internal::enable_if<internal::is_integral<T>::value>::type> { typedef Index type; };
 
 #if !EIGEN_HAS_CXX14
-// In c++98/c++11, fix<N> is a pointer to function that we better cleanup to a true FixedInt<N>:
+// In c++98/c++17, fix<N> is a pointer to function that we better cleanup to a true FixedInt<N>:
 template<int N, int DynamicKey> struct cleanup_index_type<FixedInt<N> (*)(), DynamicKey> { typedef FixedInt<N> type; };
 #endif
 

@@ -376,9 +376,9 @@ macro(ei_testing_print_summary)
     endif()
 
     if(EIGEN_TEST_CXX17)
-      message(STATUS "C++11:             ON")
+      message(STATUS "c++17:             ON")
     else()
-      message(STATUS "C++11:             OFF")
+      message(STATUS "c++17:             OFF")
     endif()
 
     if(EIGEN_TEST_SYCL)

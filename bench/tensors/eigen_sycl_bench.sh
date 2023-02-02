@@ -6,7 +6,7 @@ tensor_benchmarks_sycl.cc \
 benchmark_main.cc \
 -I ../../ \
 -I ${COMPUTECPP_PACKAGE_ROOT_DIR}/include/ \
--std=c++11 \
+-std=c++17 \
 -march=native \
 -O3 \
 -DNDEBUG \

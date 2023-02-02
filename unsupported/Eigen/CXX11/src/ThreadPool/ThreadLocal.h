@@ -32,7 +32,7 @@
 #include <Availability.h>
 #include <TargetConditionals.h>
 #endif
-// Checks whether C++11's `thread_local` storage duration specifier is
+// Checks whether c++17's `thread_local` storage duration specifier is
 // supported.
 #if defined(__apple_build_version__) &&     \
     ((__apple_build_version__ < 8000042) || \

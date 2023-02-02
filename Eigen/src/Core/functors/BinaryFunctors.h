@@ -110,13 +110,13 @@ struct scalar_conj_product_op  : binary_op_base<LhsScalar,RhsScalar>
   enum {
     Conj = NumTraits<LhsScalar>::IsComplex
   };
-  
+
   typedef typename ScalarBinaryOpTraits<LhsScalar,RhsScalar,scalar_conj_product_op>::ReturnType result_type;
-  
+
   EIGEN_EMPTY_STRUCT_CTOR(scalar_conj_product_op)
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE result_type operator() (const LhsScalar& a, const RhsScalar& b) const
   { return conj_helper<LhsScalar,RhsScalar,Conj,false>().pmul(a,b); }
-  
+
   template<typename Packet>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet packetOp(const Packet& a, const Packet& b) const
   { return conj_helper<Packet,Packet,Conj,false>().pmul(a,b); }
@@ -495,7 +495,7 @@ struct functor_traits<scalar_absolute_difference_op<LhsScalar,RhsScalar> > {
 // The following two classes permits to turn any binary functor into a unary one with one argument bound to a constant value.
 // They are analogues to std::binder1st/binder2nd but with the following differences:
 //  - they are compatible with packetOp
-//  - they are portable across C++ versions (the std::binder* are deprecated in C++11)
+//  - they are portable across C++ versions (the std::binder* are deprecated in c++17)
 template<typename BinaryOp> struct bind1st_op : BinaryOp {
 
   typedef typename BinaryOp::first_argument_type  first_argument_type;

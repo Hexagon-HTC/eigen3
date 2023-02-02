@@ -44,7 +44,7 @@ namespace std \
   }; \
 }
 
-// Don't specialize if containers are implemented according to C++11
+// Don't specialize if containers are implemented according to c++17
 #if !EIGEN_HAS_CXX11_CONTAINERS
 
 namespace std {
@@ -90,8 +90,8 @@ namespace std {
       vector_base::erase(vector_base::begin() + new_size, vector_base::end());
   }
   void push_back(const value_type& x)
-  { vector_base::push_back(x); } 
-  using vector_base::insert;  
+  { vector_base::push_back(x); }
+  using vector_base::insert;
   iterator insert(const_iterator position, const value_type& x)
   { return vector_base::insert(position,x); }
   void insert(const_iterator position, size_type new_size, const value_type& x)

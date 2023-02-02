@@ -701,7 +701,7 @@
 
 // Does the compiler support std::hash?
 #ifndef EIGEN_HAS_STD_HASH
-// The std::hash struct is defined in C++11 but is not labelled as a __device__
+// The std::hash struct is defined in c++17 but is not labelled as a __device__
 // function and is not constexpr, so cannot be used on device.
 #if EIGEN_HAS_CXX11 && !defined(EIGEN_GPU_COMPILE_PHASE)
 #define EIGEN_HAS_STD_HASH 1
@@ -765,7 +765,7 @@
 // Does the compiler fully support const expressions? (as in c++14)
 #ifndef EIGEN_HAS_CONSTEXPR
   #if defined(EIGEN_CUDACC)
-  // Const expressions are supported provided that c++11 is enabled and we're using either clang or nvcc 7.5 or above
+  // Const expressions are supported provided that c++17 is enabled and we're using either clang or nvcc 7.5 or above
     #if EIGEN_MAX_CPP_VER>=14 && (EIGEN_COMP_CXXVER >= 11 && (EIGEN_COMP_CLANG || EIGEN_COMP_NVCC >= 70500))
       #define EIGEN_HAS_CONSTEXPR 1
     #endif
@@ -787,8 +787,8 @@
 #define EIGEN_CONSTEXPR
 #endif
 
-// Does the compiler support C++11 math?
-// Let's be conservative and enable the default C++11 implementation only if we are sure it exists
+// Does the compiler support c++17 math?
+// Let's be conservative and enable the default c++17 implementation only if we are sure it exists
 #ifndef EIGEN_HAS_CXX11_MATH
   #if EIGEN_MAX_CPP_VER>=11 && ((EIGEN_COMP_CXXVER > 11) || (EIGEN_COMP_CXXVER == 11) && (EIGEN_COMP_GNUC_STRICT || EIGEN_COMP_CLANG || EIGEN_COMP_MSVC || EIGEN_COMP_ICC)  \
       && (EIGEN_ARCH_i386_OR_x86_64) && (EIGEN_OS_GNULINUX || EIGEN_OS_WIN_STRICT || EIGEN_OS_MAC))
@@ -798,7 +798,7 @@
   #endif
 #endif
 
-// Does the compiler support proper C++11 containers?
+// Does the compiler support proper c++17 containers?
 #ifndef EIGEN_HAS_CXX11_CONTAINERS
   #if    EIGEN_MAX_CPP_VER>=11 && \
          ((EIGEN_COMP_CXXVER > 11) \
@@ -809,7 +809,7 @@
   #endif
 #endif
 
-// Does the compiler support C++11 noexcept?
+// Does the compiler support c++17 noexcept?
 #ifndef EIGEN_HAS_CXX11_NOEXCEPT
   #if    EIGEN_MAX_CPP_VER>=11 && \
          (__has_feature(cxx_noexcept) \
@@ -859,7 +859,7 @@
 #endif
 
 #if defined(EIGEN_CUDACC) && EIGEN_HAS_CONSTEXPR
-  // While available already with c++11, this is useful mostly starting with c++14 and relaxed constexpr rules
+  // While available already with c++17, this is useful mostly starting with c++14 and relaxed constexpr rules
   #if defined(__NVCC__)
     // nvcc considers constexpr functions as __host__ __device__ with the option --expt-relaxed-constexpr
     #ifdef __CUDACC_RELAXED_CONSTEXPR__
@@ -1226,7 +1226,7 @@ namespace Eigen {
 /** \internal
  * \brief Macro to manually inherit assignment operators.
  * This is necessary, because the implicitly defined assignment operator gets deleted when a custom operator= is defined.
- * With C++11 or later this also default-implements the copy-constructor
+ * With c++17 or later this also default-implements the copy-constructor
  */
 #define EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Derived)  \
     EIGEN_INHERIT_ASSIGNMENT_EQUAL_OPERATOR(Derived) \
@@ -1420,7 +1420,7 @@ namespace Eigen {
 #   define EIGEN_NO_THROW throw()
 #   if EIGEN_COMP_MSVC || EIGEN_COMP_CXXVER>=17
       // MSVC does not support exception specifications (warning C4290),
-      // and they are deprecated in c++11 anyway. This is even an error in c++17.
+      // and they are deprecated in c++17 anyway. This is even an error in c++17.
 #     define EIGEN_EXCEPTION_SPEC(X) throw()
 #   else
 #     define EIGEN_EXCEPTION_SPEC(X) throw(X)

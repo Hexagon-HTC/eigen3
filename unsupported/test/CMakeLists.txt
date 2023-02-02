@@ -29,7 +29,7 @@ if(Adolc_FOUND)
   if(EIGEN_TEST_CXX17)
     ei_add_test(forward_adolc "" ${ADOLC_LIBRARIES})
   else()
-    message(STATUS "Adolc found, but tests require C++11 mode")
+    message(STATUS "Adolc found, but tests require c++17 mode")
   endif()
 else()
   ei_add_property(EIGEN_MISSING_BACKENDS "Adolc, ")
@@ -167,7 +167,7 @@ if(EIGEN_TEST_CXX17)
       set(CMAKE_CXX_STANDARD 17)
     else()
       if(MSVC)
-        # Set the host and device compilers C++ standard to C++14. On Windows setting this to C++11
+        # Set the host and device compilers C++ standard to C++14. On Windows setting this to c++17
         # can cause issues with the ComputeCpp device compiler parsing Visual Studio Headers.
         set(CMAKE_CXX_STANDARD 14)
         list(APPEND COMPUTECPP_USER_FLAGS -DWIN32)
@@ -295,7 +295,7 @@ if(CUDA_FOUND AND EIGEN_TEST_CUDA)
   # Make sure to compile without the -pedantic, -Wundef, -Wnon-virtual-dtor
   # and -fno-check-new flags since they trigger thousands of compilation warnings
   # in the CUDA runtime
-  # Also remove -ansi that is incompatible with std=c++11.
+  # Also remove -ansi that is incompatible with std=c++17.
   string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   string(REPLACE "-Wundef" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   string(REPLACE "-Wnon-virtual-dtor" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -308,7 +308,7 @@ if(CUDA_FOUND AND EIGEN_TEST_CUDA)
     set(CUDA_NVCC_FLAGS "-ccbin ${CMAKE_C_COMPILER}" CACHE STRING "nvcc flags" FORCE)
   endif()
   if(EIGEN_TEST_CUDA_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
     string(APPEND CMAKE_CXX_FLAGS " --cuda-path=${CUDA_TOOLKIT_ROOT_DIR}")
     foreach(ARCH IN LISTS EIGEN_CUDA_COMPUTE_ARCH)
         string(APPEND CMAKE_CXX_FLAGS " --cuda-gpu-arch=sm_${ARCH}")

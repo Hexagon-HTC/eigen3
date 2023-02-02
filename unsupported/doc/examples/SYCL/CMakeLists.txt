@@ -6,7 +6,7 @@ if(EIGEN_SYCL_TRISYCL)
   set(CMAKE_CXX_STANDARD 17)
 else(EIGEN_SYCL_TRISYCL)
   if(MSVC)
-    # Set the host and device compilers C++ standard to C++14. On Windows setting this to C++11
+    # Set the host and device compilers C++ standard to C++14. On Windows setting this to c++17
     # can cause issues with the ComputeCpp device compiler parsing Visual Studio Headers.
     set(CMAKE_CXX_STANDARD 14)
     list(APPEND COMPUTECPP_USER_FLAGS -DWIN32)

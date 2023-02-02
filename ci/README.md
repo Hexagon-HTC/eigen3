@@ -7,7 +7,7 @@ suite and a `test` stage to run the unit-tests.
 
 The build stage consists of the following jobs:
 
-| Job Name                                 | Arch      | OS             | Compiler   | C++11   |
+| Job Name                                 | Arch      | OS             | Compiler   | c++17   |
 |------------------------------------------|-----------|----------------|------------|---------|
 | `build:x86-64:linux:gcc-4.8:cxx11-off`   | `x86-64`  | `Ubuntu 18.04` | `GCC-4.8`  | `Off`   |
 | `build:x86-64:linux:gcc-4.8:cxx11-on`    | `x86-64`  | `Ubuntu 18.04` | `GCC-4.8`  | `On`    |
@@ -28,7 +28,7 @@ In principle every build-job has a corresponding test-job, however testing suppo
 
 ### Job dependecies
 
-| Job Name                                            | Arch      | OS             | Compiler   | C++11   | Module
+| Job Name                                            | Arch      | OS             | Compiler   | c++17   | Module
 |-----------------------------------------------------|-----------|----------------|------------|---------|--------
 | `test:x86-64:linux:gcc-4.8:cxx11-off:official`      | `x86-64`  | `Ubuntu 18.04` | `GCC-4.8`  | `Off`   | `Official`
 | `test:x86-64:linux:gcc-4.8:cxx11-off:unsupported`   | `x86-64`  | `Ubuntu 18.04` | `GCC-4.8`  | `Off`   | `Unsupported`

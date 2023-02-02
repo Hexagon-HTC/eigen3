@@ -83,7 +83,7 @@ template<typename Index> struct GemmParallelInfo
   // volatile is not enough on all architectures (see bug 1572)
   // to guarantee that when thread A says to thread B that it is
   // done with packing a block, then all writes have been really
-  // carried out... C++11 memory model+atomic guarantees this.
+  // carried out... c++17 memory model+atomic guarantees this.
 #if EIGEN_HAS_CXX11_ATOMIC
   std::atomic<Index> sync;
   std::atomic<int> users;
@@ -101,7 +101,7 @@ void parallelize_gemm(const Functor& func, Index rows, Index cols, Index depth, 
 {
   // TODO when EIGEN_USE_BLAS is defined,
   // we should still enable OMP for other scalar types
-  // Without C++11, we have to disable GEMM's parallelization on
+  // Without c++17, we have to disable GEMM's parallelization on
   // non x86 architectures because there volatile is not enough for our purpose.
   // See bug 1572.
 #if (! defined(EIGEN_HAS_OPENMP)) || defined(EIGEN_USE_BLAS) || ((!EIGEN_HAS_CXX11_ATOMIC) && !(EIGEN_ARCH_i386_OR_x86_64))

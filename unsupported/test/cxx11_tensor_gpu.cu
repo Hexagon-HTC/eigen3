@@ -563,7 +563,7 @@ void test_gpu_convolution_3d()
   gpuMemcpy(d_input, input.data(), input_bytes, gpuMemcpyHostToDevice);
   gpuMemcpy(d_kernel, kernel.data(), kernel_bytes, gpuMemcpyHostToDevice);
 
-  Eigen::GpuStreamDevice stream;    
+  Eigen::GpuStreamDevice stream;
   Eigen::GpuDevice gpu_device(&stream);
 
   Eigen::TensorMap<Eigen::Tensor<float, 5, DataLayout> > gpu_input(d_input,74,37,11,137,17);
@@ -730,7 +730,7 @@ void test_gpu_zeta()
   in_x(3) = Scalar(-10.5);
   in_x(4) = Scalar(10000.5);
   in_x(5) = Scalar(3);
-  
+
   in_q(0) = Scalar(1.2345);
   in_q(1) = Scalar(2);
   in_q(2) = Scalar(1.5);
@@ -756,7 +756,7 @@ void test_gpu_zeta()
 
   gpuMemcpy(d_in_x, in_x.data(), bytes, gpuMemcpyHostToDevice);
   gpuMemcpy(d_in_q, in_q.data(), bytes, gpuMemcpyHostToDevice);
-  
+
   Eigen::GpuStreamDevice stream;
   Eigen::GpuDevice gpu_device(&stream);
 
@@ -799,7 +799,7 @@ void test_gpu_polygamma()
   in_n(4) = Scalar(31);
   in_n(5) = Scalar(28);
   in_n(6) = Scalar(8);
-  
+
   in_x(0) = Scalar(2);
   in_x(1) = Scalar(3);
   in_x(2) = Scalar(25.5);
@@ -827,7 +827,7 @@ void test_gpu_polygamma()
 
   gpuMemcpy(d_in_x, in_x.data(), bytes, gpuMemcpyHostToDevice);
   gpuMemcpy(d_in_n, in_n.data(), bytes, gpuMemcpyHostToDevice);
-  
+
   Eigen::GpuStreamDevice stream;
   Eigen::GpuDevice gpu_device(&stream);
 
@@ -1561,9 +1561,9 @@ EIGEN_DECLARE_TEST(cxx11_tensor_gpu)
 #endif
 
 #if EIGEN_GPU_TEST_C99_MATH
-  // std::erf, std::erfc, and so on where only added in c++11. We use them
+  // std::erf, std::erfc, and so on where only added in c++17. We use them
   // as a golden reference to validate the results produced by Eigen. Therefore
-  // we can only run these tests if we use a c++11 compiler.
+  // we can only run these tests if we use a c++17 compiler.
   CALL_SUBTEST_4(test_gpu_lgamma<float>(1.0f));
   CALL_SUBTEST_4(test_gpu_lgamma<float>(100.0f));
   CALL_SUBTEST_4(test_gpu_lgamma<float>(0.01f));

@@ -31,6 +31,6 @@ foreach(snippet_src ${snippets_SRCS})
     set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${compile_snippet_src}
                                 PROPERTIES OBJECT_DEPENDS ${snippet_src})
   else()
-    message("skip snippet ${snippet_src} because compiler does not support C++11")
+    message("skip snippet ${snippet_src} because compiler does not support c++17")
   endif()
 endforeach()

@@ -47,7 +47,7 @@ struct traits<CwiseNullaryOp<NullaryOp, PlainObjectType> > : traits<PlainObjectT
   * It is also possible to expose the last two operators if the generation makes sense for matrices but can be optimized for vectors.
   *
   * See DenseBase::NullaryExpr(Index,const CustomNullaryOp&) for an example binding
-  * C++11 random number generators.
+  * c++17 random number generators.
   *
   * A nullary expression can also be used to implement custom sophisticated matrix manipulations
   * that cannot be covered by the existing set of natively supported matrix manipulations.
@@ -129,7 +129,7 @@ DenseBase<Derived>::NullaryExpr(Index rows, Index cols, const CustomNullaryOp& f
   *
   * The template parameter \a CustomNullaryOp is the type of the functor.
   *
-  * Here is an example with C++11 random generators: \include random_cpp11.cpp
+  * Here is an example with c++17 random generators: \include random_cpp11.cpp
   * Output: \verbinclude random_cpp11.out
   *
   * \sa class CwiseNullaryOp

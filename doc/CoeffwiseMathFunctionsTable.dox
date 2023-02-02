@@ -23,7 +23,7 @@ using std::foo;
 foo(a[i]);
 \endcode
 means that the STL's function \c std::foo will be potentially called if it is compatible with the underlying scalar type. If not, then the user must ensure that an overload of the function foo is available for the given scalar type (usually defined in the same namespace as the given scalar type).
-This also means that, unless specified, if the function \c std::foo is available only in some recent c++ versions (e.g., c++11), then the respective %Eigen's function/method will be usable on standard types only if the compiler support the required c++ version.
+This also means that, unless specified, if the function \c std::foo is available only in some recent c++ versions (e.g., c++17), then the respective %Eigen's function/method will be usable on standard types only if the compiler support the required c++ version.
 
 <table class="manual-hl">
 <tr>

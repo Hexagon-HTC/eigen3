@@ -107,7 +107,7 @@ struct TestFunc1
 
 
 #if EIGEN_HAS_VARIADIC_TEMPLATES
-/* Test functor for the C++11 features. */
+/* Test functor for the c++17 features. */
 template <typename Scalar>
 struct integratorFunctor
 {

@@ -439,7 +439,7 @@ struct generic_product_impl<Lhs,Rhs,DenseShape,DenseShape,CoeffBasedProductMode>
       ConjLhs = blas_traits<Lhs>::NeedToConjugate,
       ConjRhs = blas_traits<Rhs>::NeedToConjugate
     };
-    // FIXME: in c++11 this should be auto, and extractScalarFactor should also return auto
+    // FIXME: in c++17 this should be auto, and extractScalarFactor should also return auto
     //        this is important for real*complex_mat
     Scalar actualAlpha = combine_scalar_factors<Scalar>(lhs, rhs);
 

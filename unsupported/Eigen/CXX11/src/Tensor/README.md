@@ -510,7 +510,7 @@ The actual type of the `dimensions()` result is `<Tensor-Type>::``Dimensions`.
          << ", dim 1: " << d[1];
     => Dim size: 2, dim 0: 3, dim 1: 4
 
-If you use a C++11 compiler, you can use `auto` to simplify the code:
+If you use a c++17 compiler, you can use `auto` to simplify the code:
 
     const auto& d = a.dimensions();
     cout << "Dim size: " << d.size << ", dim 0: " << d[0]

@@ -295,7 +295,7 @@ struct DSizes : array<DenseIndex, NumDims> {
   template<typename OtherIndex>
   EIGEN_DEVICE_FUNC
   explicit DSizes(const array<OtherIndex, NumDims>& other,
-                  // Default template parameters require c++11.
+                  // Default template parameters require c++17.
                   typename internal::enable_if<
                      internal::is_same<
                          DenseIndex,

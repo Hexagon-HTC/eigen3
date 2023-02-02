@@ -619,7 +619,7 @@ void packetmath() {
 }
 
 // Notice that this definition works for complex types as well.
-// c++11 has std::log2 for real, but not for complex types.
+// c++17 has std::log2 for real, but not for complex types.
 template <typename Scalar>
 Scalar log2(Scalar x) {
   return Scalar(EIGEN_LOG2E) * std::log(x);
@@ -660,7 +660,7 @@ void packetmath_real() {
   CHECK_CWISE1_EXACT_IF(PacketTraits::HasRint, numext::rint, internal::print);
 
   packetmath_boolean_mask_ops_real<Scalar,Packet>();
-  
+
   // Rounding edge cases.
   if (PacketTraits::HasRound || PacketTraits::HasCeil || PacketTraits::HasFloor || PacketTraits::HasRint) {
     typedef typename internal::make_integer<Scalar>::type IntType;
@@ -693,7 +693,7 @@ void packetmath_real() {
     values.push_back(NumTraits<Scalar>::infinity());
     values.push_back(-NumTraits<Scalar>::infinity());
     values.push_back(NumTraits<Scalar>::quiet_NaN());
-    
+
     for (size_t k=0; k<values.size(); ++k) {
       data1[0] = values[k];
       CHECK_CWISE1_EXACT_IF(PacketTraits::HasRound, numext::round, internal::pround);
@@ -715,7 +715,7 @@ void packetmath_real() {
     data2[i] = Scalar(internal::random<double>(-87, 88));
   }
   CHECK_CWISE1_IF(PacketTraits::HasExp, std::exp, internal::pexp);
-  
+
   CHECK_CWISE1_BYREF1_IF(PacketTraits::HasExp, REF_FREXP, internal::pfrexp);
   if (PacketTraits::HasExp) {
     // Check denormals:
@@ -725,16 +725,16 @@ void packetmath_real() {
       data1[0] = -data1[0];
       CHECK_CWISE1_BYREF1_IF(PacketTraits::HasExp, REF_FREXP, internal::pfrexp);
     }
-    
+
     // zero
     data1[0] = Scalar(0);
     CHECK_CWISE1_BYREF1_IF(PacketTraits::HasExp, REF_FREXP, internal::pfrexp);
-    
+
     // inf and NaN only compare output fraction, not exponent.
     test::packet_helper<PacketTraits::HasExp,Packet> h;
     Packet pout;
     Scalar sout;
-    Scalar special[] = { NumTraits<Scalar>::infinity(), 
+    Scalar special[] = { NumTraits<Scalar>::infinity(),
                         -NumTraits<Scalar>::infinity(),
                          NumTraits<Scalar>::quiet_NaN()};
     for (int i=0; i<3; ++i) {
@@ -744,7 +744,7 @@ void packetmath_real() {
       VERIFY(test::areApprox(ref, data2, 1) && "internal::pfrexp");
     }
   }
-  
+
   for (int i = 0; i < PacketSize; ++i) {
     data1[i] = Scalar(internal::random<double>(-1, 1));
     data2[i] = Scalar(internal::random<double>(-1, 1));

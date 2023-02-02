@@ -29,7 +29,7 @@ namespace Eigen {
   *
   * However, in C++98, if you want to directly maniputate reshaped expressions,
   * for instance if you want to write a function returning such an expression, you
-  * will need to use this class. In C++11, it is advised to use the \em auto
+  * will need to use this class. In c++17, it is advised to use the \em auto
   * keyword for such use cases.
   *
   * Here is an example illustrating the dynamic case:
