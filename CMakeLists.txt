@@ -62,7 +62,7 @@ include(CMakeDependentOption)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 
-option(EIGEN_TEST_CXX11 "Enable testing with C++11 and C++11 features (e.g. Tensor module)." OFF)
+option(EIGEN_TEST_CXX17 "Enable testing with C++11 and C++11 features (e.g. Tensor module)." OFF)
 
 
 macro(ei_add_cxx_compiler_flag FLAG)

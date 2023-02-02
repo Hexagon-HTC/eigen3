@@ -285,7 +285,7 @@ ei_add_test(array_of_string)
 ei_add_test(num_dimensions)
 ei_add_test(stl_iterators)
 ei_add_test(blasutil)
-if(EIGEN_TEST_CXX11)
+if(EIGEN_TEST_CXX17)
   ei_add_test(initializer_list_construction)
   ei_add_test(diagonal_matrix_variadic_ctor)
 endif()
@@ -387,15 +387,15 @@ if(EIGEN_TEST_CUDA)
 
 find_package(CUDA 5.0)
 if(CUDA_FOUND)
-  
+
   set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-  
+
   set(EIGEN_CUDA_RELAXED_CONSTEXPR "--expt-relaxed-constexpr")
   if (${CUDA_VERSION} STREQUAL "7.0")
     set(EIGEN_CUDA_RELAXED_CONSTEXPR "--relaxed-constexpr")
   endif()
-  
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") 
+
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CUDA_NVCC_FLAGS "-ccbin ${CMAKE_C_COMPILER}" CACHE STRING "nvcc flags" FORCE)
   endif()
   if(EIGEN_TEST_CUDA_CLANG)
@@ -411,9 +411,9 @@ if(CUDA_FOUND)
   endif()
   string(APPEND CUDA_NVCC_FLAGS " ${EIGEN_CUDA_RELAXED_CONSTEXPR}")
   set(EIGEN_ADD_TEST_FILENAME_EXTENSION  "cu")
-  
+
   ei_add_test(gpu_basic)
-  
+
   unset(EIGEN_ADD_TEST_FILENAME_EXTENSION)
 
 endif()
@@ -428,8 +428,8 @@ if (EIGEN_TEST_HIP)
   set(HIP_PATH "/opt/rocm/hip" CACHE STRING "Path to the HIP installation.")
 
   if (EXISTS ${HIP_PATH})
-    
-    list(APPEND CMAKE_MODULE_PATH ${HIP_PATH}/cmake) 
+
+    list(APPEND CMAKE_MODULE_PATH ${HIP_PATH}/cmake)
 
     find_package(HIP REQUIRED)
     if (HIP_FOUND)
@@ -443,12 +443,12 @@ if (EIGEN_TEST_HIP)
 	set(EIGEN_ADD_TEST_FILENAME_EXTENSION  "cu")
 	ei_add_test(gpu_basic)
 	unset(EIGEN_ADD_TEST_FILENAME_EXTENSION)
-	
+
       elseif ((${HIP_PLATFORM} STREQUAL "nvcc") OR (${HIP_PLATFORM} STREQUAL "nvidia"))
 	message(FATAL_ERROR "HIP_PLATFORM = nvcc is not supported within Eigen")
       else ()
 	message(FATAL_ERROR "Unknown HIP_PLATFORM = ${HIP_PLATFORM}")
-      endif() 
+      endif()
     endif()
   else ()
     message(FATAL_ERROR "EIGEN_TEST_HIP is ON, but the specified HIP_PATH (${HIP_PATH}) does not exist")

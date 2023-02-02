@@ -15,6 +15,6 @@ foreach(example_src ${examples_SRCS})
   add_dependencies(all_examples ${example})
 endforeach()
 
-if(EIGEN_COMPILER_SUPPORT_CPP11)
-ei_add_target_property(nullary_indexing COMPILE_FLAGS "-std=c++11")
+if(EIGEN_COMPILER_SUPPORT_CPP17)
+ei_add_target_property(nullary_indexing COMPILE_FLAGS "-std=c++17")
 endif()

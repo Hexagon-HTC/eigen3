@@ -11,7 +11,7 @@
   script:
     - mkdir -p ${BUILDDIR} && cd ${BUILDDIR}
     - CXX=${EIGEN_CI_CXX_COMPILER} CC=${EIGEN_CI_CC_COMPILER} cmake -G
-      ${EIGEN_CI_CMAKE_GENEATOR} -DEIGEN_TEST_CXX11=${EIGEN_TEST_CXX11}
+      ${EIGEN_CI_CMAKE_GENEATOR} -DEIGEN_TEST_CXX17=${EIGEN_TEST_CXX17}
       ${EIGEN_CI_ADDITIONAL_ARGS} ..
     - cmake --build . --target buildsmoketests
   artifacts:
@@ -27,28 +27,28 @@ buildsmoketests:x86-64:linux:gcc-10:cxx11-off:
   variables:
     EIGEN_CI_CXX_COMPILER: "g++-10"
     EIGEN_CI_CC_COMPILER: "gcc-10"
-    EIGEN_TEST_CXX11: "off"
+    EIGEN_TEST_CXX17: "off"
 
 buildsmoketests:x86-64:linux:gcc-10:cxx11-on:
   extends: .buildsmoketests:linux:base
   variables:
     EIGEN_CI_CXX_COMPILER: "g++-10"
     EIGEN_CI_CC_COMPILER: "gcc-10"
-    EIGEN_TEST_CXX11: "on"
+    EIGEN_TEST_CXX17: "on"
 
 buildsmoketests:x86-64:linux:clang-10:cxx11-off:
   extends: .buildsmoketests:linux:base
   variables:
     EIGEN_CI_CXX_COMPILER: "clang++-10"
     EIGEN_CI_CC_COMPILER: "clang-10"
-    EIGEN_TEST_CXX11: "off"
+    EIGEN_TEST_CXX17: "off"
 
 buildsmoketests:x86-64:linux:clang-10:cxx11-on:
   extends: .buildsmoketests:linux:base
   variables:
     EIGEN_CI_CXX_COMPILER: "clang++-10"
     EIGEN_CI_CC_COMPILER: "clang-10"
-    EIGEN_TEST_CXX11: "on"
+    EIGEN_TEST_CXX17: "on"
 
 .smoketests:linux:base:
   stage: smoketests

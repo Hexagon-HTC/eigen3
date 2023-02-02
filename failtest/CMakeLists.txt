@@ -63,7 +63,7 @@ ei_add_failtest("bdcsvd_int")
 ei_add_failtest("eigensolver_int")
 ei_add_failtest("eigensolver_cplx")
 
-if(EIGEN_TEST_CXX11)
+if(EIGEN_TEST_CXX17)
   ei_add_failtest("initializer_list_1")
   ei_add_failtest("initializer_list_2")
 endif()
